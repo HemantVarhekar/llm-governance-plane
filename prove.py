@@ -56,6 +56,9 @@ if not Path(PY).is_file():
 
 PASS, FAIL, SKIP, ERROR = "PASS", "FAIL", "SKIP", "ERROR"
 
+# Filled by collect_environment() at the start of a run.
+ENVIRONMENT: dict = {}
+
 
 # --------------------------------------------------------------------------
 # Result shape
@@ -456,6 +459,137 @@ def check_load(results: list[Result], url: str, key: str, minutes: float) -> Non
 
 
 # --------------------------------------------------------------------------
+# What it passed ON
+# --------------------------------------------------------------------------
+
+
+def collect_environment() -> dict:
+    """The stack, the models and the scenario spread.
+
+    A result without its environment is half a result. "159 tests passed"
+    says nothing about which model was behind the safety guard, which
+    detector won the promotion gate, or which library versions produced
+    the numbers - and those are the first things anyone sensible asks.
+
+    Every value here is READ, not recalled: package versions come from
+    the installed distributions, models and zones from config.yaml,
+    scenario counts from SCENARIOS.md. A hand-written stack list is how
+    requirements.txt came to claim seven versions that had never existed
+    in this project.
+    """
+    env: dict = {}
+
+    # -- libraries, from what is actually importable ----------------------
+    import importlib.metadata as md
+    dists = {"fastapi": "fastapi", "uvicorn": "uvicorn", "pydantic": "pydantic",
+             "httpx": "httpx", "PyYAML": "PyYAML", "pytest": "pytest",
+             "presidio-analyzer": "presidio-analyzer", "spacy": "spacy",
+             "psutil": "psutil"}
+    env["libraries"] = {}
+    for label, dist in dists.items():
+        try:
+            env["libraries"][label] = md.version(dist)
+        except Exception:
+            env["libraries"][label] = None
+
+    # -- models and routing zones, from the live configuration ------------
+    try:
+        import yaml
+        cfg = yaml.safe_load((GATEWAY / "config.yaml").read_text(encoding="utf-8"))
+        env["providers"] = {
+            name: {"type": p.get("type"), "model": p.get("model"),
+                   "zone": p.get("zone"), "cost_per_1k": p.get("cost_per_1k")}
+            for name, p in (cfg.get("providers") or {}).items()
+        }
+        cls = cfg.get("classifier") or {}
+        env["classifier"] = {"type": cls.get("type"),
+                             "members": cls.get("members"),
+                             "require_all_healthy": cls.get("require_all_healthy")}
+        guards = cfg.get("guardrails") or {}
+        env["guardrails"] = {
+            d: [g.get("name") or g.get("type") for g in (guards.get(d) or [])]
+            for d in ("input", "output")
+        }
+    except Exception as exc:                                  # noqa: BLE001
+        env["config_error"] = f"{type(exc).__name__}: {exc}"
+
+    # -- which detector actually won the gate -----------------------------
+    try:
+        reg = json.loads((ROOT / "evals" / "registry.json")
+                         .read_text(encoding="utf-8"))
+        env["classifier_candidates"] = {
+            n: {"f1": c.get("f1"), "recall": c.get("recall"),
+                "precision": c.get("precision"), "gate": c.get("gate")}
+            for n, c in (reg.get("candidates") or {}).items()
+        }
+        env["gate_thresholds"] = reg.get("thresholds")
+        env["eval_dataset_size"] = reg.get("dataset_size")
+    except Exception:
+        pass
+
+    # -- scenarios, by category -------------------------------------------
+    try:
+        doc = (ROOT / "SCENARIOS.md").read_text(encoding="utf-8")
+        cats: dict[str, int] = {}
+        for line in doc.splitlines():
+            if not line.startswith("| SC-"):
+                continue
+            parts = [c.strip() for c in line.split("|")]
+            if len(parts) > 4:
+                cats[parts[3]] = cats.get(parts[3], 0) + 1
+        env["scenarios_by_category"] = dict(
+            sorted(cats.items(), key=lambda kv: -kv[1]))
+        env["scenarios_total"] = sum(cats.values())
+    except Exception:
+        pass
+
+    # -- the load generator, if present ------------------------------------
+    k6 = ROOT / "loadtest" / "bin" / ("k6.exe" if platform.system() == "Windows"
+                                      else "k6")
+    binary = str(k6) if k6.is_file() else shutil.which("k6")
+    if binary:
+        code, out = run([binary, "version"], timeout=30)
+        env["load_generator"] = out.strip().splitlines()[0] if out.strip() else None
+    else:
+        env["load_generator"] = None
+
+    return env
+
+
+def render_environment(env: dict) -> list[str]:
+    lines = ["", "  STACK AND MODELS"]
+    for name, p in (env.get("providers") or {}).items():
+        cost = p.get("cost_per_1k")
+        lines.append(f"    provider {name:<8} {str(p.get('model')):<22} "
+                     f"{str(p.get('zone')):<7} "
+                     f"${cost}/1k" if cost is not None else "")
+    cls = env.get("classifier") or {}
+    if cls:
+        lines.append(f"    classifier         {cls.get('type')} "
+                     f"({', '.join(cls.get('members') or [])}), "
+                     f"fail-closed={cls.get('require_all_healthy')}")
+    for d, names in (env.get("guardrails") or {}).items():
+        if names:
+            lines.append(f"    guards {d:<12}{', '.join(str(n) for n in names)}")
+    cands = env.get("classifier_candidates") or {}
+    if cands:
+        lines.append("    gate candidates    " + "   ".join(
+            f"{n}:{c.get('gate','?').lower()}(f1={c.get('f1')})"
+            for n, c in cands.items()))
+    libs = env.get("libraries") or {}
+    if libs:
+        lines.append("    libraries          " + "  ".join(
+            f"{k}=={v}" for k, v in libs.items() if v))
+    if env.get("load_generator"):
+        lines.append(f"    load generator     {env['load_generator']}")
+    cats = env.get("scenarios_by_category") or {}
+    if cats:
+        lines.append(f"    scenarios ({env.get('scenarios_total')})      " +
+                     "  ".join(f"{k}:{v}" for k, v in cats.items()))
+    return lines
+
+
+# --------------------------------------------------------------------------
 # Reporting
 # --------------------------------------------------------------------------
 
@@ -472,6 +606,7 @@ def render(results: list[Result], started: datetime, elapsed: float) -> str:
                  f"{platform.system()} {platform.machine()}   "
                  f"python {platform.python_version()}")
     lines.append("=" * w)
+    lines.extend(render_environment(ENVIRONMENT))
 
     by_cat: dict[str, list[Result]] = {}
     for r in results:
@@ -520,6 +655,54 @@ def render_markdown(results: list[Result], started: datetime,
     out += [f"**{tally[PASS]} passed · {tally[FAIL]} failed · "
             f"{tally[SKIP]} skipped · {tally[ERROR]} errored** "
             f"in {elapsed:.0f}s", ""]
+
+    env = ENVIRONMENT
+    if env.get("providers"):
+        out += ["## What it ran against", "",
+                "| Provider | Type | Model | Zone | Cost /1k |",
+                "|---|---|---|---|---|"]
+        for n, pr in env["providers"].items():
+            out.append(f"| `{n}` | {pr.get('type')} | **{pr.get('model')}** | "
+                       f"{pr.get('zone')} | ${pr.get('cost_per_1k')} |")
+        out.append("")
+    cls = env.get("classifier") or {}
+    if cls:
+        out += [f"**Personal-data classifier:** `{cls.get('type')}` over "
+                f"{', '.join(f'`{m}`' for m in cls.get('members') or [])} — "
+                f"fail-closed: `{cls.get('require_all_healthy')}`", ""]
+    g = env.get("guardrails") or {}
+    if any(g.values()):
+        out += ["**Guardrails:** " + "; ".join(
+            f"{d} → {', '.join(str(x) for x in names)}"
+            for d, names in g.items() if names), ""]
+    cands = env.get("classifier_candidates") or {}
+    if cands:
+        out += ["### Detector promotion gate", "",
+                "Thresholds set before evaluation: "
+                + ", ".join(f"{k} >= {v}" for k, v in
+                            (env.get("gate_thresholds") or {}).items())
+                + f", over {env.get('eval_dataset_size')} labelled samples."
+                + " Asymmetric on purpose: a miss is a breach, a false "
+                  "alarm is a slower answer.", "",
+                "| Candidate | Recall | Precision | F1 | Gate |",
+                "|---|---|---|---|---|"]
+        for n, c in cands.items():
+            mark = "BLOCKED" if c.get("gate") == "BLOCKED" else "**promoted**"
+            out.append(f"| `{n}` | {c.get('recall')} | {c.get('precision')} | "
+                       f"{c.get('f1')} | {mark} |")
+        out.append("")
+    cats = env.get("scenarios_by_category") or {}
+    if cats:
+        out += [f"### Scenarios ({env.get('scenarios_total')} total, "
+                f"all traced to tests)", "",
+                " · ".join(f"**{k}** {v}" for k, v in cats.items()), ""]
+    libs = {k: v for k, v in (env.get("libraries") or {}).items() if v}
+    if libs:
+        out += ["### Stack", "",
+                " · ".join(f"`{k} {v}`" for k, v in libs.items())]
+        if env.get("load_generator"):
+            out[-1] += f" · `{env['load_generator']}`"
+        out += [f" · `Python {platform.python_version()}`", ""]
 
     by_cat: dict[str, list[Result]] = {}
     for r in results:
@@ -578,6 +761,8 @@ def main() -> int:
         return 0
 
     EVIDENCE.mkdir(exist_ok=True)
+    global ENVIRONMENT
+    ENVIRONMENT = collect_environment()
     started_at = datetime.now(timezone.utc)
     t0 = time.perf_counter()
     results: list[Result] = []
@@ -613,6 +798,7 @@ def main() -> int:
         "elapsed_s": round(elapsed, 1),
         "host": {"system": platform.system(), "machine": platform.machine(),
                  "python": platform.python_version()},
+        "environment": ENVIRONMENT,
         "gateway_reachable": up,
         "gateway_guards": (health.get("guardrails") or {}).get("input"),
         "summary": {k: sum(1 for r in results if r.outcome == k)

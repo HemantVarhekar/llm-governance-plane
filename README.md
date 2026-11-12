@@ -1,5 +1,7 @@
 # LLM Governance Plane
 
+[![Evidence](https://github.com/HemantVarhekar/llm-governance-plane/actions/workflows/evidence.yml/badge.svg)](https://github.com/HemantVarhekar/llm-governance-plane/actions/workflows/evidence.yml)
+
 A control plane that sits in front of every machine-learning and
 large-language-model call, so each one is **observable, guard-railed,
 cost-routed, compliance-bound and fallback-protected** — and so every
@@ -78,12 +80,74 @@ drifts from it.
 
 ---
 
+## The stack it runs on
+
+Four models, each with a different job. None of them is hard-coded
+anywhere in the pipeline — the Adapter boundary means a provider is a
+config entry, and swapping one is a YAML line rather than a release.
+
+| Role | Model | Runtime | Zone | Cost /1k |
+|---|---|---|---|---|
+| Drafting | **`llama3.2:3b`** | Ollama | on-prem | $0.00 |
+| Safety classification | **`llama-guard3:1b`** | Ollama | on-prem | $0.00 |
+| Cloud drafting | **`claude-sonnet-5-5`** | Anthropic API | cloud | $0.003 |
+| Personal-data detection | **Presidio + spaCy `en_core_web_sm`** | HTTP service | on-prem | $0.00 |
+
+The cloud cost being non-zero is the point: it makes routing a real
+economic choice rather than a demonstration.
+
+**Guardrails** — input: `injection`, `safety_model`. Output: `format`.
+**Classifier**: `composite` over `regex` + `presidio`, `require_all_healthy: true`, so the gate fails closed.
+
+### The promotion gate, on 185 labelled samples
+
+Thresholds set *before* evaluation: recall ≥ 0.95, precision ≥ 0.90, F1 ≥ 0.92.
+Asymmetric on purpose — a miss is a data breach, a false alarm is a slower answer.
+
+| Candidate | Recall | Precision | F1 | Gate |
+|---|---|---|---|---|
+| `regex` | 0.676 | 1.000 | 0.806 | **BLOCKED** |
+| `presidio` | 0.784 | 1.000 | 0.879 | **BLOCKED** |
+| `composite` | 1.000 | 1.000 | 1.000 | **promoted** |
+
+Neither detector alone clears the bar. That is the finding: regex cannot
+find a name, Presidio alone misses structured identifiers, and the
+composite is the only thing that passes. A gate that promoted everything
+would prove nothing.
+
+### Scenarios — 23, every one traced to a test
+
+`governance` 6 · `security` 5 · `performance` 3 · `cost` 2 · `resilience` 2 · `architecture` 2 · `reliability` 1 · `operability` 1 · `quality` 1
+
+### Libraries
+
+`Python 3.13` · `fastapi 0.162.2` · `uvicorn 0.54.0` · `pydantic 2.14.3` · `httpx 0.28.1` · `PyYAML 6.0.3` · `presidio-analyzer 2.2.366` · `spacy 3.8.18` · `psutil 6.1.1` · `pytest 9.2.0` · `k6 2.3.0`
+
+Pinned from the environment that passes, not from memory. The first
+version of `requirements.txt` was hand-written and seven of its nine pins
+were wrong; CI died in twelve seconds and the commit message lists every
+one of them.
+
+---
+
 ## Measured
 
-On two physical cores, with every figure traceable to the run that
-produced it. `python dashboard/verify.py` asserts each one against its
-source file, so a number that drifts fails a check instead of being found
-by whoever is listening to the presentation.
+Every figure traceable to the run that produced it. `python
+dashboard/verify.py` asserts each one against its source file, so a number
+that drifts fails a check instead of being found by whoever is listening
+to the presentation.
+
+**The latest CI run, in full:**
+
+```
+15 passed · 0 failed · 1 skipped · 0 errored   in 53.5s
+
+tests 159 passed | scenarios 23/23 | redteam 976/1000 held (24 residual)
+generated 49/50 held | gate blocked 2/3 | figures 44/44
+```
+
+The single skip is the deployment preflight, which needs a live gateway
+and says so rather than counting itself as a pass.
 
 | | |
 |---|---|
@@ -92,9 +156,13 @@ by whoever is listening to the presentation.
 | Benign messages, false alarms | 136 — **0** |
 | Personal data reaching cloud, under load | **0** |
 | Composite classifier | F1 **1.000**; the gate blocks 2 of 3 candidates |
-| Tests | **158 pass, hermetically** — no service required |
+| Tests | **159 pass in CI**, 158 locally — hermetic, no service required |
 | Scenario coverage | **23 of 23** traced |
 | Control-plane throughput | **~3.1 per second**, flat from 1 to 16 concurrent |
+
+Tests pass 159 in CI and 158 locally because the timing side-channel test
+skips itself when Presidio is not running. CI starts Presidio, so CI
+tests slightly *more* than a laptop does.
 
 That last row is a finding, not a boast. See below.
 
