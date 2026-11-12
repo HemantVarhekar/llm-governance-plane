@@ -89,29 +89,53 @@ jobs:
       # and through the public API WITHOUT signing in. A green tick only
       # says the command exited zero; these say what it actually proved,
       # and in particular how much it had to SKIP.
+      # Emitted as annotations because they are readable on the run page
+      # and through the public API WITHOUT signing in. A green tick only
+      # says the command exited zero; these say what it actually proved.
+      #
+      # GitHub caps annotations at ten per step. The first version spent
+      # that budget on successes and silently truncated six checks,
+      # including the red team's numbers - so the headline figures go in
+      # ONE notice, and individual annotations are reserved for what did
+      # not pass. Exceptions are what annotations are for.
       - name: Report what was proved
         if: always()
         run: |
           python - <<'PY'
-          import json, os, pathlib
+          import json, pathlib
           p = pathlib.Path("evidence/catalogue.json")
           if not p.is_file():
               print("::error::no catalogue was written")
               raise SystemExit(0)
           d = json.loads(p.read_text())
           s = d["summary"]
-          print(f"::notice title=Evidence::"
-                f"{s['PASS']} passed, {s['FAIL']} failed, "
-                f"{s['SKIP']} skipped, {s['ERROR']} errored "
-                f"in {d['elapsed_s']}s")
+          head = []
           for c in d["checks"]:
-              n = " ".join(f"{k}={v}" for k, v in (c["numbers"] or {}).items()
-                           if v is not None)
-              line = f"{c['outcome']} {c['name']}" + (f" | {n}" if n else "")
-              if c["detail"]:
-                  line += f" | {c['detail']}"
-              kind = {"PASS": "notice", "SKIP": "warning"}.get(c["outcome"], "error")
-              print(f"::{kind} title=Check::{line}")
+              n = c["numbers"] or {}
+              if c["id"] == "tests.all":
+                  head.append(f"tests {n.get('passed')} passed")
+              elif c["id"] == "traceability":
+                  head.append(f"scenarios {n.get('tested')}/{n.get('declared')}")
+              elif c["id"] == "security.redteam":
+                  head.append(f"redteam {n.get('held')}/{n.get('attacks')} held "
+                              f"({n.get('breached')} residual)")
+              elif c["id"] == "security.generated":
+                  head.append(f"generated {n.get('held')}/{n.get('scored')} held")
+              elif c["id"] == "quality.gate":
+                  head.append(f"gate blocked {n.get('blocked_candidates')}")
+              elif c["id"] == "evidence.figures":
+                  head.append(f"figures {n.get('verified')}/{n.get('total')}")
+          print(f"::notice title=Evidence::"
+                f"{s['PASS']} passed, {s['FAIL']} failed, {s['SKIP']} skipped, "
+                f"{s['ERROR']} errored in {d['elapsed_s']}s | "
+                + " | ".join(x for x in head if "None" not in x))
+          # Only the exceptions get their own annotation.
+          for c in d["checks"]:
+              if c["outcome"] == "PASS":
+                  continue
+              kind = "warning" if c["outcome"] == "SKIP" else "error"
+              print(f"::{kind} title={c['outcome']}::"
+                    f"{c['name']} | {c['detail'] or 'no detail'}")
           PY
 
       - name: Publish the catalogue to the job summary
