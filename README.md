@@ -11,17 +11,17 @@ decision it made can be proved afterwards.
 python prove.py          # run every gate and write the evidence catalogue
 ```
 
-> **On the worked example.** The scenario below is a large US pay-television
-> operator migrating subscribers from satellite to streaming. The company is
-> not named, and every figure is drawn from public third-party analysis rather
-> than anything internal. It is there to make the engineering concrete — the
-> control plane is industry-agnostic.
+> **On the worked example.** The scenario below is DIRECTV migrating
+> subscribers from satellite to streaming. **Every figure comes from public
+> third-party analysis — nothing internal, and each one is confidence-labelled
+> in [BUSINESS_CASE.md](BUSINESS_CASE.md).** It is there to make the
+> engineering concrete; the control plane itself is industry-agnostic.
 
 ---
 
 ## The problem I set out to fix
 
-The operator's winning move is operational: hold the subscribers you have,
+DIRECTV's winning move is operational: hold the subscribers you have,
 and move them to streaming without losing them in transit. Churn scoring,
 playback anomaly detection, support drafting — all of it now runs through an
 ML or LLM call, and every one of those calls touches customer data.
