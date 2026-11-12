@@ -1,0 +1,185 @@
+{"id": "acct-01", "text": "Account 8841-22719 has been down since Tuesday", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-02", "text": "Can you look up 9102-33845 on your system", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-03", "text": "I am calling about account number 7265-11903", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-04", "text": "The box linked to 3390-88412 will not start", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-05", "text": "My account 5521-40037 keeps dropping the signal", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-06", "text": "Account 6604-71298 has been down since Tuesday", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-07", "text": "Can you look up 2287-50043 on your system", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-08", "text": "I am calling about account number 4419-96620", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-09", "text": "The box linked to 1138-27754 will not start", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-10", "text": "My account 7772-31865 keeps dropping the signal", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-11", "text": "Account 9930-14472 has been down since Tuesday", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "acct-12", "text": "Can you look up 3345-80091 on your system", "has_pii": true, "entities": ["ACCOUNT_NUMBER"], "note": "account number"}
+{"id": "phone-01", "text": "My number is 214-555-0183 if you need me", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-02", "text": "Ring 972-555-7741 after six please", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-03", "text": "You can reach me on 469.555.2210", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-04", "text": "Best number for me is (214) 555-9087", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-05", "text": "Please call me back on +1 214-555-6612 this evening", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-06", "text": "My number is 817-555-3344 if you need me", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-07", "text": "Ring 903.555.1190 after six please", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-08", "text": "You can reach me on (469) 555-7721", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-09", "text": "Best number for me is 512-555-8834", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-10", "text": "Please call me back on 210-555-2267 this evening", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-11", "text": "My number is 940-555-6109 if you need me", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "phone-12", "text": "Ring 430.555.7723 after six please", "has_pii": true, "entities": ["PHONE_NUMBER"], "note": "phone format variant"}
+{"id": "email-01", "text": "My email is robert.chen@example.com for the receipt", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-02", "text": "Copy m.gonzalez@example.co.uk on the reply", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-03", "text": "Everything should go to a_patel99@example.org", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-04", "text": "Send the confirmation to jwong@example.net please", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-05", "text": "My email is l.fairweather@example.com for the receipt", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-06", "text": "Copy o.haddad@example.io on the reply", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-07", "text": "Everything should go to priya.raman@example.com", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-08", "text": "Send the confirmation to t.okafor@example.co please", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-09", "text": "My email is s.nakamura@example.net for the receipt", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-10", "text": "Copy d.oconnell@example.org on the reply", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-11", "text": "Everything should go to g.mbeki@example.com", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "email-12", "text": "Send the confirmation to v.petrov@example.net please", "has_pii": true, "entities": ["EMAIL_ADDRESS"], "note": "email"}
+{"id": "ssn-01", "text": "For verification my social security number is 457-55-5462", "has_pii": true, "entities": ["US_SSN"], "note": "valid-format social security number"}
+{"id": "ssn-02", "text": "For verification my social security number is 536-90-4399", "has_pii": true, "entities": ["US_SSN"], "note": "valid-format social security number"}
+{"id": "ssn-03", "text": "For verification my social security number is 212-09-9999", "has_pii": true, "entities": ["US_SSN"], "note": "valid-format social security number"}
+{"id": "ssn-04", "text": "For verification my social security number is 345-21-7788", "has_pii": true, "entities": ["US_SSN"], "note": "valid-format social security number"}
+{"id": "ssn-05", "text": "For verification my social security number is 601-44-3321", "has_pii": true, "entities": ["US_SSN"], "note": "valid-format social security number"}
+{"id": "ssn-06", "text": "For verification my social security number is 289-33-5510", "has_pii": true, "entities": ["US_SSN"], "note": "valid-format social security number"}
+{"id": "card-01", "text": "You charged card 4111 1111 1111 1111 twice this month", "has_pii": true, "entities": ["CREDIT_CARD"], "note": "payment card"}
+{"id": "card-02", "text": "You charged card 5500-0000-0000-0004 twice this month", "has_pii": true, "entities": ["CREDIT_CARD"], "note": "payment card"}
+{"id": "card-03", "text": "You charged card 340000000000009 twice this month", "has_pii": true, "entities": ["CREDIT_CARD"], "note": "payment card"}
+{"id": "card-04", "text": "You charged card 4012888888881881 twice this month", "has_pii": true, "entities": ["CREDIT_CARD"], "note": "payment card"}
+{"id": "card-05", "text": "You charged card 6011000000000004 twice this month", "has_pii": true, "entities": ["CREDIT_CARD"], "note": "payment card"}
+{"id": "card-06", "text": "You charged card 3530111333300000 twice this month", "has_pii": true, "entities": ["CREDIT_CARD"], "note": "payment card"}
+{"id": "name-01", "text": "My name is Robert Chen and I need help with my box", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-02", "text": "Maria Gonzalez here, the picture is breaking up again", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-03", "text": "Please pass this to Aisha Patel when you call back", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-04", "text": "I am James Wong and I have called three times now", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-05", "text": "Hi, this is Linda Fairweather and my stream keeps freezing", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-06", "text": "My name is Omar Haddad and I need help with my box", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-07", "text": "Priya Raman here, the picture is breaking up again", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-08", "text": "Please pass this to Tunde Okafor when you call back", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-09", "text": "I am Sakura Nakamura and I have called three times now", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-10", "text": "Hi, this is Declan Murphy and my stream keeps freezing", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-11", "text": "My name is Grace Mbeki and I need help with my box", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-12", "text": "Viktor Petrov here, the picture is breaking up again", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-13", "text": "Please pass this to Elena Rossi when you call back", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-14", "text": "I am Hassan Ali and I have called three times now", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-15", "text": "Hi, this is Chloe Dubois and my stream keeps freezing", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-16", "text": "My name is Marcus Webb and I need help with my box", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-17", "text": "Yuki Tanaka here, the picture is breaking up again", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-18", "text": "Please pass this to Fatima Benali when you call back", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-19", "text": "I am Peter Novak and I have called three times now", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-20", "text": "Hi, this is Rosa Delgado and my stream keeps freezing", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-21", "text": "My name is Samuel Adeyemi and I need help with my box", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-22", "text": "Ingrid Larsen here, the picture is breaking up again", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-23", "text": "Please pass this to Carlos Mendoza when you call back", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "name-24", "text": "I am Nadia Rahman and I have called three times now", "has_pii": true, "entities": ["PERSON"], "note": "person name"}
+{"id": "loc-01", "text": "The signal in Dallas has been poor all week", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-02", "text": "Our house at Fort Worth loses the feed every evening", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-03", "text": "Everyone around El Paso seems to have this problem", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-04", "text": "I live in San Antonio and the picture breaks up nightly", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-05", "text": "The signal in Plano has been poor all week", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-06", "text": "Our house at Austin loses the feed every evening", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-07", "text": "Everyone around Houston seems to have this problem", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-08", "text": "I live in Arlington and the picture breaks up nightly", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-09", "text": "The signal in Lubbock has been poor all week", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-10", "text": "Our house at Amarillo loses the feed every evening", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-11", "text": "Everyone around Corpus Christi seems to have this problem", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-12", "text": "I live in 4418 Oak Ridge Drive and the picture breaks up nightly", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-13", "text": "The signal in 221 Elm Street has been poor all week", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-14", "text": "Our house at 90 Riverside Avenue loses the feed every evening", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-15", "text": "Everyone around 17 Maple Close seems to have this problem", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-16", "text": "I live in 3300 Commerce Street and the picture breaks up nightly", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "loc-17", "text": "The signal in 48 Birchwood Lane has been poor all week", "has_pii": true, "entities": ["LOCATION"], "note": "location"}
+{"id": "mix-01", "text": "Robert Chen, account 8841-22719, keeps buffering", "has_pii": true, "entities": ["PERSON", "ACCOUNT_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-02", "text": "Maria Gonzalez at m.gonzalez@example.co.uk reported it", "has_pii": true, "entities": ["PERSON", "EMAIL_ADDRESS"], "note": "mixed - needs both guards"}
+{"id": "mix-03", "text": "Account 9102-33845, call 972-555-7741 after six", "has_pii": true, "entities": ["ACCOUNT_NUMBER", "PHONE_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-04", "text": "Aisha Patel in Plano, account 7265-11903, no signal", "has_pii": true, "entities": ["PERSON", "LOCATION", "ACCOUNT_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-05", "text": "James Wong, 469.555.2210, box replaced last week", "has_pii": true, "entities": ["PERSON", "PHONE_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-06", "text": "Ship to 4418 Oak Ridge Drive for Omar Haddad", "has_pii": true, "entities": ["LOCATION", "PERSON"], "note": "mixed - needs both guards"}
+{"id": "mix-07", "text": "Priya Raman, social security 536-90-4399, verifying identity", "has_pii": true, "entities": ["PERSON", "US_SSN"], "note": "mixed - needs both guards"}
+{"id": "mix-08", "text": "Contact jwong@example.net or 214-555-0183", "has_pii": true, "entities": ["EMAIL_ADDRESS", "PHONE_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-09", "text": "Tunde Okafor in Houston, account 3390-88412 is dead", "has_pii": true, "entities": ["PERSON", "LOCATION", "ACCOUNT_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-10", "text": "Linda Fairweather, card 4111 1111 1111 1111 was declined", "has_pii": true, "entities": ["PERSON", "CREDIT_CARD"], "note": "mixed - needs both guards"}
+{"id": "mix-11", "text": "Reach Grace Mbeki on 817-555-3344 about account 5521-40037", "has_pii": true, "entities": ["PERSON", "PHONE_NUMBER", "ACCOUNT_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-12", "text": "Elena Rossi moved to 221 Elm Street, please update", "has_pii": true, "entities": ["PERSON", "LOCATION"], "note": "mixed - needs both guards"}
+{"id": "mix-13", "text": "Hassan Ali, h.ali@example.com, Austin, no picture", "has_pii": true, "entities": ["PERSON", "EMAIL_ADDRESS", "LOCATION"], "note": "mixed - needs both guards"}
+{"id": "mix-14", "text": "Account 6604-71298 belongs to Marcus Webb in Arlington", "has_pii": true, "entities": ["ACCOUNT_NUMBER", "PERSON", "LOCATION"], "note": "mixed - needs both guards"}
+{"id": "mix-15", "text": "Yuki Tanaka called from 512-555-8834 yesterday", "has_pii": true, "entities": ["PERSON", "PHONE_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-16", "text": "Fatima Benali, 48 Birchwood Lane, signal drops nightly", "has_pii": true, "entities": ["PERSON", "LOCATION"], "note": "mixed - needs both guards"}
+{"id": "mix-17", "text": "Peter Novak paid with 5500-0000-0000-0004 last month", "has_pii": true, "entities": ["PERSON", "CREDIT_CARD"], "note": "mixed - needs both guards"}
+{"id": "mix-18", "text": "Rosa Delgado, account 2287-50043, wants to cancel", "has_pii": true, "entities": ["PERSON", "ACCOUNT_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "mix-19", "text": "Email v.petrov@example.net about the Lubbock outage", "has_pii": true, "entities": ["EMAIL_ADDRESS", "LOCATION"], "note": "mixed - needs both guards"}
+{"id": "mix-20", "text": "Carlos Mendoza on 940-555-6109, account 9930-14472", "has_pii": true, "entities": ["PERSON", "PHONE_NUMBER", "ACCOUNT_NUMBER"], "note": "mixed - needs both guards"}
+{"id": "clean-01", "text": "What channels are in the sports package?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-02", "text": "My stream keeps buffering since I switched to streaming", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-03", "text": "How much does the premium tier cost per month?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-04", "text": "Does the package include 4K and surround sound?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-05", "text": "Can I pause my subscription for three months?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-06", "text": "The remote stopped responding after the update", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-07", "text": "Please explain the difference between the plans", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-08", "text": "When does the free trial end?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-09", "text": "Is there a discount for paying annually?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-10", "text": "The guide takes ages to load on my box", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-11", "text": "Can I record two shows at the same time?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-12", "text": "What happens to my recordings if I cancel?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-13", "text": "How do I reset the box without losing settings?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-14", "text": "Why does the picture freeze during live sport?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-15", "text": "Can I watch on two televisions at once?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-16", "text": "Is there an app for tablets?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-17", "text": "How long does an engineer visit usually take?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-18", "text": "What is the notice period for cancelling?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-19", "text": "Do I keep the equipment if I leave?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-20", "text": "The sound drops out but the picture is fine", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-21", "text": "Is there a way to turn off autoplay?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-22", "text": "Can I change my package mid-contract?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-23", "text": "How do I add subtitles permanently?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-24", "text": "The parental lock keeps resetting itself", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-25", "text": "Does bad weather affect the streaming service too?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-26", "text": "Why is the on-demand library smaller than advertised?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-27", "text": "Can two people watch different things at once?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-28", "text": "How do I stop the box going to standby?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-29", "text": "Is the sports add-on available monthly?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-30", "text": "The picture is fine but the guide is empty", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-31", "text": "What internet speed do I need for this?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-32", "text": "Can I keep my recordings if I upgrade the box?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-33", "text": "How do I turn on audio description?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-34", "text": "Does pausing the subscription keep my settings?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "clean-35", "text": "Why did the app sign me out overnight?", "has_pii": false, "entities": [], "note": "plainly safe"}
+{"id": "hard-01", "text": "I spoke to someone in Billing last Tuesday", "has_pii": false, "entities": [], "note": "HARD: department word reads like a place"}
+{"id": "hard-02", "text": "My box number is 3 and the model is H44", "has_pii": false, "entities": [], "note": "HARD: digits that are not identifiers"}
+{"id": "hard-03", "text": "Call the 800 number on the back of the card", "has_pii": false, "entities": [], "note": "HARD: number and card with no value"}
+{"id": "hard-04", "text": "Dish Network was worse honestly", "has_pii": false, "entities": [], "note": "HARD: competitor brand, capitalised"}
+{"id": "hard-05", "text": "I watch ESPN and Fox Sports mostly", "has_pii": false, "entities": [], "note": "HARD: channel brands look like proper nouns"}
+{"id": "hard-06", "text": "Send a technician to my house please", "has_pii": false, "entities": [], "note": "HARD: location-ish, no actual address"}
+{"id": "hard-07", "text": "Reach me at your earliest convenience", "has_pii": false, "entities": [], "note": "HARD: Reach can be read as a name"}
+{"id": "hard-08", "text": "The Sports package and the Movies package differ", "has_pii": false, "entities": [], "note": "HARD: capitalised product names"}
+{"id": "hard-09", "text": "I had 4 buffering events in 10 minutes last night", "has_pii": false, "entities": [], "note": "HARD: harmless numbers"}
+{"id": "hard-10", "text": "Customer Service hung up on me twice", "has_pii": false, "entities": [], "note": "HARD: department, capitalised"}
+{"id": "hard-11", "text": "Is the Genie box better than the Gemini?", "has_pii": false, "entities": [], "note": "HARD: product names that look like names"}
+{"id": "hard-12", "text": "My bill went up by 15 dollars in March", "has_pii": false, "entities": [], "note": "HARD: money and a month"}
+{"id": "hard-13", "text": "The installer came on Tuesday the 14th", "has_pii": false, "entities": [], "note": "HARD: a date, not personal data"}
+{"id": "hard-14", "text": "I pay by direct debit every month", "has_pii": false, "entities": [], "note": "HARD: payment words, no numbers"}
+{"id": "hard-15", "text": "Netflix and Hulu work fine on the same wifi", "has_pii": false, "entities": [], "note": "HARD: brands"}
+{"id": "hard-16", "text": "Ask Support to escalate this to Engineering", "has_pii": false, "entities": [], "note": "HARD: two departments"}
+{"id": "hard-17", "text": "Channel 206 is pixelating badly", "has_pii": false, "entities": [], "note": "HARD: a number that is a channel"}
+{"id": "hard-18", "text": "My postcode area gets bad weather", "has_pii": false, "entities": [], "note": "HARD: mentions location abstractly"}
+{"id": "hard-19", "text": "Sunday Ticket was the only reason I stayed", "has_pii": false, "entities": [], "note": "HARD: product name"}
+{"id": "hard-20", "text": "The Retention team offered me a discount", "has_pii": false, "entities": [], "note": "HARD: department"}
+{"id": "hard-21", "text": "Paramount and Max both buffer in the evening", "has_pii": false, "entities": [], "note": "HARD: brands that are ordinary words"}
+{"id": "hard-22", "text": "I upgraded in 2024 and again in 2026", "has_pii": false, "entities": [], "note": "HARD: years, not identifiers"}
+{"id": "hard-23", "text": "Order 12 of the guide shows the wrong times", "has_pii": false, "entities": [], "note": "HARD: a small number"}
+{"id": "hard-24", "text": "Spectrum quoted me 70 a month", "has_pii": false, "entities": [], "note": "HARD: competitor plus money"}
+{"id": "hard-25", "text": "The Gemini device is in the living room", "has_pii": false, "entities": [], "note": "HARD: product plus a room"}
+{"id": "hard-26", "text": "Dispatch said between 9 and 11", "has_pii": false, "entities": [], "note": "HARD: department plus times"}
+{"id": "hard-27", "text": "My contract ends in April next year", "has_pii": false, "entities": [], "note": "HARD: a month"}
+{"id": "hard-28", "text": "Does YouTube TV have the same problem?", "has_pii": false, "entities": [], "note": "HARD: competitor brand"}
+{"id": "hard-29", "text": "Scheduling called but I missed it", "has_pii": false, "entities": [], "note": "HARD: department"}
+{"id": "hard-30", "text": "Error code 771 keeps appearing", "has_pii": false, "entities": [], "note": "HARD: an error code"}
+{"id": "hard-31", "text": "The Disney bundle is cheaper elsewhere", "has_pii": false, "entities": [], "note": "HARD: brand"}
+{"id": "hard-32", "text": "Comcast had the same outage apparently", "has_pii": false, "entities": [], "note": "HARD: competitor"}
+{"id": "hard-33", "text": "Model number H44-500 is on the sticker", "has_pii": false, "entities": [], "note": "HARD: a model number"}
+{"id": "hard-34", "text": "I rate the service 7 out of 10", "has_pii": false, "entities": [], "note": "HARD: a rating"}
+{"id": "hard-35", "text": "Press 3 for technical support", "has_pii": false, "entities": [], "note": "HARD: menu digits"}
+{"id": "hard-36", "text": "The warranty lasts 24 months from install", "has_pii": false, "entities": [], "note": "HARD: a duration"}
+{"id": "edge-01", "text": "My social security number is 123-45-6789 for verification", "has_pii": true, "entities": ["US_SSN"], "note": "EDGE: a known-fake number. Presidio ignores it on purpose; the pattern guard does not"}
+{"id": "edge-02", "text": "Reference number REF-2026-00841 on the work order", "has_pii": false, "entities": [], "note": "EDGE: looks structured but is not personal data"}
+{"id": "edge-03", "text": "Work order WO-8841-22719 was raised yesterday", "has_pii": false, "entities": [], "note": "EDGE: an account-shaped number inside a work order code"}
+{"id": "edge-04", "text": "Call 911 if there is an emergency", "has_pii": false, "entities": [], "note": "EDGE: a real phone number that belongs to nobody"}
+{"id": "edge-05", "text": "The router address is 192.168.1.1 on my network", "has_pii": true, "entities": ["IP_ADDRESS"], "note": "EDGE: a private network address, arguably still identifying"}

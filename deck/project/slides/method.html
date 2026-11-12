@@ -1,0 +1,53 @@
+<section id="method" data-transition="fade" style="background:#F6F7F9;color:#141A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:30px">
+
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#0B63C5">Every step taken · and the same step at production grade</p>
+
+<h2 style="font-size:56px;font-weight:600;line-height:1.1">Five disciplines, each one gated by a number rather than an opinion.</h2>
+
+<table style="font-family:'IBM Plex Sans', Arial, sans-serif;font-size:24px;color:#141A23;border:1px solid #D8DEE7;border-radius:12px;padding:14px 16px">
+<tr style="background:#EDF1F6">
+<th style="width:15%;text-align:left;font-weight:600;color:#4A5568">Discipline</th>
+<th style="width:27%;text-align:left;font-weight:600;color:#4A5568">What was done here</th>
+<th style="width:30%;text-align:left;font-weight:600;color:#4A5568">What it measured</th>
+<th style="width:28%;text-align:left;font-weight:600;color:#4A5568">At production grade</th>
+</tr>
+<tr>
+<td><b>Evaluation</b></td>
+<td>185-message dataset, 36 deliberately tricky. Three PII detectors scored against it, with a promotion gate.</td>
+<td>Composite F1 <b>1.000</b>. The gate <b>blocked two of the three</b> candidates: regex recall 0.676, Presidio 0.784, both under the 0.95 floor.</td>
+<td>Nightly evaluation in CI. The gate blocks promotion rather than reporting it. Dataset owned by a second author.</td>
+</tr>
+<tr>
+<td><b>Security</b></td>
+<td>1,000 hand-written attacks — 50 originals × 20 deterministic mutations — re-run after every change.</td>
+<td><b>988 of 1,000 held.</b> Five runs; run four went <i>up</i>, catching a regression I had introduced myself.</td>
+<td>Same harness as a pull-request gate. garak and PyRIT nightly on GPU, with this as the fast gate in front.</td>
+</tr>
+<tr>
+<td><b>AI-enabled QE</b></td>
+<td>The local model invented 100 attacks. Output frozen for reproducibility, then curated before scoring.</td>
+<td><b>50 of 100 were not attacks</b> — ordinary customer language. Of the 50 that were, <b>49 held</b>, and they exposed an attack class I had never written.</td>
+<td>Regenerate per release, freeze per release. Curation rules reviewed, because the curator is now a control.</td>
+</tr>
+<tr>
+<td><b>Performance</b></td>
+<td>Three load scenarios separated: control plane alone, end to end, and the compliance path.</td>
+<td>Control plane ceiling <b>2.9 req/s</b> — flat from 1 to 16 concurrent, which traced it to a dependency, not the gateway.</td>
+<td>k6 in CI with thresholds from this baseline. Classifier replicated: N replicas give N × 2.9 req/s.</td>
+</tr>
+<tr>
+<td><b>Governance</b></td>
+<td>23 scenarios in one source of truth, each bound to tests by marker and verified by parsing both files.</td>
+<td><b>23 of 23 traced, 133 tests passing.</b> The matrix is generated, so it cannot quietly go stale.</td>
+<td>Same, plus coverage gates and an admission policy that refuses to schedule PII workloads outside the on-prem zone.</td>
+</tr>
+</table>
+
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#76839A">Extrapolation assumes GPU inference nodes and horizontally replicated classifiers. Throughput is the only figure extrapolated, and it scales with replicas. No other number in this deck is projected.</p>
+
+<aside>This is the method slide. The left three columns are what exists and ran; the right column is what the same discipline looks like with a real budget.
+
+The line I want you to take from it is the third row. I asked a local model to invent attacks, and half of what it produced was not an attack at all — it was ordinary customer language like "how do I get a refund". The raw score said seventy of a hundred got through. Publishing that would have been wrong twice over: it inflates the failure count, and it implies the guards should be blocking real customers. So generated test data gets curated before it is scored, and the curation rules are written down so you can argue with a specific line instead of the headline.
+
+The fourth row matters for a different reason. Splitting the load test in three is what turned a throughput number into a diagnosis. If I had only measured end to end I would have reported that the governance layer does 0.28 requests a second, which would have been true and completely misleading.</aside>
+</section>

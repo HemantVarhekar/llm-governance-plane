@@ -1,0 +1,67 @@
+<section id="plan" data-transition="fade" style="background:#0F141C;color:#E9EEF5;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#6CB0FF">Where this goes next</p>
+
+<h2 style="font-size:56px;font-weight:600;line-height:1.1;color:#FFFFFF">Eight weeks to production grade. Then the hybrid build this POC is deliberately not pretending to be.</h2>
+
+<div style="display:flex;gap:26px;align-items:stretch">
+
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#161D27;border:1px solid #27313F;border-top:4px solid #5FD6A4;border-radius:12px;padding:28px 30px">
+<h3 style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#5FD6A4">Now · built, measured, runnable</h3>
+<ul style="font-size:25px;line-height:1.45;color:#C3D0E0">
+<li>Policy-driven routing with PII as a hard constraint, failing closed</li>
+<li>Four models, per-model guardrails and fallback chains</li>
+<li>1,000-attack red team plus an AI-generated corpus, both re-runnable</li>
+<li>Promotion gate on the PII detector, blocking two of three candidates</li>
+<li>Three-scenario load test and a deployment preflight</li>
+<li>133 tests, 23 of 23 scenarios traced</li>
+</ul>
+</div>
+
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#161D27;border:1px solid #27313F;border-top:4px solid #6CB0FF;border-radius:12px;padding:28px 30px">
+<h3 style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#6CB0FF">8 weeks · 2 engineers + 1 QA lead</h3>
+<ul style="font-size:25px;line-height:1.45;color:#C3D0E0">
+<li>GPU inference nodes; classifier replicated to lift the 2.9 req/s ceiling</li>
+<li>k6 in CI with thresholds from this baseline, including the zero-PII-to-cloud assertion</li>
+<li>garak and PyRIT nightly, with this harness as the fast gate in front</li>
+<li>Retry and canned-template fallback on an output-guard rejection</li>
+<li>Kyverno admission: PII workloads cannot schedule outside the on-prem zone</li>
+<li>Evaluation dataset rewritten by a second author</li>
+</ul>
+</div>
+
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#161D27;border:1px solid #27313F;border-top:4px solid #E8AD52;border-radius:12px;padding:28px 30px">
+<h3 style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:#E8AD52">Then · the genuine hybrid</h3>
+<ul style="font-size:25px;line-height:1.45;color:#C3D0E0">
+<li>Managed Kubernetes for burst; on-prem holds steady state and all PII workloads</li>
+<li>Workload identity and OIDC federation — no long-lived keys crossing the boundary</li>
+<li>Private Link and mTLS through a service mesh</li>
+<li>GitOps: one repository, two targets, the split declarative</li>
+<li>OPA promoted to the policy engine; one model registry read from both sides</li>
+<li>Per-segment cost attribution, and multi-region failover with stated RTO and RPO</li>
+</ul>
+</div>
+
+</div>
+
+<div style="display:flex;gap:26px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#12202A;border-left:4px solid #6CB0FF;border-radius:0px 12px 12px 0px;padding:20px 26px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;color:#6CB0FF">Build versus buy</p>
+<p style="font-size:25px;line-height:1.4;color:#C3D0E0">The gateway is commodity — LiteLLM, Portkey, Kong AI Gateway, Bedrock. <b>I would buy the gateway and build the policy and evidence layer</b>, because that is the part nobody sells and the part a regulator asks about.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#12202A;border-left:4px solid #5FD6A4;border-radius:0px 12px 12px 0px;padding:20px 26px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;color:#5FD6A4">What this is not</p>
+<p style="font-size:25px;line-height:1.4;color:#C3D0E0">Not a replacement for your data science platform. This is the quality and governance control plane that sits in front of whatever models you already have, and it is <b>model-agnostic by construction</b>.</p>
+</div>
+</div>
+
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#78879C">Not covered, and said plainly: no multi-turn attacks, the output path is lightly tested, garak and PyRIT were not run, and the evaluation dataset was written by the same person who wrote the guards.</p>
+
+<aside>Three horizons, and I have put the honest limits in the footer rather than leaving them out.
+
+The eight week column is the one to argue with. Every item in it comes from something this POC measured rather than something I imagined. The classifier replicas come from the 2.9 requests a second finding. The output-guard retry comes from the 502 we still return. The second author on the evaluation dataset comes from the fact that I wrote both the guards and the tests for them, which is a real weakness in the evidence.
+
+On build versus buy — I want to be direct about this. The gateway itself is commodity. LiteLLM and Portkey and Kong all do routing and fallback, and I would buy one. What nobody sells is the evidence layer: the corpus, the gates, the traceability, the audit trail that lets you answer why a model made a decision about a customer. That is the part worth building, and it is the part this role is actually about.
+
+Last line. If you take one thing from this: every number I have shown you came from a command, and the commands are in the repository. If something here is wrong, it is falsifiable, and that is the standard I would hold the team to.</aside>
+</section>

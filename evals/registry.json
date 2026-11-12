@@ -1,0 +1,48 @@
+{
+  "evaluated_at": "2026-11-11T11:04:31.937786+00:00",
+  "dataset": "evals/dataset.jsonl",
+  "dataset_size": 185,
+  "thresholds": {
+    "recall": 0.95,
+    "precision": 0.9,
+    "f1": 0.92
+  },
+  "candidates": {
+    "regex": {
+      "precision": 1.0,
+      "recall": 0.676,
+      "f1": 0.806,
+      "entity_recall": 0.577,
+      "median_latency_ms": 0.0,
+      "gate": "BLOCKED",
+      "blocking_reasons": [
+        "recall 0.676 < required 0.95",
+        "f1 0.806 < required 0.92"
+      ],
+      "promoted": false
+    },
+    "presidio": {
+      "precision": 1.0,
+      "recall": 0.784,
+      "f1": 0.879,
+      "entity_recall": 0.708,
+      "median_latency_ms": 257.8,
+      "gate": "BLOCKED",
+      "blocking_reasons": [
+        "recall 0.784 < required 0.95",
+        "f1 0.879 < required 0.92"
+      ],
+      "promoted": false
+    },
+    "composite": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "entity_recall": 1.0,
+      "median_latency_ms": 255.6,
+      "gate": "PASS",
+      "blocking_reasons": [],
+      "promoted": true
+    }
+  }
+}

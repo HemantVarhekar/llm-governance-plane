@@ -1,0 +1,39 @@
+{
+  "measured_at": "2026-11-11T18:11:11+00:00",
+  "rows": [
+    {
+      "chars": 200,
+      "seconds": 4.24,
+      "ms_per_char": 21.2
+    },
+    {
+      "chars": 1000,
+      "seconds": 7.35,
+      "ms_per_char": 7.35
+    },
+    {
+      "chars": 2000,
+      "seconds": 8.55,
+      "ms_per_char": 4.275
+    },
+    {
+      "chars": 4000,
+      "seconds": 15.46,
+      "ms_per_char": 3.865
+    },
+    {
+      "chars": 8000,
+      "seconds": 31.81,
+      "ms_per_char": 3.976
+    },
+    {
+      "chars": 20000,
+      "seconds": 1.51,
+      "ms_per_char": 0.075
+    }
+  ],
+  "mean_ms_per_char": 6.79,
+  "guard_failed_at_chars": [],
+  "note": "Linear in payload length over the range that completes. With 8 in-flight slots, eight large requests hold the gateway for the duration of the slowest and every real customer gets a 429.",
+  "second_finding": "Past roughly 8,000 characters the guard does not merely slow down, it STOPS WORKING - the local model drops the connection. So the 4,000-character limit is not performance tuning; it is what keeps the guard functional. A size limit placed for latency reasons turned out to be load-bearing for correctness."
+}

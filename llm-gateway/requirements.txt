@@ -1,0 +1,25 @@
+# MigrationGuard gateway - runtime and test dependencies.
+#
+# Pinned exactly. A load test result is a claim about a specific build, and
+# "it was slower on Tuesday" is not a finding if the dependency tree moved
+# underneath it.
+
+# --- service ---------------------------------------------------------------
+fastapi==0.115.6
+uvicorn==0.34.0
+pydantic==2.10.4
+httpx==0.28.1
+PyYAML==6.0.2
+
+# --- personal-data detection ----------------------------------------------
+presidio-analyzer==2.2.357
+spacy==3.8.3
+
+# --- metrics ---------------------------------------------------------------
+# Used ONLY by sysmetrics.py, and imported defensively: if this is missing
+# the gateway still boots and serves, it just reports mg_sampler_available 0.
+# Nothing on the request path depends on it.
+psutil==6.1.1
+
+# --- tests -----------------------------------------------------------------
+pytest==8.3.4

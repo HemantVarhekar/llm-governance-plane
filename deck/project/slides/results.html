@@ -1,0 +1,92 @@
+<section id="results" data-transition="fade" style="background:#F6F7F9;color:#141A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:26px">
+
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#0B63C5">Results · quality, security, load, scalability</p>
+
+<h2 style="font-size:52px;font-weight:600;line-height:1.1">The load test was built to produce a throughput number. It found two customer-facing defects instead.</h2>
+
+<div style="display:flex;gap:14px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 20px">
+<p style="font-size:44px;font-weight:700;line-height:1.05;color:#117A51">988<span style="color:#76839A">/1000</span></p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">attacks held, full chain</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 20px">
+<p style="font-size:44px;font-weight:700;line-height:1.05;color:#117A51">49<span style="color:#76839A">/50</span></p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">AI-generated, after curation</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 20px">
+<p style="font-size:44px;font-weight:700;line-height:1.05;color:#117A51">0<span style="color:#76839A">/24</span></p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">PII leaks to cloud, under load</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 20px">
+<p style="font-size:44px;font-weight:700;line-height:1.05;color:#117A51">0<span style="color:#76839A">/136</span></p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">false alarms on benign text</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 20px">
+<p style="font-size:44px;font-weight:700;line-height:1.05;color:#B0700F">66→0<span style="color:#76839A">%</span></p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">guard false alarms, fixed</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 20px">
+<p style="font-size:44px;font-weight:700;line-height:1.05;color:#141A23">2.9<span style="color:#76839A"> req/s</span></p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">control plane ceiling</p>
+</div>
+</div>
+
+<div style="display:flex;gap:24px;align-items:stretch">
+
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:24px 28px">
+<h3 style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#4A5568">Load &amp; scalability</h3>
+<table style="font-family:'IBM Plex Sans', Arial, sans-serif;font-size:24px;color:#141A23;padding:8px 10px">
+<tr style="background:#EDF1F6">
+<th style="width:34%;text-align:left;font-weight:600;color:#4A5568">Scenario</th>
+<th style="width:22%;text-align:left;font-weight:600;color:#4A5568">Concurrency</th>
+<th style="width:20%;text-align:right;font-weight:600;color:#4A5568">req/s</th>
+<th style="width:24%;text-align:right;font-weight:600;color:#4A5568">p95</th>
+</tr>
+<tr><td>A · control plane</td><td>1 → 16</td><td style="text-align:right">2.92 → 2.97</td><td style="text-align:right">0.4s → 7.6s</td></tr>
+<tr><td>B · end to end</td><td>1 → 4</td><td style="text-align:right">0.12 → 0.28</td><td style="text-align:right">9.4s → 16.5s</td></tr>
+<tr><td>C · compliance path</td><td>1</td><td style="text-align:right">0.08</td><td style="text-align:right">15.5s</td></tr>
+</table>
+<p style="font-size:24px;line-height:1.4;color:#4A5568"><b>Flat throughput against linearly rising latency</b> is the signature of a serialised dependency. Presidio alone answers in 347ms — 2.9 req/s — and runs on every request. The ceiling belongs to the classifier, not the gateway, and it is stateless, so it scales with replicas.</p>
+</div>
+
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:24px 28px">
+<h3 style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#4A5568">Security &amp; resilience</h3>
+<table style="font-family:'IBM Plex Sans', Arial, sans-serif;font-size:24px;color:#141A23;padding:8px 10px">
+<tr style="background:#EDF1F6">
+<th style="width:52%;text-align:left;font-weight:600;color:#4A5568">Test</th>
+<th style="width:20%;text-align:right;font-weight:600;color:#4A5568">Cases</th>
+<th style="width:28%;text-align:right;font-weight:600;color:#4A5568">Result</th>
+</tr>
+<tr><td>Hand-written attacks</td><td style="text-align:right">1,000</td><td style="text-align:right">988 held</td></tr>
+<tr><td>Model-generated, curated</td><td style="text-align:right">50</td><td style="text-align:right">49 held</td></tr>
+<tr><td>Benign messages</td><td style="text-align:right">136</td><td style="text-align:right">0 blocked</td></tr>
+<tr><td>Denial of service</td><td style="text-align:right">1</td><td style="text-align:right">found, fixed</td></tr>
+</table>
+<p style="font-size:24px;line-height:1.4;color:#4A5568">The 12 that remain are each categorised and either fixed or <b>consciously accepted with reasoning</b>. Loosening the pattern that accounts for seven of them would flag an ordinary sentence, and this guard blocks — a false alarm is a real customer receiving an error.</p>
+</div>
+
+</div>
+
+<div style="display:flex;gap:24px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBEEDB;border-left:4px solid #B0700F;border-radius:0px 12px 12px 0px;padding:20px 26px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;color:#B0700F">Defect 1 · the deployment, not the code</p>
+<p style="font-size:24px;line-height:1.4;color:#141A23">A gateway left running from earlier in the day predated the guard wiring and <b>answered “ignore all previous instructions” for eight hours</b>, while every in-process test passed. Fixed by a preflight that asks the live service what it loaded and sends one real attack through it.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#FBEEDB;border-left:4px solid #B0700F;border-radius:0px 12px 12px 0px;padding:20px 26px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;color:#B0700F">Defect 2 · the safety model blocked real customers</p>
+<p style="font-size:24px;line-height:1.4;color:#141A23"><b>8 of 12 ordinary messages carrying a name or address got HTTP 400</b>, all category S7 “Privacy”. The PII classifier already owned that decision. S7 made advisory: still audited, no longer blocking. Attacks caught: unchanged.</p>
+</div>
+</div>
+
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#76839A">Load figures are from a Python harness, not k6 — k6 was not installed on this host. The same three scenarios ship as a k6 script with thresholds set from this baseline. Two CPU cores, no GPU: the shapes transfer, the absolute numbers do not.</p>
+
+<aside>Six numbers across the top, then the detail underneath.
+
+Start with the bottom two boxes, because they are the point of the slide. Neither was found by a unit test.
+
+The first one is a governance failure, not a code failure. The code was correct the whole time. The deployed process was eight hours stale and had no guards loaded, and it answered a textbook prompt injection. Every test passed throughout, because the tests import the guards and call them directly — they never ask the thing that is actually listening whether it has them switched on. That is precisely how this breaks in production.
+
+The second one is more interesting. The safety model was flagging sixty-six percent of ordinary customers as a privacy hazard and returning a four hundred. And the model was right — the message does contain personal information. It is simply useless as a gate, because that is true of most support traffic. The real fault was two controls with overlapping scope: we already have a PII classifier that owns that decision, and the blunt one was overriding it. We made that category advisory. Attacks caught did not change.
+
+If somebody asks what I would do differently: I would have run the load test on day one, not day three.</aside>
+</section>

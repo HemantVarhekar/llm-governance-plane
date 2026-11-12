@@ -1,0 +1,99 @@
+name: Evidence
+
+# Runs the SAME command a person runs locally: python prove.py
+#
+# That is deliberate. A pipeline that assembles its own sequence of steps
+# drifts from what gets demonstrated, and then "it passes in CI" and "it
+# works on my machine" become two separate claims. Here there is one
+# command, one definition of done, and one catalogue.
+#
+# What this can and cannot cover, stated rather than implied:
+#   CAN  - the whole test suite, hermetically (no service needed)
+#   CAN  - scenario traceability, parsed from both sides
+#   CAN  - the red team corpus against the pattern layer
+#   CAN  - the classifier promotion gate, with Presidio started below
+#   CAN  - every published figure against the run that produced it
+#   CANNOT - the deployment preflight and the load test, which need a
+#            running gateway, and the safety model, which needs Ollama
+#            and several gigabytes of weights
+#
+# The checks it cannot run are reported as SKIP with a reason, never as
+# passes. A green badge here means exactly what the catalogue says it
+# means.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence:
+    name: Run every gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: llm-gateway/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r llm-gateway/requirements.txt
+
+      - name: Download the spaCy model Presidio needs
+        run: python -m spacy download en_core_web_sm
+
+      # Started so the promotion gate and the timing side-channel test can
+      # actually run rather than being skipped. If it fails to come up the
+      # build continues - those checks then report SKIP with a reason,
+      # which is the honest outcome, not a hidden one.
+      - name: Start the Presidio classifier
+        continue-on-error: true
+        run: |
+          cd llm-gateway
+          PYTHONPATH=. nohup python -m uvicorn classifiers.presidio_service:app \
+            --host 127.0.0.1 --port 8001 --log-level warning > /tmp/presidio.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:8001/health > /dev/null 2>&1 \
+               || curl -sf http://127.0.0.1:8001/healthz > /dev/null 2>&1; then
+              echo "presidio up after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "presidio did not start in 60s; dependent checks will SKIP"
+          tail -20 /tmp/presidio.log || true
+
+      - name: Run every gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}/llm-gateway
+          MG_API_KEY: ci-not-a-real-key
+        run: python prove.py
+
+      - name: Publish the catalogue to the job summary
+        if: always()
+        run: |
+          if [ -f evidence/catalogue.md ]; then
+            cat evidence/catalogue.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No catalogue produced - the run failed before writing one." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Keep the evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-catalogue
+          path: evidence/
+          retention-days: 30

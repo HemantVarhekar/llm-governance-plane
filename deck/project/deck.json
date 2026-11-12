@@ -1,0 +1,41 @@
+{
+  "v": 4,
+  "createdOnFiles": { "v": 1, "at": "2026-11-12T02:15:00Z" },
+  "lists": "css",
+  "title": "MigrationGuard ELT Briefing",
+  "cover": "case",
+  "order": ["case", "architecture", "method", "results", "plan"],
+  "sections": {
+    "s1": {
+      "description": "The prize and the saving are different numbers, and only one of them belongs to this POC.",
+      "start": "case"
+    },
+    "s2": {
+      "description": "What runs today, what it buys, and what it still costs.",
+      "start": "architecture"
+    },
+    "s3": {
+      "description": "Every step taken, what it measured, and what the same step looks like at production grade.",
+      "start": "method"
+    },
+    "s4": {
+      "description": "Quality, security, load and scalability results, including the defects the load test found.",
+      "start": "results"
+    },
+    "s5": {
+      "description": "Eight weeks to production grade, then the genuine hybrid build.",
+      "start": "plan"
+    }
+  },
+  "faces": {
+    "ibm-plex-sans": {
+      "family": "IBM Plex Sans",
+      "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    },
+    "jetbrains-mono": {
+      "family": "JetBrains Mono",
+      "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+    }
+  },
+  "designSystems": []
+}

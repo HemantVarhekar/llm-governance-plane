@@ -1,0 +1,120 @@
+# MigrationGuard — routing policy.
+#
+# THIS FILE IS THE GOVERNANCE ARTIFACT. It is deliberately short enough to
+# read aloud, because "show me the rule" is a question you must be able to
+# answer by pointing at one screen.
+#
+# config.yaml is an INVENTORY (what providers exist).
+# policy.yaml is a CONTROL  (what is allowed).
+# Keeping them apart means the compliance rule is not buried among base URLs.
+#
+# The central distinction:
+#   constraints = FILTERS     - cannot be outvoted by cost or latency
+#   selection   = A SORT KEY  - applies only to whatever survived the filters
+#
+# See ARCHITECTURE.md sections 4 and 8.
+
+version: 1
+
+# --------------------------------------------------------------------------
+# How we decide a payload is sensitive.
+# At checkpoint 1 a regex stand-in implements this; Presidio replaces it at
+# checkpoint 2 behind the same Classifier contract. The ENTITY LIST does not
+# change when the implementation does - that is the point of the contract.
+# --------------------------------------------------------------------------
+classification:
+  pii_entities:
+    - PERSON
+    - EMAIL_ADDRESS
+    - PHONE_NUMBER
+    - US_SSN
+    - CREDIT_CARD
+    - LOCATION
+    - ACCOUNT_NUMBER
+
+# --------------------------------------------------------------------------
+# HARD CONSTRAINTS
+#
+# Evaluated FIRST, before any cost or latency consideration. Each one removes
+# providers from consideration. If nothing survives, the request is REFUSED -
+# the system fails rather than violating a constraint.
+#
+# 'when' supports exactly two keys: has_pii, classifier_healthy.
+# This is deliberately NOT an expression language. A DSL here would be
+# unreadable at 2am, untestable, and an injection surface. Two named
+# conditions cover the requirement; add a third named key if one is needed.
+# --------------------------------------------------------------------------
+constraints:
+
+  - name: pii_stays_onprem
+    description: >
+      Customer PII may never leave the on-prem boundary. Cost and latency do
+      not get a vote, because they are not consulted until after this filter.
+    when:
+      has_pii: true
+    require_zone: onprem
+
+  - name: fail_closed_when_classifier_down
+    description: >
+      If the classifier is unavailable we cannot PROVE a payload is PII-free.
+      Inability to prove absence is treated as presence. The subscriber is
+      still served - on-prem - so this is safety without an outage.
+    when:
+      classifier_healthy: false
+    require_zone: onprem
+
+# --------------------------------------------------------------------------
+# SOFT PREFERENCES
+#
+# A sort key over the survivors, used when no explicit chain applies.
+# Order matters: a dead provider is never "cheap", so health sorts first.
+# --------------------------------------------------------------------------
+selection:
+  order:
+    - health      # unhealthy providers sink to the bottom
+    - cost        # then cheapest per 1k tokens
+    - latency     # then fastest observed p99
+
+# --------------------------------------------------------------------------
+# OPERATIONAL LIMITS
+# --------------------------------------------------------------------------
+routing:
+  # Total budget for walking an ENTIRE fallback chain, not per hop.
+  #
+  # Without it, three hops at a 120s timeout each means a customer waits six
+  # minutes, p99 latency under partial failure is unbounded, and a queue
+  # builds behind it. With it, an exhausted budget stops the chain and
+  # records a 'skipped' hop so the log shows WHY the last provider was not
+  # tried.
+  #
+  # PROVISIONAL: 40s is a judgement, not a measurement. One local call costs
+  # 6-10s on this hardware, so a two-hop chain can legitimately need ~20s.
+  # TO BE REVISITED after load testing - this number should come from a
+  # measured p99, not a guess.
+  chain_deadline_s: 40
+
+# --------------------------------------------------------------------------
+# FALLBACK CHAINS
+#
+# An ordered list of providers to attempt for a given task.
+# Two invariants:
+#   1. Every hop is still filtered by the constraints above. A PII request's
+#      chain has cloud hops REMOVED before the first call is made - not
+#      caught on the way out.
+#   2. Every hop taken is recorded in the audit event. Silent degradation is
+#      worse than failure, because you cannot see it happening.
+#
+# The chain is an explicit preference and overrides 'selection' when present.
+# --------------------------------------------------------------------------
+chains:
+  support_draft: [claude, local]   # prefer quality, degrade to on-prem
+  safety_check:  [guard]           # the guard model, no substitute
+  default:       [local]           # cheapest safe option
+
+# --------------------------------------------------------------------------
+# What happens when the allowlist is empty.
+# 'refuse' is the only acceptable value. It exists as a key so that the
+# alternative is visible and has to be argued for, rather than being an
+# unexamined default buried in code.
+# --------------------------------------------------------------------------
+on_no_allowed_provider: refuse

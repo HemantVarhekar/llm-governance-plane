@@ -1,0 +1,73 @@
+<section id="architecture" data-transition="fade" style="background:#F6F7F9;color:#141A23;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:#0B63C5">What runs today</p>
+
+<h2 style="font-size:56px;font-weight:600;line-height:1.1">One control plane in front of every model call. Routing is policy, not code.</h2>
+
+<div style="display:flex;gap:10px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#0B63C5">1</p>
+<p style="font-size:24px;font-weight:600;line-height:1.3">Size limit</p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">4,000 chars, before any model runs</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#0B63C5">2</p>
+<p style="font-size:24px;font-weight:600;line-height:1.3">PII classifier</p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">regex + Presidio, fails closed</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#0B63C5">3</p>
+<p style="font-size:24px;font-weight:600;line-height:1.3">Policy</p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">PII is a hard constraint, not a preference</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#0B63C5">4</p>
+<p style="font-size:24px;font-weight:600;line-height:1.3">Input guards</p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">8 pattern families, then a safety model</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#0B63C5">5</p>
+<p style="font-size:24px;font-weight:600;line-height:1.3">Provider chain</p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">on-prem or cloud, with fallback</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px;background:#FFFFFF;border:1px solid #D8DEE7;border-radius:12px;padding:18px 16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:700;color:#0B63C5">6</p>
+<p style="font-size:24px;font-weight:600;line-height:1.3">Output guard<br>&amp; audit</p>
+<p style="font-size:24px;line-height:1.3;color:#4A5568">every decision written down</p>
+</div>
+</div>
+
+<div style="display:flex;gap:28px;align-items:stretch">
+
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;border:1px solid #D8DEE7;border-left:4px solid #117A51;border-radius:12px;padding:28px 32px">
+<h3 style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#117A51">What it buys</h3>
+<ul style="font-size:26px;line-height:1.45;color:#141A23">
+<li><b>Personal data never leaves.</b> It is a hard constraint evaluated before any cost or latency optimisation, and the gate fails closed — classifier down means cloud refused, not cloud unchecked.</li>
+<li><b>Safety without an outage.</b> Failing closed degrades to on-prem rather than returning an error.</li>
+<li><b>One config line swaps a model.</b> No release, no code change, and the compliance behaviour is unaffected by the swap.</li>
+<li><b>Every decision is auditable:</b> who answered, which zone, which guard fired, what it cost — refusals included.</li>
+</ul>
+</div>
+
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;border:1px solid #D8DEE7;border-left:4px solid #B0700F;border-radius:12px;padding:28px 32px">
+<h3 style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#B0700F">What it still costs</h3>
+<ul style="font-size:26px;line-height:1.45;color:#141A23">
+<li><b>Two controls overlapped</b> and the cruder one silently vetoed the precise one — blocking 66% of customers who gave their name. Found by a load test, not by 133 unit tests.</li>
+<li><b>The PII classifier is the ceiling</b> at 2.9 requests a second, single process. Stateless, so it scales with replicas.</li>
+<li><b>In-process tests never check the deployment.</b> A stale gateway answered attacks for eight hours while every test passed.</li>
+<li><b>An output-guard rejection has no retry path.</b> The customer gets a 502. Known and unfixed.</li>
+</ul>
+</div>
+
+</div>
+
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#76839A">Four models, each with its own guardrail and its own fallback chain · llama3.2:3b · llama-guard3:1b · Presidio · claude-sonnet-5-5</p>
+
+<aside>This is the architecture slide, and I have put the limits next to the strengths on purpose.
+
+The pipeline across the top is the order things happen in. The important one is stage two and three. Personal data is a hard constraint, which means it filters the choice of provider before cost or latency get a vote. A preference can be outvoted; a constraint cannot.
+
+And the gate fails closed. If the classifier is down we cannot prove the request is safe to send outside, so we refuse cloud entirely and serve it on-prem. That is safety without an outage, which is the distinction that usually gets lost.
+
+On the right hand column — I would rather you hear these from me. The first one is the most instructive thing in the whole build: two controls with overlapping scope, and the blunt one was quietly overriding the precise one. A load test found it. A hundred and thirty-three unit tests did not. I will come back to that on slide four.</aside>
+</section>
