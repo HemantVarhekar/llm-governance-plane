@@ -328,19 +328,39 @@ def check_promotion_gate(results: list[Result]) -> None:
         results.append(r)
         return
     started = time.perf_counter()
-    code, out = run([PY, "evals/gate.py", "--all"], timeout=600)
+    # --json, NOT the human-readable output.
+    #
+    # The first version counted occurrences of the word "BLOCKED" in the
+    # printed report and got 3. The true answer is 2: the word appears
+    # once per blocked candidate AND once more in the closing line
+    # "BLOCKED from promotion: regex, presidio". So the harness published
+    # "gate blocked 3" while the dashboard, README and verify.py all said
+    # 2 - two figures from one run disagreeing, which is precisely what
+    # verify.py exists to catch.
+    #
+    # Scraping prose for a number is the bug. The structured output was
+    # one flag away the whole time.
+    code, out = run([PY, "evals/gate.py", "--all", "--json"], timeout=900)
     r.duration_s = round(time.perf_counter() - started, 1)
-    if code in (0, 1) and ("PROMOTION GATE" in out or "recall" in out):
-        blocked = len(re.findall(r"BLOCKED", out))
-        r.numbers = {"blocked_candidates": blocked}
+    try:
+        data = json.loads(out[out.index("{"):out.rindex("}") + 1])
+    except Exception:
+        data = None
+    if data and data.get("candidates"):
+        cands = data["candidates"]
+        blocked = sum(1 for c in cands.values() if c.get("gate") == "BLOCKED")
+        promoted = [n for n, c in cands.items() if c.get("gate") != "BLOCKED"]
+        r.numbers = {"candidates": len(cands), "blocked": blocked,
+                     "dataset": data.get("dataset_size")}
         # A gate that passes everything proves nothing. At least one
         # candidate must be refused for the gate to be doing any work.
         r.outcome = PASS if blocked >= 1 else FAIL
-        if blocked == 0:
-            r.detail = "nothing was blocked - a gate that never refuses is decoration"
+        r.detail = (f"promoted: {', '.join(promoted) or 'none'}"
+                    if blocked else
+                    "nothing was blocked - a gate that never refuses is decoration")
     else:
         r.outcome = SKIP
-        r.detail = "needs the Presidio classifier running"
+        r.detail = "gate produced no parseable result"
     results.append(r)
 
 

@@ -122,7 +122,8 @@ jobs:
               elif c["id"] == "security.generated":
                   head.append(f"generated {n.get('held')}/{n.get('scored')} held")
               elif c["id"] == "quality.gate":
-                  head.append(f"gate blocked {n.get('blocked_candidates')}")
+                  head.append(f"gate blocked {n.get('blocked')}"
+                              f"/{n.get('candidates')}")
               elif c["id"] == "evidence.figures":
                   head.append(f"figures {n.get('verified')}/{n.get('total')}")
           print(f"::notice title=Evidence::"
