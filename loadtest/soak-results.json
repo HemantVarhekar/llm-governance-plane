@@ -1,0 +1,1584 @@
+{
+  "requests": 16,
+  "samples": 23,
+  "planned_minutes": 2.0,
+  "actual_minutes": 2.0,
+  "trend_window_minutes": 2.0,
+  "warmup_excluded_minutes": 3.0,
+  "trend_note": "observation window 2.0 min is under the 20 min needed to call a trend; slopes are reported as TOO SHORT rather than guessed at",
+  "status_mix": {
+    "200": 13,
+    "503": 1,
+    "400": 2
+  },
+  "pii_to_cloud": 0,
+  "attacks_answered": 0,
+  "memory": {
+    "gateway": {
+      "start_mb": 76.2,
+      "end_mb": 82.0,
+      "min_mb": 75.8,
+      "max_mb": 82.9,
+      "slope_mb_per_hour": null,
+      "verdict": "TOO SHORT"
+    },
+    "presidio": {
+      "start_mb": 726.6,
+      "end_mb": 727.3,
+      "min_mb": 726.6,
+      "max_mb": 727.3,
+      "slope_mb_per_hour": null,
+      "verdict": "TOO SHORT"
+    },
+    "ollama": {
+      "start_mb": 4306.2,
+      "end_mb": 4353.8,
+      "min_mb": 4304.8,
+      "max_mb": 4355.2,
+      "slope_mb_per_hour": null,
+      "verdict": "TOO SHORT"
+    }
+  },
+  "handles": {
+    "gateway": {
+      "start": 299,
+      "end": 303,
+      "slope_per_hour": null,
+      "verdict": "TOO SHORT"
+    },
+    "presidio": {
+      "start": 256,
+      "end": 256,
+      "slope_per_hour": null,
+      "verdict": "TOO SHORT"
+    }
+  },
+  "event_loop": {
+    "floor_ms": 4.19,
+    "median_ms": 14.24,
+    "p95_ms": 1316.11,
+    "max_ms": 2792.39
+  },
+  "verdict": "INCONCLUSIVE",
+  "started_at": "2026-11-12T07:51:44.942709+00:00",
+  "concurrency": 2,
+  "raw_requests": [
+    {
+      "t": 1794469915.288065,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 9552.5
+    },
+    {
+      "t": 1794469917.690245,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 12264.8
+    },
+    {
+      "t": 1794469924.1364284,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 8848.4
+    },
+    {
+      "t": 1794469924.8501775,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 7159.9
+    },
+    {
+      "t": 1794469934.076149,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 9226.0
+    },
+    {
+      "t": 1794469961.0473483,
+      "kind": "pii",
+      "status": 200,
+      "zone": "onprem",
+      "ms": 36910.9
+    },
+    {
+      "t": 1794469978.0148385,
+      "kind": "pii",
+      "status": 503,
+      "zone": null,
+      "ms": 43938.7
+    },
+    {
+      "t": 1794469984.838609,
+      "kind": "pii",
+      "status": 200,
+      "zone": "onprem",
+      "ms": 23791.3
+    },
+    {
+      "t": 1794469986.3616688,
+      "kind": "attack",
+      "status": 400,
+      "zone": null,
+      "ms": 1523.0
+    },
+    {
+      "t": 1794469998.530215,
+      "kind": "pii",
+      "status": 200,
+      "zone": "onprem",
+      "ms": 20515.4
+    },
+    {
+      "t": 1794469998.9693608,
+      "kind": "attack",
+      "status": 400,
+      "zone": null,
+      "ms": 439.1
+    },
+    {
+      "t": 1794470002.1544049,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 15792.7
+    },
+    {
+      "t": 1794470009.2655835,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 7111.2
+    },
+    {
+      "t": 1794470011.9721544,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 13002.8
+    },
+    {
+      "t": 1794470018.4410105,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 9175.4
+    },
+    {
+      "t": 1794470019.0440223,
+      "kind": "ordinary",
+      "status": 200,
+      "zone": "cloud",
+      "ms": 7071.9
+    }
+  ],
+  "raw_samples": [
+    {
+      "sampler_available": true,
+      "sampler_samples": 101,
+      "sampler_cost_ms": 27.07,
+      "host": {
+        "cpu_percent": 38.8,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 71.7,
+        "cpu_unattributed_percent": 34.7,
+        "memory_available_mb": 5720.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 3.12,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 687.31,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1813,
+        "tasks": 6,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 76.2,
+          "cpu_percent_core": 10.2,
+          "cpu_percent_host": 2.6,
+          "cpu_seconds_user": 9.2,
+          "threads": 5,
+          "handles": 299,
+          "uptime_s": 532.1
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 726.6,
+          "cpu_percent_core": 0.0,
+          "cpu_percent_host": 0.0,
+          "cpu_seconds_user": 1.1,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 595.2
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4306.2,
+          "cpu_percent_core": 6.2,
+          "cpu_percent_host": 1.6,
+          "cpu_seconds_user": 139.4,
+          "threads": 61,
+          "handles": 1023,
+          "uptime_s": 81942.7
+        }
+      },
+      "t": 1794469905.7472034
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 102,
+      "sampler_cost_ms": 40.46,
+      "host": {
+        "cpu_percent": 42.2,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.0,
+        "cpu_unattributed_percent": 35.7,
+        "memory_available_mb": 5666.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 4.34,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 741.43,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1824,
+        "tasks": 8,
+        "python_threads": 5
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 78.2,
+          "cpu_percent_core": 25.0,
+          "cpu_percent_host": 6.2,
+          "cpu_seconds_user": 9.4,
+          "threads": 6,
+          "handles": 305,
+          "uptime_s": 537.1
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 726.8,
+          "cpu_percent_core": 0.3,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.1,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 600.3
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4306.2,
+          "cpu_percent_core": 0.9,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 139.4,
+          "threads": 61,
+          "handles": 1023,
+          "uptime_s": 81947.7
+        }
+      },
+      "t": 1794469910.7708285
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 103,
+      "sampler_cost_ms": 29.46,
+      "host": {
+        "cpu_percent": 57.2,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 5.2,
+        "memory_available_mb": 5655.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 271.92,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 735.0,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1842,
+        "tasks": 9,
+        "python_threads": 5
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 75.8,
+          "cpu_percent_core": 13.9,
+          "cpu_percent_host": 3.5,
+          "cpu_seconds_user": 9.6,
+          "threads": 6,
+          "handles": 307,
+          "uptime_s": 542.2
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 726.8,
+          "cpu_percent_core": 0.6,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.1,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 605.3
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4306.2,
+          "cpu_percent_core": 193.5,
+          "cpu_percent_host": 48.4,
+          "cpu_seconds_user": 148.5,
+          "threads": 61,
+          "handles": 1023,
+          "uptime_s": 81952.7
+        }
+      },
+      "t": 1794469915.8064365
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 104,
+      "sampler_cost_ms": 157.53,
+      "host": {
+        "cpu_percent": 52.3,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.0,
+        "cpu_unattributed_percent": 27.7,
+        "memory_available_mb": 5661.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 3.63,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 730.0,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1856,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 76.4,
+          "cpu_percent_core": 19.8,
+          "cpu_percent_host": 5.0,
+          "cpu_seconds_user": 9.8,
+          "threads": 5,
+          "handles": 303,
+          "uptime_s": 547.2
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 726.9,
+          "cpu_percent_core": 0.6,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.2,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 610.3
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4304.8,
+          "cpu_percent_core": 78.0,
+          "cpu_percent_host": 19.5,
+          "cpu_seconds_user": 152.1,
+          "threads": 61,
+          "handles": 1026,
+          "uptime_s": 81957.7
+        }
+      },
+      "t": 1794469920.817304
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 105,
+      "sampler_cost_ms": 29.55,
+      "host": {
+        "cpu_percent": 65.2,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 27.7,
+        "memory_available_mb": 5649.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 112.99,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 723.93,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1873,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 77.2,
+          "cpu_percent_core": 24.2,
+          "cpu_percent_host": 6.0,
+          "cpu_seconds_user": 10.1,
+          "threads": 5,
+          "handles": 303,
+          "uptime_s": 552.4
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.0,
+          "cpu_percent_core": 0.9,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.2,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 615.6
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4306.3,
+          "cpu_percent_core": 124.8,
+          "cpu_percent_host": 31.2,
+          "cpu_seconds_user": 158.0,
+          "threads": 61,
+          "handles": 1023,
+          "uptime_s": 81963.0
+        }
+      },
+      "t": 1794469926.100836
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 106,
+      "sampler_cost_ms": 31.52,
+      "host": {
+        "cpu_percent": 63.6,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 15.9,
+        "memory_available_mb": 5653.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 962.22,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 771.0,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1887,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 79.4,
+          "cpu_percent_core": 28.4,
+          "cpu_percent_host": 7.1,
+          "cpu_seconds_user": 10.5,
+          "threads": 5,
+          "handles": 302,
+          "uptime_s": 558.3
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.1,
+          "cpu_percent_core": 0.5,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.2,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 621.5
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4306.3,
+          "cpu_percent_core": 162.0,
+          "cpu_percent_host": 40.5,
+          "cpu_seconds_user": 167.4,
+          "threads": 61,
+          "handles": 1024,
+          "uptime_s": 81968.9
+        }
+      },
+      "t": 1794469931.9900491
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 107,
+      "sampler_cost_ms": 93.02,
+      "host": {
+        "cpu_percent": 98.5,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 10.0,
+        "memory_available_mb": 5647.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 1316.11,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 845.62,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1894,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 81.5,
+          "cpu_percent_core": 25.4,
+          "cpu_percent_host": 6.3,
+          "cpu_seconds_user": 11.0,
+          "threads": 5,
+          "handles": 302,
+          "uptime_s": 565.7
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.1,
+          "cpu_percent_core": 0.3,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.2,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 628.8
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4304.8,
+          "cpu_percent_core": 328.5,
+          "cpu_percent_host": 82.1,
+          "cpu_seconds_user": 184.4,
+          "threads": 61,
+          "handles": 1026,
+          "uptime_s": 81976.2
+        }
+      },
+      "t": 1794469939.3153682
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 108,
+      "sampler_cost_ms": 206.76,
+      "host": {
+        "cpu_percent": 75.1,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 0.0,
+        "memory_available_mb": 5655.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 10.42,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 870.62,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1914,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 79.5,
+          "cpu_percent_core": 26.1,
+          "cpu_percent_host": 6.5,
+          "cpu_seconds_user": 11.4,
+          "threads": 5,
+          "handles": 303,
+          "uptime_s": 570.7
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.2,
+          "cpu_percent_core": 0.5,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.3,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 633.8
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4304.9,
+          "cpu_percent_core": 352.4,
+          "cpu_percent_host": 88.1,
+          "cpu_seconds_user": 203.7,
+          "threads": 61,
+          "handles": 1026,
+          "uptime_s": 81981.2
+        }
+      },
+      "t": 1794469944.3275704
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 109,
+      "sampler_cost_ms": 81.08,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 12.0,
+        "memory_available_mb": 5648.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 10.81,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 864.69,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1933,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 79.9,
+          "cpu_percent_core": 1.5,
+          "cpu_percent_host": 0.4,
+          "cpu_seconds_user": 11.4,
+          "threads": 5,
+          "handles": 303,
+          "uptime_s": 575.7
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.2,
+          "cpu_percent_core": 0.3,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.3,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 638.9
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4304.9,
+          "cpu_percent_core": 350.0,
+          "cpu_percent_host": 87.5,
+          "cpu_seconds_user": 221.2,
+          "threads": 59,
+          "handles": 1027,
+          "uptime_s": 81986.3
+        }
+      },
+      "t": 1794469949.3609874
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 110,
+      "sampler_cost_ms": 80.87,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 9.6,
+        "memory_available_mb": 5653.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 1002.78,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 923.12,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1946,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 80.0,
+          "cpu_percent_core": 21.1,
+          "cpu_percent_host": 5.3,
+          "cpu_seconds_user": 11.8,
+          "threads": 5,
+          "handles": 304,
+          "uptime_s": 581.3
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.2,
+          "cpu_percent_core": 0.0,
+          "cpu_percent_host": 0.0,
+          "cpu_seconds_user": 1.3,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 644.4
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4304.9,
+          "cpu_percent_core": 359.9,
+          "cpu_percent_host": 90.0,
+          "cpu_seconds_user": 238.7,
+          "threads": 59,
+          "handles": 1027,
+          "uptime_s": 81991.8
+        }
+      },
+      "t": 1794469954.950337
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 111,
+      "sampler_cost_ms": 95.08,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 15.2,
+        "memory_available_mb": 5653.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 1.54,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 917.19,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1965,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 80.0,
+          "cpu_percent_core": 21.1,
+          "cpu_percent_host": 5.3,
+          "cpu_seconds_user": 11.8,
+          "threads": 5,
+          "handles": 304,
+          "uptime_s": 586.3
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.2,
+          "cpu_percent_core": 0.0,
+          "cpu_percent_host": 0.0,
+          "cpu_seconds_user": 1.3,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 649.5
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4305.1,
+          "cpu_percent_core": 318.2,
+          "cpu_percent_host": 79.6,
+          "cpu_seconds_user": 254.5,
+          "threads": 59,
+          "handles": 1027,
+          "uptime_s": 81996.9
+        }
+      },
+      "t": 1794469959.9586856
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 112,
+      "sampler_cost_ms": 91.47,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.1,
+        "cpu_unattributed_percent": 10.2,
+        "memory_available_mb": 5649.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 5.09,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 949.12,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1973,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 80.2,
+          "cpu_percent_core": 1.5,
+          "cpu_percent_host": 0.4,
+          "cpu_seconds_user": 11.8,
+          "threads": 5,
+          "handles": 303,
+          "uptime_s": 591.3
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.2,
+          "cpu_percent_core": 0.6,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.3,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 654.5
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4305.2,
+          "cpu_percent_core": 357.2,
+          "cpu_percent_host": 89.3,
+          "cpu_seconds_user": 271.6,
+          "threads": 59,
+          "handles": 1027,
+          "uptime_s": 82001.9
+        }
+      },
+      "t": 1794469964.9637613
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 113,
+      "sampler_cost_ms": 683.96,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.2,
+        "cpu_unattributed_percent": 9.4,
+        "memory_available_mb": 5625.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 14.24,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 948.06,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1987,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 80.3,
+          "cpu_percent_core": 21.6,
+          "cpu_percent_host": 5.4,
+          "cpu_seconds_user": 12.1,
+          "threads": 5,
+          "handles": 303,
+          "uptime_s": 596.3
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.6,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.3,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 659.5
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4337.1,
+          "cpu_percent_core": 340.4,
+          "cpu_percent_host": 85.1,
+          "cpu_seconds_user": 288.5,
+          "threads": 59,
+          "handles": 1028,
+          "uptime_s": 82006.9
+        }
+      },
+      "t": 1794469969.9969466
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 114,
+      "sampler_cost_ms": 137.55,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.2,
+        "cpu_unattributed_percent": 11.3,
+        "memory_available_mb": 5624.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 2.38,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1001.58,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 1998,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 80.5,
+          "cpu_percent_core": 16.0,
+          "cpu_percent_host": 4.0,
+          "cpu_seconds_user": 12.4,
+          "threads": 5,
+          "handles": 304,
+          "uptime_s": 601.4
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.2,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.3,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 664.5
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4338.6,
+          "cpu_percent_core": 338.6,
+          "cpu_percent_host": 84.6,
+          "cpu_seconds_user": 309.4,
+          "threads": 58,
+          "handles": 1027,
+          "uptime_s": 82011.9
+        }
+      },
+      "t": 1794469975.0093567
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 115,
+      "sampler_cost_ms": 93.17,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.2,
+        "cpu_unattributed_percent": 14.5,
+        "memory_available_mb": 5624.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 2792.39,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1070.26,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2011,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 80.8,
+          "cpu_percent_core": 11.5,
+          "cpu_percent_host": 2.9,
+          "cpu_seconds_user": 12.6,
+          "threads": 7,
+          "handles": 303,
+          "uptime_s": 607.3
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.3,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.3,
+          "threads": 8,
+          "handles": 256,
+          "uptime_s": 670.5
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4338.6,
+          "cpu_percent_core": 330.3,
+          "cpu_percent_host": 82.6,
+          "cpu_seconds_user": 325.2,
+          "threads": 58,
+          "handles": 1027,
+          "uptime_s": 82017.9
+        }
+      },
+      "t": 1794469980.9642313
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 116,
+      "sampler_cost_ms": 121.25,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.3,
+        "cpu_unattributed_percent": 12.6,
+        "memory_available_mb": 5617.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 1264.9,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1133.5,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2022,
+        "tasks": 7,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 81.2,
+          "cpu_percent_core": 25.8,
+          "cpu_percent_host": 6.5,
+          "cpu_seconds_user": 13.1,
+          "threads": 7,
+          "handles": 301,
+          "uptime_s": 612.7
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.5,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.4,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 675.9
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4345.3,
+          "cpu_percent_core": 323.3,
+          "cpu_percent_host": 80.8,
+          "cpu_seconds_user": 344.2,
+          "threads": 58,
+          "handles": 1026,
+          "uptime_s": 82023.3
+        }
+      },
+      "t": 1794469986.3654015
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 117,
+      "sampler_cost_ms": 85.98,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.3,
+        "cpu_unattributed_percent": 15.4,
+        "memory_available_mb": 5605.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 839.36,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1267.14,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2026,
+        "tasks": 10,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 81.9,
+          "cpu_percent_core": 29.0,
+          "cpu_percent_host": 7.3,
+          "cpu_seconds_user": 13.6,
+          "threads": 7,
+          "handles": 301,
+          "uptime_s": 619.4
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.8,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.4,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 682.6
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4355.2,
+          "cpu_percent_core": 308.7,
+          "cpu_percent_host": 77.2,
+          "cpu_seconds_user": 361.1,
+          "threads": 58,
+          "handles": 1026,
+          "uptime_s": 82030.0
+        }
+      },
+      "t": 1794469993.0892842
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 118,
+      "sampler_cost_ms": 72.64,
+      "host": {
+        "cpu_percent": 100.0,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.3,
+        "cpu_unattributed_percent": 8.2,
+        "memory_available_mb": 5614.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 4.57,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1256.43,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2041,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 82.9,
+          "cpu_percent_core": 32.7,
+          "cpu_percent_host": 8.2,
+          "cpu_seconds_user": 14.3,
+          "threads": 7,
+          "handles": 304,
+          "uptime_s": 624.5
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.0,
+          "cpu_percent_host": 0.0,
+          "cpu_seconds_user": 1.4,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 687.6
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4355.2,
+          "cpu_percent_core": 334.6,
+          "cpu_percent_host": 83.6,
+          "cpu_seconds_user": 379.6,
+          "threads": 58,
+          "handles": 1026,
+          "uptime_s": 82035.0
+        }
+      },
+      "t": 1794469998.1043622
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 119,
+      "sampler_cost_ms": 30.69,
+      "host": {
+        "cpu_percent": 91.7,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.3,
+        "cpu_unattributed_percent": 16.0,
+        "memory_available_mb": 5600.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 15.86,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1246.43,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2055,
+        "tasks": 9,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 77.2,
+          "cpu_percent_core": 19.7,
+          "cpu_percent_host": 4.9,
+          "cpu_seconds_user": 14.5,
+          "threads": 7,
+          "handles": 303,
+          "uptime_s": 629.5
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.9,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.5,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 692.7
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4355.2,
+          "cpu_percent_core": 282.1,
+          "cpu_percent_host": 70.5,
+          "cpu_seconds_user": 393.0,
+          "threads": 58,
+          "handles": 1023,
+          "uptime_s": 82040.1
+        }
+      },
+      "t": 1794470003.2136152
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 120,
+      "sampler_cost_ms": 42.8,
+      "host": {
+        "cpu_percent": 63.8,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.4,
+        "cpu_unattributed_percent": 26.5,
+        "memory_available_mb": 5596.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 10.43,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1232.86,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2074,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 78.0,
+          "cpu_percent_core": 23.9,
+          "cpu_percent_host": 6.0,
+          "cpu_seconds_user": 14.9,
+          "threads": 7,
+          "handles": 303,
+          "uptime_s": 634.6
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.3,
+          "cpu_percent_host": 0.1,
+          "cpu_seconds_user": 1.5,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 697.8
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4355.2,
+          "cpu_percent_core": 124.8,
+          "cpu_percent_host": 31.2,
+          "cpu_seconds_user": 398.7,
+          "threads": 58,
+          "handles": 1023,
+          "uptime_s": 82045.2
+        }
+      },
+      "t": 1794470008.2542481
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 121,
+      "sampler_cost_ms": 26.61,
+      "host": {
+        "cpu_percent": 34.7,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.4,
+        "cpu_unattributed_percent": 31.6,
+        "memory_available_mb": 5584.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 201.83,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1282.27,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2086,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 78.0,
+          "cpu_percent_core": 11.2,
+          "cpu_percent_host": 2.8,
+          "cpu_seconds_user": 15.0,
+          "threads": 7,
+          "handles": 301,
+          "uptime_s": 639.9
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.6,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.5,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 703.1
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4355.2,
+          "cpu_percent_core": 0.6,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 398.7,
+          "threads": 58,
+          "handles": 1023,
+          "uptime_s": 82050.5
+        }
+      },
+      "t": 1794470013.6226532
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 122,
+      "sampler_cost_ms": 28.07,
+      "host": {
+        "cpu_percent": 79.5,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.5,
+        "cpu_unattributed_percent": 15.9,
+        "memory_available_mb": 5577.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 429.89,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1269.32,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2105,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 80.1,
+          "cpu_percent_core": 39.1,
+          "cpu_percent_host": 9.8,
+          "cpu_seconds_user": 15.4,
+          "threads": 7,
+          "handles": 303,
+          "uptime_s": 645.4
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.6,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.5,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 708.5
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4355.2,
+          "cpu_percent_core": 214.8,
+          "cpu_percent_host": 53.7,
+          "cpu_seconds_user": 408.6,
+          "threads": 58,
+          "handles": 1023,
+          "uptime_s": 82056.0
+        }
+      },
+      "t": 1794470019.047626
+    },
+    {
+      "sampler_available": true,
+      "sampler_samples": 123,
+      "sampler_cost_ms": 624.56,
+      "host": {
+        "cpu_percent": 78.3,
+        "cpu_physical": 2,
+        "cpu_logical": 4,
+        "memory_used_percent": 72.6,
+        "cpu_unattributed_percent": 61.5,
+        "memory_available_mb": 5558.0,
+        "swap_used_percent": 5.0
+      },
+      "event_loop": {
+        "lag_last_ms": 9.85,
+        "lag_max_ms": 3164.78,
+        "lag_p99_ms": 1316.3,
+        "lag_floor_ms": 4.19,
+        "lag_startup_max_ms": 310.25,
+        "warm": true,
+        "probes": 2115,
+        "tasks": 8,
+        "python_threads": 4
+      },
+      "processes": {
+        "gateway": {
+          "up": true,
+          "processes": 1,
+          "rss_mb": 82.0,
+          "cpu_percent_core": 22.3,
+          "cpu_percent_host": 5.6,
+          "cpu_seconds_user": 15.7,
+          "threads": 7,
+          "handles": 303,
+          "uptime_s": 650.4
+        },
+        "presidio": {
+          "up": true,
+          "processes": 2,
+          "rss_mb": 727.3,
+          "cpu_percent_core": 0.6,
+          "cpu_percent_host": 0.2,
+          "cpu_seconds_user": 1.5,
+          "threads": 5,
+          "handles": 256,
+          "uptime_s": 713.6
+        },
+        "ollama": {
+          "up": true,
+          "processes": 4,
+          "rss_mb": 4353.8,
+          "cpu_percent_core": 44.4,
+          "cpu_percent_host": 11.1,
+          "cpu_seconds_user": 410.7,
+          "threads": 58,
+          "handles": 1026,
+          "uptime_s": 82061.0
+        }
+      },
+      "t": 1794470024.069592
+    }
+  ]
+}
