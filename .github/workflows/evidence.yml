@@ -85,6 +85,35 @@ jobs:
           MG_API_KEY: ci-not-a-real-key
         run: python prove.py
 
+      # Emitted as annotations because they are readable on the run page
+      # and through the public API WITHOUT signing in. A green tick only
+      # says the command exited zero; these say what it actually proved,
+      # and in particular how much it had to SKIP.
+      - name: Report what was proved
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p = pathlib.Path("evidence/catalogue.json")
+          if not p.is_file():
+              print("::error::no catalogue was written")
+              raise SystemExit(0)
+          d = json.loads(p.read_text())
+          s = d["summary"]
+          print(f"::notice title=Evidence::"
+                f"{s['PASS']} passed, {s['FAIL']} failed, "
+                f"{s['SKIP']} skipped, {s['ERROR']} errored "
+                f"in {d['elapsed_s']}s")
+          for c in d["checks"]:
+              n = " ".join(f"{k}={v}" for k, v in (c["numbers"] or {}).items()
+                           if v is not None)
+              line = f"{c['outcome']} {c['name']}" + (f" | {n}" if n else "")
+              if c["detail"]:
+                  line += f" | {c['detail']}"
+              kind = {"PASS": "notice", "SKIP": "warning"}.get(c["outcome"], "error")
+              print(f"::{kind} title=Check::{line}")
+          PY
+
       - name: Publish the catalogue to the job summary
         if: always()
         run: |
