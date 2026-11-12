@@ -367,6 +367,25 @@ def check_promotion_gate(results: list[Result]) -> None:
     results.append(r)
 
 
+def check_architecture(results: list[Result]) -> None:
+    r = Result(
+        id="evidence.architecture",
+        name="Architecture diagrams match the code",
+        category="architecture",
+        claim="the published diagrams describe the CURRENT config and "
+              "import graph, and the Adapter boundary still holds",
+        command="python architecture.py --check",
+    )
+    started = time.perf_counter()
+    code, out = run([PY, "architecture.py", "--check"], timeout=120)
+    r.duration_s = round(time.perf_counter() - started, 1)
+    r.outcome = PASS if code == 0 else FAIL
+    r.detail = ("only factory.py imports a vendor" if code == 0
+                else "; ".join(l.strip() for l in out.splitlines()
+                               if "FAIL" in l)[:300])
+    results.append(r)
+
+
 def check_figures(results: list[Result]) -> None:
     r = Result(
         id="evidence.figures",
@@ -696,6 +715,14 @@ def render_markdown(results: list[Result], started: datetime,
         out += [f"### Scenarios ({env.get('scenarios_total')} total, "
                 f"all traced to tests)", "",
                 " · ".join(f"**{k}** {v}" for k, v in cats.items()), ""]
+    # The diagrams go in the job summary too, so a CI run shows the
+    # architecture it just tested rather than only a tally.
+    try:
+        import architecture
+        out += ["## Architecture", "", architecture.build(), ""]
+    except Exception as exc:                                  # noqa: BLE001
+        out += [f"_architecture diagrams unavailable: {exc}_", ""]
+
     libs = {k: v for k, v in (env.get("libraries") or {}).items() if v}
     if libs:
         out += ["### Stack", "",
@@ -783,6 +810,8 @@ def main() -> int:
         check_generated_corpus(results)
     if args.category in (None, "quality"):
         check_promotion_gate(results)
+    if args.category in (None, "architecture"):
+        check_architecture(results)
     if args.category in (None, "governance"):
         check_figures(results)
         check_preflight(results, args.url, args.key)

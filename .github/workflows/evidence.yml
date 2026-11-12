@@ -79,6 +79,13 @@ jobs:
           echo "presidio did not start in 60s; dependent checks will SKIP"
           tail -20 /tmp/presidio.log || true
 
+      # Fails the build if the README diagrams no longer describe the
+      # code, or if any module outside factory.py has started importing
+      # a concrete provider. An architecture document that cannot go
+      # stale is worth more than one that is merely current today.
+      - name: Check the architecture diagrams
+        run: python architecture.py --check
+
       - name: Run every gate
         env:
           PYTHONPATH: ${{ github.workspace }}/llm-gateway
