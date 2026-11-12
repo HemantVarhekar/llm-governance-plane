@@ -49,7 +49,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r llm-gateway/requirements.txt
+          python -c "import sys; print('python', sys.version)"
+          # --prefer-binary so a missing wheel surfaces as a wheel problem
+          # rather than a compiler error thirty lines into a source build.
+          pip install --prefer-binary -r llm-gateway/requirements.txt
+          echo "--- installed ---"
+          pip freeze | grep -iE '^(fastapi|uvicorn|pydantic|httpx|PyYAML|presidio|spacy|psutil|pytest)' 
 
       - name: Download the spaCy model Presidio needs
         run: python -m spacy download en_core_web_sm
@@ -97,3 +102,7 @@ jobs:
           name: evidence-catalogue
           path: evidence/
           retention-days: 30
+          # The catalogue is absent only when the run died before writing
+          # it. The real failure is already reported above; a second red
+          # cross for the missing upload is noise.
+          if-no-files-found: warn

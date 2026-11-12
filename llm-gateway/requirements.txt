@@ -1,19 +1,35 @@
 # MigrationGuard gateway - runtime and test dependencies.
 #
-# Pinned exactly. A load test result is a claim about a specific build, and
-# "it was slower on Tuesday" is not a finding if the dependency tree moved
-# underneath it.
+# GENERATED FROM THE WORKING ENVIRONMENT, not written by hand.
+#
+# The first version of this file was hand-written from memory and every
+# pin in it was wrong - fastapi 0.115.6 against an actual 0.162.2, spacy
+# 3.8.3 against 3.8.18, presidio-analyzer 2.2.357 against 2.2.366. The
+# first continuous-integration run died in twelve seconds because pip
+# could not resolve versions that had never existed here. The file even
+# carried a comment about pinning exactly, over numbers that were
+# invented. A dependency list is a measurement like any other: read it
+# off the thing that works.
+#
+# Regenerate after changing dependencies:
+#   .venv/Scripts/python.exe -m pip freeze | grep -iE "^(fastapi|uvicorn|...)"
+#
+# Direct dependencies are pinned; transitive ones are left to the
+# resolver, so this stays installable on Linux and in CI as well as on
+# the Windows machine it was captured from.
 
 # --- service ---------------------------------------------------------------
-fastapi==0.115.6
-uvicorn==0.34.0
-pydantic==2.10.4
+fastapi==0.162.2
+uvicorn==0.54.0
+pydantic==2.14.3
 httpx==0.28.1
-PyYAML==6.0.2
+PyYAML==6.0.3
 
 # --- personal-data detection ----------------------------------------------
-presidio-analyzer==2.2.357
-spacy==3.8.3
+# spacy is pinned even though presidio pulls it in, because the language
+# model downloaded in CI has to match the library that loads it.
+presidio-analyzer==2.2.366
+spacy==3.8.18
 
 # --- metrics ---------------------------------------------------------------
 # Used ONLY by sysmetrics.py, and imported defensively: if this is missing
@@ -22,4 +38,4 @@ spacy==3.8.3
 psutil==6.1.1
 
 # --- tests -----------------------------------------------------------------
-pytest==8.3.4
+pytest==9.2.0
