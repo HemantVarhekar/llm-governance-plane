@@ -11,6 +11,7 @@ whoever is listening to the presentation.
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -21,6 +22,34 @@ HERE = ROOT / "dashboard"
 
 def rj(p: Path):
     return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else None
+
+
+def _collect_count() -> int | None:
+    """How many tests pytest can actually see, right now.
+
+    Deliberately a collection rather than a run: this is checking that a
+    PUBLISHED FIGURE matches its source, not that the suite is green. The
+    suite being green is a separate check and belongs in prove.py.
+    """
+    import subprocess
+    gateway = ROOT / "llm-gateway"
+    py = gateway / ".venv" / "Scripts" / "python.exe"
+    if not py.is_file():
+        py = gateway / ".venv" / "bin" / "python"
+    if not py.is_file():
+        py = Path(sys.executable)
+    try:
+        proc = subprocess.run(
+            [str(py), "-m", "pytest", "--collect-only", "-q"],
+            cwd=str(gateway), capture_output=True, text=True, timeout=300,
+            env={**os.environ, "PYTHONPATH": str(gateway)})
+    except Exception:
+        return None
+    per_file = re.findall(r"^(tests[/\][\w.]+\.py): (\d+)$", proc.stdout, re.M)
+    if per_file:
+        return sum(int(n) for _, n in per_file)
+    m = re.search(r"collected (\d+) items", proc.stdout)
+    return int(m.group(1)) if m else None
 
 
 def main() -> int:
@@ -125,7 +154,27 @@ def main() -> int:
            "NOT k6" in lt["harness"], True)
 
     # --- tests and traceability -----------------------------------------
-    eq("tests: total", d["tests"]["total"], 133)
+    #
+    # NOT a hard-coded number any more. This assertion read `== 133` and
+    # PASSED for two days while the suite had grown to 160 - because the
+    # figure and the assertion were written on the same afternoon and so
+    # agreed with each other rather than with reality. The 27 tests in
+    # test_sysmetrics.py were invisible to both.
+    #
+    # A check whose expected value is frozen by hand is a check that
+    # quietly stops checking. The SOURCE of this figure is a pytest
+    # collection, so a collection is what it is compared against. Costs a
+    # few seconds and cannot go stale.
+    collected = _collect_count()
+    if collected is None:
+        print("  --   tests: total - could not run pytest --collect-only, "
+              "skipped rather than assumed")
+    else:
+        eq("tests: total matches a live pytest collection",
+           d["tests"]["total"], collected)
+    eq("tests: the per-file breakdown adds up to the total",
+       sum(r["tests"] for r in (d["tests"].get("per_file") or [])),
+       d["tests"]["total"])
     eq("tests: every scenario traced",
        d["tests"]["scenarios_tested"], d["tests"]["scenarios"])
     eq("tests: scenario count", d["tests"]["scenarios"], 23)
