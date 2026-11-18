@@ -1,8 +1,16 @@
-# Demo day — Thursday 12 November
+# Demo day — Wednesday 18 November
 
-Everything below was run and passing at 02:40 on the 12th. The gateway and
-Presidio are still up from that session; if the machine has been restarted,
-start at step 1.
+Everything below was run and passing today. The timings in the act table are
+measured, not estimated — each act was run on its own and timed. The gateway
+and Presidio are still up from that session; if the machine has been
+restarted, start at step 1.
+
+Run the demo with `demo/scenario.py`. The eight-step manual order this page
+used to carry is gone, because one of its steps asked you to kill Presidio
+with `Ctrl-C` in a second terminal and then restart it by hand mid-demo. The
+scenario script does the same thing by repointing `config.yaml` and reloading
+the gateway, and restores it in a `finally` block — verified twice today, no
+stray backup file left behind either time.
 
 ---
 
@@ -10,25 +18,24 @@ start at step 1.
 
 ### 1. Start the services
 
-```bash
-cd D:/FrameWorkCode/platformAILearning/llm-gateway
-$env:PYTHONPATH="D:/FrameWorkCode/platformAILearning/llm-gateway"
-$env:MG_API_KEY="demo-secret-key"
-$env:ANTHROPIC_API_KEY=[Environment]::GetEnvironmentVariable('ANTHROPIC_API_KEY','User')
-.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
-```
-
-In a second terminal:
+Only needed if the machine has restarted. Terminal one:
 
 ```bash
-cd D:/FrameWorkCode/platformAILearning/llm-gateway
-.\.venv\Scripts\python.exe -m uvicorn classifiers.presidio_service:app --host 127.0.0.1 --port 8001
+cd D:/FrameWorkCode/platformAILearning/llm-gateway; $env:PYTHONPATH="D:/FrameWorkCode/platformAILearning/llm-gateway"; $env:MG_API_KEY="demo-secret-key"; $env:ANTHROPIC_API_KEY=[Environment]::GetEnvironmentVariable('ANTHROPIC_API_KEY','User'); .\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-### 2. Pre-warm the models — this takes about four minutes and it matters
+Terminal two:
 
-Cold load is 145s and 107s. If the first thing the interviewer sees is a
-two-minute pause, nothing else on this page helps.
+```bash
+cd D:/FrameWorkCode/platformAILearning/llm-gateway; .\.venv\Scripts\python.exe -m uvicorn classifiers.presidio_service:app --host 127.0.0.1 --port 8001
+```
+
+### 2. Pre-warm the models — allow four minutes, and it matters
+
+Cold load is 145s and 107s. A warm run is under twenty seconds, but only
+because the weights are still in the operating system's file cache; do not
+assume that state. If the first thing the interviewer sees is a two-minute
+pause, nothing else on this page helps.
 
 ```bash
 curl -s -m 300 http://127.0.0.1:8000/v1/chat/completions -H "Authorization: Bearer demo-secret-key" -H "Content-Type: application/json" -d '{"task":"support_draft","messages":[{"role":"user","content":"My account 8841-22719 keeps buffering."}]}'
@@ -51,26 +58,67 @@ instructions"* for eight hours while every test passed.
 python dashboard/verify.py
 ```
 
-44 figures, each checked against the file that produced it. If a number on a
+45 figures, each checked against the file that produced it. If a number on a
 slide no longer matches a run, this fails instead of the interviewer finding
 it.
 
 ---
 
-## The demo, in order (about 12 minutes)
+## The demo (about 12 minutes)
 
-Lead with the thing that is hardest to fake, which is the live kill.
+One command. It pauses between acts, so you drive it with Enter and the
+pacing is yours:
 
-| # | Do | Say |
+```bash
+python demo/scenario.py
+```
+
+| Act | Scenario | What happens | Measured | The line that lands |
+|---|---|---|---|---|
+| 0 | — | Context — the migration, the churn moment | 1.6s | "Every migrated household is a churn-risk moment." |
+| 1 | — | The rule, read off `policy.yaml` on screen | 1.2s | "Nine lines. Governance you can read aloud." |
+| 2 | SC-17 | Who decides what counts as personal data — three candidates, measured | 1.5s | "The gate blocked two of the three. A gate that always passes proves nothing." |
+| 3 | SC-02 | A clean question, answered by **cloud** | 5.5s | "No personal data, so cost and latency get a vote." |
+| 4 | SC-01 | Same agent, now with an account number, answered **on-premises** | **19.8s** | "A preference can be outvoted. A constraint cannot." |
+| 5 | SC-08 | Caller explicitly demands cloud, still answered on-premises | **17.3s** | "Governance a caller can bypass with a field is not governance." |
+| 6 | SC-04/05 | **Kill the on-premises model.** Cloud is up, healthy, three times faster | 5.0s | "It takes the outage rather than the breach." |
+| 7 | SC-18 | **Kill the classifier**, on a payload with no personal data in it | **19.7s** | "We did not detect data. We could not *prove* its absence. Different things." |
+| 8 | SC-12 | The audit trail — 3,618 records, 152 provider exclusions | 1.5s | "Prove it from the log, not the slide." |
+| 9 | SC-13 | The money, with the sensitivity table | 1.3s | see the note below — read this one carefully |
+| 10 | SC-15 | Swap the model by config, then a bad config is rejected while serving continues | 4.4s | "An SRE can do that at 3am. A release cannot." |
+| 11 | — | The tests and the coverage | 1.1s | "174 tests, every one with a discipline marker." |
+
+**Total machine time is about 80 seconds.** The other eleven minutes are you
+talking, which means nothing forces your pace except acts 4, 5 and 7 at
+roughly twenty seconds each. Have a sentence ready for each of those three
+waits. They are long because the brevity instruction was removed from the
+demo's system prompt (see F-P15) and the model now generates to its
+120-token ceiling.
+
+Jump to a single act with `--act N`, using the numbers in the table above.
+`--no-pause` runs straight through, which is for rehearsal, not for the room.
+
+**Do not pass `--fresh`.** It clears `events.jsonl`, and the historical
+numbers — 3,618 records, 152 provider exclusions — are better evidence than
+a small clean count taken in front of the interviewer.
+
+### Act 9 and the README disagree. Act 9 is the one to say out loud.
+
+Act 9 prints the real ledger — cloud 518 calls (72%), on-premises 206 (28%) —
+then a sensitivity table, and then says outright that *cost is the weakest of
+the three drivers at this scale*:
+
+| tokens/call | all-cloud per year | at 28% on-prem |
 |---|---|---|
-| 1 | Send an ordinary message → answered by **cloud** | "No personal data, so cost and latency get a vote. It went to Claude." |
-| 2 | Send one with an account number → answered **on-prem** | "Personal data is a *hard constraint*. It filters the provider list before cost or latency are considered. A preference can be outvoted; a constraint cannot." |
-| 3 | **Kill Presidio** (`Ctrl-C` in terminal two). Send the same message again | "The classifier is down, so I cannot *prove* the request is safe to send outside. It refuses cloud entirely and degrades to on-prem. Safety without an outage — and the audit log says why." |
-| 4 | Restart Presidio. Send an injection attempt → **HTTP 400** | "Blocked, and it names the pattern that fired." |
-| 5 | `python redteam/run.py --limit 60` | "A thousand of these, same order every run. 988 held. The twelve that don't are each categorised and either fixed or consciously accepted." |
-| 6 | Open the **dashboard**, go to the red team chart | "Run four went *up*. That is a regression I introduced — I put a full stop inside a character class and broke nineteen cases to fix three. It was only caught because the whole corpus re-runs after every change." |
-| 7 | Dashboard → Load & NFR | "The load test found two customer-facing defects that a hundred and thirty-three unit tests did not." |
-| 8 | `python evals/gate.py --promote regex` → **BLOCKED** | "The gate blocks two of the three candidates. A gate that always passes proves nothing." |
+| 516 — this demo, short replies | $19,040 | **$5,418** |
+| 1,000 | $36,900 | $10,499 |
+| 3,000 — realistic with retrieval context | $110,700 | **$31,498** |
+
+`README.md` still carries **~$74K/yr** as the inference saving, and
+`verify.py` gate-locks that figure. So if anyone reads the table and then
+watches act 9, the two disagree. Say the act 9 version. The discrepancy then
+becomes you correcting your own number in public, which reads as rigour;
+leave it unspoken and it reads as a number nobody checked.
 
 **If something breaks mid-demo, say so and keep going.** The dashboard has
 every figure and the commands that produced them; the story works from the
@@ -78,17 +126,13 @@ page alone.
 
 ---
 
-## The three questions you will get
+## The questions you will get
 
 **"Isn't this just LiteLLM?"**
 > The gateway is commodity — LiteLLM, Portkey, Kong AI Gateway, Bedrock. I
 > would buy the gateway. What nobody sells is the evidence layer: the corpus,
 > the gates, the traceability, the audit trail that answers *why* a model made
 > a decision about a customer. That is the part worth building.
-
-**"Your churn model is a toy."**
-> Deliberately. It is a stand-in. Swap in yours — the control plane does not
-> care what the model is, which is the whole point of the adapter boundary.
 
 **"This is a laptop, not scale."**
 > Architecture-correct, scale-simulated. And the laptop is why the most useful
@@ -97,11 +141,20 @@ page alone.
 > because throughput is flat from one to sixteen concurrent while latency
 > rises linearly. On real hardware that number changes; the shape does not.
 
-**"How much does routing on-prem actually save?"**
-> About $74,000 a year, and that is the weakest of the three drivers against
-> $17.6 billion of revenue. I would rather tell you that than have you find
-> it. The cost argument that holds is optionality — when a provider raises
-> prices, it is a config line rather than a release.
+**"How do you know your quality signals are real?"**
+> Because three times this week they were not, and I found each one. Attack
+> length, prose length, identifier format — a corpus that presents one surface
+> form only ever measures the guard against that form. And this morning, two
+> hours before this meeting, my own safety model refused a buffering complaint
+> as a violent crime, because the gateway hands it the operator's system prompt
+> as if it were customer text. All four are written up with the mechanism, the
+> isolation steps and the remediation order.
+
+**"What is not built?"**
+> The Kafka data plane, the constrained agent, the containers and the cluster.
+> `ARCHITECTURE.md` says so in the sections that describe them, rather than
+> leaving you to find out. The migration-regression score — the one genuinely
+> DIRECTV-specific idea in the design — exists as a sentence, not as code.
 
 ---
 
