@@ -57,7 +57,7 @@ about a customer.
 | False alarms on real customer messages | **0 of 136** |
 | Hand-written adversarial prompts held | **988 of 1,000** (976 by patterns alone) — **all of them short; see the caveat below** |
 | Model-generated attacks held | **49 of 50** |
-| Personal-data detector | F1 **1.000** — the gate refuses **2 of every 3** candidates |
+| Personal-data detector | F1 **1.000** on the evaluation set — the gate refuses **2 of every 3** candidates. **One account-number format only; see F-P14** |
 | Tests | **174**, hermetic, green in CI on every push |
 | Scenario coverage | **23 of 23**, traced from code and spec |
 | Published figures | **45 of 45**, asserted against their source runs |
@@ -417,7 +417,13 @@ Stated first, because they would be asked anyway.
   findings holds; the absolute numbers are two-core numbers
 - On-premises with a *real* cloud model provider — **not** a hybrid cloud
   deployment, and never described as one
-- The churn model is a deliberate stand-in
+- **There is no churn model, and no event-driven data plane.** `ARCHITECTURE.md`
+  specifies `churn-scorer`, `qoe-consumer`, the migration-regression score, a
+  `monitor` service and Kafka; none of them is built. Neither is the single
+  constrained agent in section 9. Those sections are design, and now say so
+- **No containers and no cluster.** No `docker-compose.yml`, no Dockerfile, no
+  Kubernetes manifest, no Kyverno policy. Everything measured here runs as
+  native host processes, which is also how every number was measured
 
 ---
 

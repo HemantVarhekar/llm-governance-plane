@@ -45,7 +45,7 @@ a customer.
 | Model-generated attacks, curated | 50 — **49 held** |
 | False alarms on ordinary customer messages | 136 tested — **0** |
 | Personal data reaching cloud under load | **0** |
-| Personal-data detector | F1 **1.000**; the gate **refuses 2 of 3** candidates |
+| Personal-data detector | F1 **1.000** on the evaluation set; the gate **refuses 2 of 3** candidates. **One account-number format only; see below** |
 | Tests | **174**, hermetic, green in CI on every push |
 | Scenario coverage | **23 of 23**, traced by parsing code and spec |
 | Published figures | **45 of 45** asserted against their source runs |
@@ -145,6 +145,17 @@ corpus was measuring the guard against the corpus.** The same change found a
 legitimate customer complaint being refused as a violent crime, and confirmed
 the chain-deadline defect is worse at realistic length: 50% of the
 personal-data path shed, against the 30.1% I reported from short inputs.
+
+**The same question asked of the detector found the same shape of defect.**
+Probing it with one identifier at a time rather than with my evaluation set,
+it recognises **exactly one account-number format**. `8841-22719` is detected;
+`4471-9082-3356` and a bare run of digits are not. It scores F1 1.000 because
+every account number in both my datasets is written in that one format. No
+customer data reached the cloud in any run — but one such request was served
+on-premises because short simple requests route locally by default, not
+because the privacy rule fired. The right outcome for the wrong reason. The
+fix is to the dataset before the pattern: every identifier type has to appear
+in several surface forms, and recall has to be reported per form.
 
 I would rather show you this than a clean number I had not stress-tested.
 
