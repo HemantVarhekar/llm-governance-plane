@@ -133,6 +133,12 @@ jobs:
                               f"/{n.get('candidates')}")
               elif c["id"] == "evidence.figures":
                   head.append(f"figures {n.get('verified')}/{n.get('total')}")
+              elif c["id"] == "performance.longevity":
+                  # The soak cannot run here, so its verdict rides in on the
+                  # headline instead. A FAILING soak must never be invisible
+                  # just because the check that publishes it passed.
+                  head.append(f"soak {n.get('run')} {n.get('minutes')}min "
+                              f"verdict {n.get('verdict')}")
           print(f"::notice title=Evidence::"
                 f"{s['PASS']} passed, {s['FAIL']} failed, {s['SKIP']} skipped, "
                 f"{s['ERROR']} errored in {d['elapsed_s']}s | "

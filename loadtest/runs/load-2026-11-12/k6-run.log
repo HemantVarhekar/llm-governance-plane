@@ -1,0 +1,58 @@
+
+  k6 D:\FrameWorkCode\platformAILearning\loadtest\bin\k6.exe
+  scenarios : control_plane, end_to_end, compliance
+  profile   : 10 stages x 30s = 300s (5.0 min)
+    control_plane  concurrency 1,4,8,16
+    end_to_end     concurrency 1,2,4
+    compliance     concurrency 1,2,4
+
+  PRE-FLIGHT
+    gateway up, input guards: ['injection', 'safety-model']
+    sampler up, 721 samples so far
+    classifier composite healthy=True
+    warming the local model (up to 300s)... ready in 9s
+
+  RUNNING - about 5.0 minutes. Do not run anything else on this machine:
+  two cores, and a competing process measures itself into the result.
+
+
+  MigrationGuard k6 run
+  ------------------------------------------------------------------------
+  control_plane_ms     n=  372  med=  1804.7ms  p95=  8785.13ms  max= 10589.89ms
+  end_to_end_ms        n=   21  med=11295.23ms  p95=  14172.2ms  max= 16972.32ms
+  compliance_path_ms   n=    7  med=46996.41ms  p95= 53020.14ms  max= 55116.04ms   << too few samples for a percentile
+
+  NOTE: compliance_path_ms (n=7) have fewer than 20 samples.
+        Read the median and the maximum; the p95 is not evidence at this size.
+        These paths wait on the model, so more samples means a longer run, not more load.
+
+  attacks_refused      372
+  attacks_answered     0
+  routed_onprem        2
+  routed_cloud         21
+  pii_leaked_to_cloud  0
+
+  FAIL http_req_failed{scenario:compliance} rate<0.10
+  ok   http_req_failed rate<0.05
+  ok   attacks_answered count==0
+  ok   http_req_failed{scenario:end_to_end} rate<0.10
+  ok   control_plane_ms p(95)<9000
+  ok   compliance_path_ms p(95)<60000
+  ok   pii_leaked_to_cloud count==0
+  ok   http_req_failed{scenario:control_plane} rate<0.10
+  ok   end_to_end_ms p(95)<25000
+
+  1 THRESHOLD(S) FAILED
+time="2026-11-12T12:00:35+05:30" level=error msg="thresholds on metrics 'http_req_failed{scenario:compliance}' have been crossed"
+
+  SERVER SIDE during the run (106 samples)
+    host CPU        median   76.5%   peak 100.0%
+    gateway   CPU   median    7.8%   peak   24.0%    RSS 90MB
+    presidio  CPU   median    0.1%   peak    1.2%    RSS 80MB
+    ollama    CPU   median   47.6%   peak   79.3%    RSS 3724MB
+    event-loop lag  median 123.02ms   peak 3756.94ms   (floor 3.37ms)
+    memory drift    gateway -2.8MB   presidio +0.0MB   ollama +14.0MB
+
+  wrote k6-summary.json, k6-raw.json, k6-server.json  in 327s
+
+  k6 exited 99 - a threshold failed. That is the harness working, not a broken run.
