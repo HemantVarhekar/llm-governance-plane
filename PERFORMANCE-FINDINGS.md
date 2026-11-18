@@ -496,6 +496,86 @@ function of input size. **Run 1's 30.1% was the best case reported as the
 case.** The remediation in F-P8 is unchanged and now better supported:
 replicate the on-premises path, and do not raise the deadline.
 
+## F-P14 — the detector recognises exactly ONE account-number format, and every dataset only ever uses that one
+
+**Found 2026-11-18, by probing the promoted detector with one identifier at a
+time instead of with the evaluation dataset.**
+
+The promoted classifier is scored by the gate at **recall 1.000, precision
+1.000, entity recall 1.000**. Probed per identifier, in isolation:
+
+| Input | `has_pii` | entities |
+|---|---|---|
+| `Account 8841-22719 has been down since Tuesday` | **true** | `ACCOUNT_NUMBER` |
+| `Account 4471-9082-3356 was charged twice` | **false** | — |
+| `My account number is 447190823356` | **false** | — |
+| `Acct 8830-2214-9076 shows two charges` | **false** | — |
+| `Call me on 555-0147 after six` | **false** | — |
+| `Call me on (415) 555-0147 after six` | true | `PHONE_NUMBER` |
+| `My name is Priya Raman and I need help` | **false** | — |
+| `Priya Raman, account 4471-9082-3356, priya.raman@example.com` | true | `EMAIL_ADDRESS` only |
+| `My box reports 192.168.1.44 as the gateway` | **false** | — |
+| card, SSN, email alone | true | correct |
+
+The pattern, at `llm-gateway/policy.py:139`:
+
+```
+(?<![\w.-])\d{4}[.-]\d{5,}(?![\w-])(?!\.\d)
+```
+
+Four digits, one separator, then **five or more** digits. `NNNN-NNNNN` matches.
+`NNNN-NNNN-NNNN` does not, because the second group is four digits. A bare
+run of digits does not, because there is no separator.
+
+**Why the gate still reads 1.000.** All twelve rows in `evals/dataset.jsonl`
+whose only identifier is `ACCOUNT_NUMBER` are written `NNNN-NNNNN`. So are all
+fourteen account numbers in `loadtest/corpus.json`, the corpus that was just
+lengthened to remove exactly this kind of bias. The score is true *of that
+surface form* and says nothing about any other. This is the third instance of
+the same defect in one day — F-P10 found it in attack length, F-P11 in prose
+length, and this is it in identifier format. **A corpus that presents one
+surface form measures the guard against that form.**
+
+**What it does and does not mean.** It does not mean customer data reached the
+cloud: the audit trail still shows zero personal data to a cloud provider in
+every run. But the request `Account 4471-9082-3356 was charged twice` was
+served on-premises with `constraints_fired: []` — it went local because a short
+simple request routes local-first, **not** because the privacy constraint
+fired. The right outcome for the wrong reason, which is the same shape as the
+roleplay attack in F-P10 that leaked nothing only because the model chose not
+to. A guarantee that depends on a routing default is not a guarantee.
+
+Two smaller observations from the same probe:
+
+- `PERSON` was missed in `My name is Priya Raman and I need help` but found in
+  a longer sentence containing the same name. spaCy's small model is
+  context-sensitive, so name detection is weaker in short messages than the
+  aggregate suggests.
+- `IP_ADDRESS` appears in the classifier service's advertised entity list and
+  was not detected in `192.168.1.44`.
+
+**Remediation, in order.**
+
+1. Widen the account-number recogniser to the grouping families a real billing
+   system emits, plus a context-keyword recogniser ("account", "acct", "a/c"
+   followed by a digit run), and treat a bare run of 10 to 16 digits near such
+   a keyword as a candidate.
+2. **The real fix is to the dataset, not the pattern.** Every entity type must
+   appear in several surface forms, and entity-level recall must be reported
+   **per form**, not aggregated. An aggregate hides a format monoculture
+   exactly as it hid the long-attack gap.
+3. Re-run the promotion gate afterwards and expect precision to fall. A wider
+   numeric pattern will fire on channel numbers and error codes; the fourteen
+   borderline bodies in `loadtest/corpus.json` are the regression set that
+   decides whether the trade is acceptable, and the asymmetric thresholds in
+   `evals/gate.py` are what the decision should be argued against.
+
+**Reproduce:**
+
+```bash
+python -c "import sys,yaml;sys.path.insert(0,'llm-gateway');from factory import build_classifier;c=build_classifier(yaml.safe_load(open('llm-gateway/config.yaml'))['classifier']);print(c.classify('Account 4471-9082-3356 was charged twice'))"
+```
+
 ## What held up
 
 Worth recording, because an exercise that only produces bad news is usually

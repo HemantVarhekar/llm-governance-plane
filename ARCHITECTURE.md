@@ -170,6 +170,10 @@ Hot-path per-event checks compile in-process from the same file rather than call
 
 ## 9. The agent — exactly one, deliberately constrained
 
+> **Status: designed, not built.** There is no agent in this repository. This section is the specification I would
+> build against, and the constraints below are the whole point of it — but none of them is enforced by code today.
+> The governance that *is* built sits one layer lower, at the gateway, and is demonstrable: see sections 3 to 7.
+
 One agent, because an agent is the thing that *needs* governing. A model that only predicts is low-stakes; a system
 that acts — issues credits, dispatches technicians, changes a bitrate tier — is where quality and governance become
 visible. Without it the governance story stays abstract.
@@ -185,6 +189,14 @@ Constraints:
 Multi-agent is deferred to the 60-day phase: non-deterministic, hard to demo reliably, hard to test.
 
 ## 10. Deployment topology — two stages, run SEQUENTIALLY
+
+> **Status: designed, not built.** Neither stage exists as artefacts here. There is no `docker-compose.yml`, no
+> Dockerfile, no Kubernetes manifest, no Kyverno policy, and no `kind` cluster has ever been created. What is built
+> runs **natively on the host** — the gateway, the Presidio classifier service and Ollama — and that is how every
+> number in `PERFORMANCE-REPORT.md` was measured. The hardware groundwork was done and can be shown: `.wslconfig`
+> is capped at 6GB for exactly this topology, and Docker, `kind` and `kubectl` are installed. The two stages below
+> were never executed. Read this section as the deployment design and the measurement that forced it, not as a
+> description of something you can start.
 
 **Decision (2026-11-10), forced by measurement.** The original plan ran the whole application inside a `kind`
 cluster. That is not viable on this host, for two independent reasons:
@@ -209,8 +221,12 @@ host (outside any container)
 └── Ollama + llama3.2:3b + llama-guard3:1b          4.07GB resident
 ```
 
-This stage does the real work: inference, streaming, guardrails, fallback, the fail-closed PII gate, the cost
-ledger and the audit log. Everything in sections 3–7 is demonstrated here.
+Of those six containers only **gateway** and **presidio** exist as code. `churn-scorer`, `qoe-consumer`, `agent`
+and `monitor` are specified in this document and were never built, and Kafka has never been run.
+
+This stage *would* do the real work: inference, guardrails, fallback, the fail-closed PII gate, the cost ledger and
+the audit log. All of that is built and demonstrated today — but natively, as host processes, not in containers.
+Everything in sections 3–7 is real; only this packaging of it is not.
 
 ### Stage 2 — the platform policy, on a small `kind` cluster
 
@@ -233,9 +249,15 @@ Running a control plane next to CPU-bound inference on a dual-core laptop is not
 deployment, so a demo that did it would prove nothing while risking everything. Two clean demonstrations beat one
 machine thrashing through both. The interview framing:
 
-> *"I ran the workload on Compose because a full control plane alongside CPU-bound inference on a dual-core laptop
-> isn't representative. Here are the Kubernetes manifests for the real deployment — and here is the admission
-> policy enforcing data residency at the platform layer, running, in a cluster, right now."*
+> *"I ran the workload as host processes rather than under a control plane, because a full control plane alongside
+> CPU-bound inference on a dual-core laptop isn't representative — and I can show you the measurement that forced
+> that call. The Kubernetes and Kyverno layer is designed, not built. The data-residency rule it would enforce at
+> admission is enforced today in the gateway, and there is a test proving it fails closed when the classifier
+> dies."*
+
+**What this costs, stated plainly.** Defence in depth is the argument for having the rule at two layers; only one
+layer exists. A reviewer is entitled to count that as a gap, and it is listed as one. What it does not cost is the
+guarantee itself: the constraint is enforced, it is tested, and it fails closed.
 
 Knowing the difference between what the laptop proves and what the cluster proves is the point.
 
