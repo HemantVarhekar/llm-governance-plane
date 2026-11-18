@@ -32,14 +32,32 @@ cd D:/FrameWorkCode/platformAILearning/llm-gateway; .\.venv\Scripts\python.exe -
 
 ### 2. Pre-warm the models — allow four minutes, and it matters
 
-Cold load is 145s and 107s. A warm run is under twenty seconds, but only
-because the weights are still in the operating system's file cache; do not
-assume that state. If the first thing the interviewer sees is a two-minute
-pause, nothing else on this page helps.
+Cold load is 145s and 107s. If the first thing the interviewer sees is a
+two-minute pause, nothing else on this page helps.
+
+**Use this payload and no other.** The shorter one that used to be here is
+refused by the safety model with `hazard:S2`, five times out of five — so it
+never reaches the drafting model and warms only the guard. See F-P16. This
+one is the demo's own act 4 body and is verified to return 200 and to load
+both models.
 
 ```bash
-curl -s -m 300 http://127.0.0.1:8000/v1/chat/completions -H "Authorization: Bearer demo-secret-key" -H "Content-Type: application/json" -d '{"task":"support_draft","messages":[{"role":"user","content":"My account 8841-22719 keeps buffering."}]}'
+curl -s -m 560 -o /dev/null -w "http %{http_code} in %{time_total}s" http://127.0.0.1:8000/v1/chat/completions -H "Authorization: Bearer demo-secret-key" -H "Content-Type: application/json" -d '{"task":"support_draft","messages":[{"role":"user","content":"My account 8841-22719 keeps buffering since you moved me from satellite to streaming. Call me back on 214-555-0183."}]}'
 ```
+
+It must print **http 200**. Then confirm both models are actually resident —
+this is the check, not the curl:
+
+```bash
+curl -s http://127.0.0.1:11434/api/ps
+```
+
+You want `llama-guard3:1b` **and** `llama3.2:3b` in that list. `guard` alone
+means the warm-up was refused and the drafting model is still cold.
+
+`OLLAMA_KEEP_ALIVE` is set to `60m` on this machine, so once both are resident
+they stay for an hour after the last request rather than the default five
+minutes. Warming an hour early is fine; warming two hours early is not.
 
 ### 3. Preflight — the one that catches a stale process
 
@@ -83,7 +101,7 @@ python demo/scenario.py
 | 5 | SC-08 | Caller explicitly demands cloud, still answered on-premises | **17.3s** | "Governance a caller can bypass with a field is not governance." |
 | 6 | SC-04/05 | **Kill the on-premises model.** Cloud is up, healthy, three times faster | 5.0s | "It takes the outage rather than the breach." |
 | 7 | SC-18 | **Kill the classifier**, on a payload with no personal data in it | **19.7s** | "We did not detect data. We could not *prove* its absence. Different things." |
-| 8 | SC-12 | The audit trail — 3,618 records, 152 provider exclusions | 1.5s | "Prove it from the log, not the slide." |
+| 8 | SC-12 | The audit trail — reads live; currently ~3,600 records and 159 provider exclusions, and it grows every time you rehearse | 1.5s | "Prove it from the log, not the slide." |
 | 9 | SC-13 | The money, with the sensitivity table | 1.3s | see the note below — read this one carefully |
 | 10 | SC-15 | Swap the model by config, then a bad config is rejected while serving continues | 4.4s | "An SRE can do that at 3am. A release cannot." |
 | 11 | — | The tests and the coverage | 1.1s | "174 tests, every one with a discipline marker." |
@@ -98,9 +116,9 @@ demo's system prompt (see F-P15) and the model now generates to its
 Jump to a single act with `--act N`, using the numbers in the table above.
 `--no-pause` runs straight through, which is for rehearsal, not for the room.
 
-**Do not pass `--fresh`.** It clears `events.jsonl`, and the historical
-numbers — 3,618 records, 152 provider exclusions — are better evidence than
-a small clean count taken in front of the interviewer.
+**Do not pass `--fresh`.** It clears `events.jsonl`, and the accumulated
+history — around 3,600 decisions with 159 provider exclusions — is better
+evidence than a small clean count taken in front of the interviewer.
 
 ### Act 9 and the README disagree. Act 9 is the one to say out loud.
 
