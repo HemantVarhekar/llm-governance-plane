@@ -108,12 +108,32 @@ def spinner_call(fn, label: str):
 
 def chat(content: str, *, task: str = "support_draft", model: str | None = None,
          max_tokens: int = 120, timeout: float = 180.0) -> httpx.Response:
+    # NO SYSTEM MESSAGE. See F-P15 in PERFORMANCE-FINDINGS.md.
+    #
+    # This helper used to send "You are a concise TV support writer. Two
+    # short sentences." as a system message, purely so replies fitted on
+    # screen. main.py:364 concatenates EVERY message - system included -
+    # into one string and hands it to both input guards, so llama-guard3:1b
+    # was shown the operator's instruction glued to the front of the
+    # customer's complaint. With that line present it returned hazard:S1,
+    # Violent Crimes, and refused a buffering complaint with HTTP 400.
+    # Without it: hazard:S7, advisory, served. Eight reproductions each way.
+    #
+    # The demo is the wrong place to fix the gateway, and this does not fix
+    # it: the defect is still there for any caller that sends a system
+    # message. The real fix builds the safety model's payload from user-role
+    # content while the pattern matcher keeps scanning every role, because
+    # narrowing BOTH guards would let an attacker hide a hostile instruction
+    # in a system message. That needs a test and a red-team re-run.
+    #
+    # What this does fix is the demo telling a lie: operator text was being
+    # sent as if a customer had typed it. A real support path would put a
+    # style instruction in its own task template, not take it from the
+    # caller and hand it to a safety classifier.
     body: dict = {
         "task": task,
         "max_tokens": max_tokens,
         "messages": [
-            {"role": "system",
-             "content": "You are a concise TV support writer. Two short sentences."},
             {"role": "user", "content": content},
         ],
     }
