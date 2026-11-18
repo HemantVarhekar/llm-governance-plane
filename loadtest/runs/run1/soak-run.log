@@ -1,0 +1,90 @@
+
+  SOAK  60 minutes at concurrency 2, sampling every 10s
+  guards: ['injection', 'safety-model']
+  Nothing else should run on this machine for the duration.
+
+      1.0 min       5 requests   median    9673 ms   gateway RSS   77.9 MB
+      2.0 min      17 requests   median    9519 ms   gateway RSS   81.2 MB
+      3.0 min      24 requests   median   10098 ms   gateway RSS   77.9 MB
+      4.0 min      31 requests   median    9519 ms   gateway RSS   83.1 MB
+      5.0 min      41 requests   median    9044 ms   gateway RSS   80.0 MB
+      6.0 min      49 requests   median    9044 ms   gateway RSS   81.7 MB
+      7.0 min      55 requests   median    9365 ms   gateway RSS   79.0 MB
+      8.0 min      65 requests   median    8964 ms   gateway RSS   83.0 MB
+      9.0 min      73 requests   median    9623 ms   gateway RSS   81.3 MB
+     10.0 min      78 requests   median   10431 ms   gateway RSS   77.4 MB
+     11.1 min      89 requests   median   10431 ms   gateway RSS   83.4 MB
+     12.1 min      95 requests   median   10824 ms   gateway RSS   81.1 MB
+     13.1 min     101 requests   median   10431 ms   gateway RSS   77.0 MB
+     14.1 min     111 requests   median   10530 ms   gateway RSS   81.5 MB
+     15.1 min     119 requests   median    9974 ms   gateway RSS   79.6 MB
+     16.1 min     126 requests   median    9974 ms   gateway RSS   76.3 MB
+     17.1 min     137 requests   median    9478 ms   gateway RSS   82.1 MB
+     18.1 min     143 requests   median    9718 ms   gateway RSS   81.9 MB
+     19.1 min     150 requests   median    9671 ms   gateway RSS   78.3 MB
+     20.1 min     161 requests   median    9388 ms   gateway RSS   84.3 MB
+     21.1 min     165 requests   median   10320 ms   gateway RSS   80.6 MB
+     22.1 min     173 requests   median    9352 ms   gateway RSS   81.1 MB
+     23.1 min     185 requests   median    9273 ms   gateway RSS   85.1 MB
+     24.1 min     191 requests   median    9273 ms   gateway RSS   84.9 MB
+     25.1 min     197 requests   median    9337 ms   gateway RSS   79.2 MB
+     26.1 min     209 requests   median    9337 ms   gateway RSS   79.7 MB
+     27.1 min     215 requests   median    9574 ms   gateway RSS   78.0 MB
+     28.1 min     222 requests   median    9337 ms   gateway RSS   79.6 MB
+     29.2 min     233 requests   median    9263 ms   gateway RSS   80.9 MB
+     30.2 min     239 requests   median    9198 ms   gateway RSS   84.1 MB
+     31.2 min     246 requests   median    9125 ms   gateway RSS   87.5 MB
+     32.2 min     257 requests   median    9125 ms   gateway RSS   82.3 MB
+     33.2 min     261 requests   median    9900 ms   gateway RSS   84.8 MB
+     34.2 min     270 requests   median    9866 ms   gateway RSS   86.8 MB
+     35.2 min     281 requests   median    9561 ms   gateway RSS   86.6 MB
+     36.2 min     290 requests   median    9866 ms   gateway RSS   85.0 MB
+     37.2 min     295 requests   median   10075 ms   gateway RSS   86.6 MB
+     38.2 min     305 requests   median    8918 ms   gateway RSS   80.9 MB
+     39.2 min     317 requests   median    8408 ms   gateway RSS   86.7 MB
+     40.2 min     323 requests   median    8738 ms   gateway RSS   87.9 MB
+     41.2 min     329 requests   median    8230 ms   gateway RSS   80.8 MB
+     42.2 min     341 requests   median    8941 ms   gateway RSS   88.5 MB
+     43.2 min     350 requests   median    9003 ms   gateway RSS   88.6 MB
+     44.2 min     357 requests   median    9003 ms   gateway RSS   88.7 MB
+     45.2 min     366 requests   median    8487 ms   gateway RSS   88.3 MB
+     46.2 min     377 requests   median    8766 ms   gateway RSS   79.8 MB
+     47.2 min     383 requests   median    8989 ms   gateway RSS   84.5 MB
+     48.2 min     390 requests   median    8622 ms   gateway RSS   85.4 MB
+     49.2 min     401 requests   median    8343 ms   gateway RSS   86.4 MB
+     50.2 min     411 requests   median    8687 ms   gateway RSS   83.5 MB
+     51.3 min     419 requests   median    8486 ms   gateway RSS   85.0 MB
+     52.3 min     426 requests   median    8868 ms   gateway RSS   87.9 MB
+     53.3 min     436 requests   median    8868 ms   gateway RSS   88.1 MB
+     54.3 min     441 requests   median   12356 ms   gateway RSS   87.3 MB
+     55.3 min     449 requests   median    9492 ms   gateway RSS   87.2 MB
+     56.3 min     458 requests   median   10142 ms   gateway RSS   87.2 MB
+     57.3 min     465 requests   median   11959 ms   gateway RSS   87.3 MB
+     58.3 min     474 requests   median    9215 ms   gateway RSS   87.7 MB
+     59.3 min     485 requests   median    8464 ms   gateway RSS   87.7 MB
+
+==========================================================================
+  SOAK RESULT: FAIL
+==========================================================================
+  489 requests over 60.0 minutes, 348 server samples
+  status mix: {'200': 359, '503': 49, '400': 81}
+  personal data to cloud: 0    attacks answered: 0
+
+  MEMORY (the reason a soak exists)
+    process       start      end     peak   per hour   verdict
+    gateway         76M      88M      89M     +10.0M   PASS
+    presidio       727M     720M     729M      -5.5M   PASS
+    ollama        4215M    5634M    5634M   +1662.1M   FAIL
+
+  HANDLES
+    gateway       309 -> 309       +0.3/hour   PASS
+    presidio      272 -> 272       +0.0/hour   PASS
+
+  LATENCY DRIFT (first tenth vs last tenth)
+    10298 ms -> 9319 ms   -9.5%   PASS
+
+  EVENT LOOP   median 16.42ms   p95 1857.08ms   max 7063.5ms   (floor 6.36ms)
+==========================================================================
+
+  wrote loadtest\soak-results.json
+

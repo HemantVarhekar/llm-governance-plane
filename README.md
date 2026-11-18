@@ -60,7 +60,9 @@ about a customer.
 | Personal-data detector | F1 **1.000** — the gate refuses **2 of every 3** candidates |
 | Tests | **159**, hermetic, green in CI on every push |
 | Scenario coverage | **23 of 23**, traced from code and spec |
-| Published figures | **44 of 44**, asserted against their source runs |
+| Published figures | **45 of 45**, asserted against their source runs |
+| Longevity, run 1 — 60 minutes under load | **489 requests**: 0 personal data to cloud, 0 attacks answered, 81 of 81 refused |
+| Memory under sustained load | **FAIL** — one component retains ~4.0MB per request and never releases it |
 
 ### Coverage, by discipline
 
@@ -90,13 +92,27 @@ denial-of-service vector *and* a latency concern.
 | Red team, hand-written | 1,000 attacks | Prompt injection, credential extraction, authority pretexting, obfuscation |
 | Red team, model-generated | 50 curated | Attacks the model invented — curated and frozen for reproducibility |
 | Detector promotion gate | 3 candidates, 185 samples | No detector below threshold can be promoted |
-| Figure verification | 44 assertions | Every published number checked against its source run |
+| Figure verification | 45 assertions | Every published number checked against its source run |
 | Architecture drift | 4 diagrams + 1 invariant | Diagrams regenerated from config and the import graph; no vendor name appears outside the adapter layer |
 
-Three gates are reported as **not** covered by CI, because they need a live
-service or wall-clock time: the deployment preflight, the load test and the
-longevity soak. CI marks them skipped **with the reason**, rather than
-counting them as passes.
+Three things need a live service or wall-clock time, so CI handles each
+differently — and they are **not** handled the same way, which the earlier
+wording here got wrong:
+
+| | In CI | Run locally |
+|---|---|---|
+| **Deployment preflight** | runs when a gateway answers, **SKIPs with the reason** otherwise | yes |
+| **Longevity soak** | cannot run — instead CI asserts a run exists, is **under 30 days old**, breached no compliance absolute, and **publishes its verdict in the headline** | **run 1**, 2026-11-17 |
+| **Load test** | opt-in behind `--with-load`; needs k6 and a live gateway | 2026-11-12 ladder |
+
+The soak gate is deliberately **not** the same as "the system has no memory
+defect". Its claim is *a current longevity result is published, pass or
+fail*. Run 1's verdict is **FAIL** and CI prints that on every build. Making
+the build red over a known, tracked defect would only tempt the next person
+to delete the gate instead of fixing the leak.
+
+Archives: [loadtest/runs/](loadtest/runs/) · Analysis:
+[PERFORMANCE-REPORT.md](PERFORMANCE-REPORT.md)
 
 ---
 
@@ -368,8 +384,14 @@ Stated first, because they would be asked anyway.
 
 - No multi-turn attacks yet
 - The output path is more lightly tested than the input path
-- **No longevity test** — five minutes can't tell a memory leak from a cache
-  settling, and one component drifted 91MB in that window
+- ~~No longevity test~~ — **closed by run 1 on 2026-11-17.** 60 minutes, 489
+  requests. It found what five minutes could not: the drift is **per request,
+  not per hour** (~4.0MB retained each, never released), and **30.1% of the
+  personal-data path** is shed at the 40-second chain deadline. Both are open
+  defects — see [PERFORMANCE-REPORT.md](PERFORMANCE-REPORT.md)
+- **Only one soak, at one concurrency** — 2 virtual users, 60 minutes, fixed
+  short payloads. Longer runs, higher concurrency and production-length text
+  are not yet measured, and every one of those would make the numbers worse
 - The evaluation dataset was written by the same person who wrote the guards
 - garak and PyRIT were not run
 - Runs on a laptop: **architecture-correct, scale-simulated**. The shape of the

@@ -48,7 +48,8 @@ a customer.
 | Personal-data detector | F1 **1.000**; the gate **refuses 2 of 3** candidates |
 | Tests | **159**, hermetic, green in CI on every push |
 | Scenario coverage | **23 of 23**, traced by parsing code and spec |
-| Published figures | **44 of 44** asserted against their source runs |
+| Published figures | **45 of 45** asserted against their source runs |
+| Longevity, run 1 — 60 minutes under load | **489 requests**, 0 personal data to cloud, 0 attacks answered |
 
 Three customer-facing defects were found by load testing that 133 unit tests
 missed — including a safety model rejecting **66% of legitimate support
@@ -78,13 +79,16 @@ Beyond the unit suite, these gates also run on every push:
 | Red team, hand-written | 1,000 attacks | Prompt injection, credential extraction, authority pretexting, obfuscation |
 | Red team, model-generated | 50 curated | Attacks the model invented, curated and frozen for reproducibility |
 | Detector promotion gate | 3 candidates, 185 samples | No detector below threshold can be promoted |
-| Figure verification | 44 assertions | Every published number checked against its source run |
+| Figure verification | 45 assertions | Every published number checked against its source run |
 | Architecture drift | 4 diagrams + 1 invariant | Diagrams regenerated from config and the import graph; **no vendor name may appear outside the adapter layer** |
 
-Three gates are honestly reported as **not** covered by CI, because they need a
-live service or wall-clock time: the deployment preflight, the load test, and
-the longevity soak. CI marks them skipped with the reason rather than counting
-them as passes.
+Three things need a live service or wall-clock time, so CI cannot run them
+directly: the deployment preflight, the load test, and the longevity soak.
+None is counted as a pass. The preflight skips with its reason; the soak is
+handled by a gate that checks a run exists, is under 30 days old, and
+**publishes its verdict on every build** — currently **FAIL**, printed in the
+pipeline rather than buried. All three have been run locally against live
+services and their raw results are in the repository.
 
 ## Cost — two numbers, not to be confused
 
@@ -125,18 +129,29 @@ request/second ceiling, not a guess.
 ## Known gaps
 
 No multi-turn attacks; the output path is more lightly tested than the input
-path; no longevity test yet — five minutes cannot distinguish a memory leak
-from a cache settling; and the evaluation dataset was written by the same
-person who wrote the guards.
+path; and the evaluation dataset was written by the same person who wrote the
+guards.
+
+**The longevity gap is now closed, and it found two defects.** A 60-minute
+run on 2026-11-17 showed one component retaining **~4.0MB per request and
+never releasing it**, and **30.1% of the personal-data path** shed at the
+40-second chain deadline — while every compliance assertion held. I am
+reporting this rather than waiting to fix it first: the measurement, and
+what it changes about the production design, is the more useful thing to
+show you. Full detail in `PERFORMANCE-REPORT.md` in the repository.
 
 ## Links
 
 - **Repository:** https://github.com/HemantVarhekar/llm-governance-plane
-- **Latest CI run:** https://github.com/HemantVarhekar/llm-governance-plane/actions/runs/43194710037
+- **Latest CI run:** https://github.com/HemantVarhekar/llm-governance-plane/actions/runs/43570418816
 
 `python prove.py` runs every gate and writes a categorised evidence catalogue.
 CI runs that same command on every push — what you see in the pipeline is what
 I'd demo, not a parallel process that drifts from it.
+
+`main` is protected: every change goes through a pull request and cannot merge
+until that command passes. The rule applies to administrators, so it applies to
+me too.
 
 Happy to walk through any of it on Monday.
 

@@ -21,6 +21,10 @@ __pycache__/
 # run — not source, and potentially sensitive.
 events.jsonl
 *.log
+# ...except inside a run archive, where the raw log IS the evidence rather
+# than a build artefact. Force-adding each one by hand would be forgotten on
+# the very run that mattered.
+!loadtest/runs/**/*.log
 
 # --- load test output -----------------------------------------------------
 k6-results/

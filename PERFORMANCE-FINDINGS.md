@@ -212,6 +212,141 @@ personal data within its deadline on this hardware.**
 
 ---
 
+## F-P7 — Ollama's resident memory grows with traffic and is never released
+
+The question a soak exists to answer, answered. Two earlier five-minute
+runs saw Ollama gain 91MB and 14MB and could not tell a cache settling
+from a leak. A 60-minute run can.
+
+| | |
+|---|---|
+| Resident memory, minute 10 → minute 60 | **3,980MB → 5,634MB** |
+| Least-squares slope over the 57-minute trend window | **+1,662MB/hour** |
+| Shape | **monotone, no plateau** |
+| Processes / threads / handles | **3 / 41 / flat** throughout |
+| Host memory | 77% → **88%** |
+
+Not a cache settling: a cache approaches a plateau, and this did not bend
+over fifty minutes. Not process churn and not a descriptor leak either —
+the process, thread and handle counts never moved, so the growth is inside
+a stable process set.
+
+**But it is not a time-based leak.** Measured again after the run, with the
+services still up and no traffic at all, resident memory was **byte-identical
+across 100 seconds, five minutes after the last request**:
+
+```
+llama-server 1744 (llama-guard3:1b)  1,616.93MB  ->  1,616.93MB
+llama-server 9860 (llama3.2:3b)      3,977.97MB  ->  3,977.97MB
+```
+
+So the growth is proportional to **requests served**, not to time, and the
+memory is never returned: roughly **4.0MB per request** retained across the
+411 requests in the growth window. That is consistent with per-request
+context or KV-cache allocation accumulating in `llama-server`, though this
+instrument cannot prove the mechanism — see the limitation below.
+
+**The operational consequence does not depend on the mechanism.** At this
+rate, the remaining headroom on a 16GB host is about four more hours of
+this traffic. The requirement is therefore not a bug fix but a deployment
+rule: **the model server needs a resident-memory ceiling and a scheduled
+recycle, and the control plane has to drain in-flight work before it.**
+Treating a model server as a long-lived process without a recycle policy is
+the actual defect.
+
+**Limitation of the instrument, not of the finding.** The sampler groups
+`ollama.exe` and both `llama-server.exe` processes into one `ollama` total,
+so it can say the group grew 1,654MB but cannot attribute it per model. The
+idle snapshot above had to come from outside the sampler. Per-model
+attribution is the next change to `sysmetrics.py` — the same class of gap
+as F-P4, where the group matcher missed the process holding the weights.
+
+---
+
+## F-P8 — Enforcing the privacy constraint cost 30% of the personal-data path
+
+Forty-nine of 489 requests returned HTTP 503. **Every one of them was on the
+personal-data path**, and none on any other:
+
+| Path | Requests | Outcome |
+|---|---|---|
+| ordinary | 245 | **200**, cloud, median 8,698ms |
+| personal data | 114 | **200**, on-prem, median 21,590ms |
+| personal data | **49** | **503** — 30% of that path |
+| attack | 81 | **400**, refused, 81 of 81 |
+
+Aggregate error rate: **10%**. Per-path: **30%**. F-P6 is why that
+distinction is now instrumented rather than discovered twice.
+
+The audit trail names the cause without ambiguity — 49 events,
+`outcome: unavailable`, `all providers in the chain were unavailable` — and
+the mechanism follows from the policy:
+
+1. Personal data is a **hard constraint** that filters cloud out of the
+   provider list before cost or latency are considered.
+2. What remains is **one** on-prem provider. By design there is no fallback,
+   because a fallback would be the cloud.
+3. On-prem on two CPU cores runs at a median of **21.6s** against the cloud
+   path's 8.7s, with **p95 38.3s** and a maximum of 41.9s.
+4. The chain deadline is **40s** — sitting directly on top of that upper
+   tail. Requests past it are shed.
+
+`policy.yaml` had already flagged this number as the weak point, before any
+of it was measured:
+
+> `PROVISIONAL: 40s is a judgement, not a measurement. One local call costs`
+> `6-10s on this hardware, so a two-hop chain can legitimately need ~20s.`
+> `TO BE REVISITED after load testing - this number should come from a`
+> measurement.
+
+This is that measurement. A guessed deadline that is annotated as a guess
+gets checked; a guessed deadline that reads as a decision does not.
+
+The failures were **evenly spread across the whole hour** (four or five per
+five-minute bucket, first bucket to last), so this is a constant structural
+rate at this concurrency, not a degradation over time.
+
+**The safety properties held throughout.** Zero personal-data items reached
+cloud. Zero attacks were answered. Every one of the 81 injection attempts
+was refused. The 503 is a fail-closed refusal — availability was lost and
+compliance was kept, which is the correct direction to fail — but a 30%
+error rate is not a shippable answer, and "it failed safe" is not a defence
+of it.
+
+**This is the number the production architecture has to answer**, and it is
+the honest cost of the governance claim: the constraint that makes the
+system compliant is the same constraint that makes it slow, because it
+moves work onto the scarcer resource and removes the fallback. Replicated
+classifiers and GPU inference nodes are not a wish-list item here; they are
+what this measurement requires. The alternative — raising the deadline —
+hides the queue rather than clearing it.
+
+---
+
+## F-P9 — An hour of observation confirmed the single-core finding, and found no latency drift
+
+| | Measured | Verdict |
+|---|---|---|
+| Event-loop lag, median | **16.42ms** against a measured **6.36ms** floor | blocked |
+| Event-loop lag, p95 | **1,857ms** | blocked |
+| Event-loop lag, max | **7,064ms** | blocked |
+| Latency, first tenth → last tenth | 10,298ms → **9,319ms**, **−9.5%** | PASS |
+| Gateway memory | +10.0MB/hour | PASS |
+| Presidio memory | −5.5MB/hour | PASS |
+| Handles, gateway / Presidio | +0.3/hour / +0.0/hour | PASS |
+
+The loop stalls for whole seconds at a time — F-P1 and F-P5, now observed
+over an hour rather than inferred from a ladder.
+
+**Latency did not drift, and that is the point worth keeping.** The system
+got slightly *faster* across the hour while Ollama was accumulating 1.6GB.
+A latency-based or response-time-based soak would have returned a clean
+pass. Only a memory-trend instrument caught it — which is the argument for
+measuring resources alongside responses rather than inferring one from the
+other.
+
+---
+
 ## Measurement caveats, stated rather than buried
 
 **Sample size.** The compliance path produced **7 samples** across four
@@ -226,8 +361,16 @@ the result — this already invalidated the timing side-channel test once.
 `run_k6.py` says so before it starts.
 
 **Ollama grew 91MB of resident memory in five and a half minutes.** Model
-cache settling, or a leak. Five minutes cannot distinguish them. Only a
-soak can, which is the gap flagged at the top of the day and still open.
+cache settling, or a leak. Five minutes cannot distinguish them. **Closed by
+the 60-minute soak on 2026-11-17 — see F-P7.** It is neither: the memory
+grows with requests served, not with time, and is never released.
+
+**The soak measured one concurrency on one host.** Concurrency 2, two
+physical cores, 489 requests. The 30% refusal rate in F-P8 is that
+configuration's rate, not a property of the design; the per-request memory
+retention in F-P7 is a rate per request and would scale with throughput, not
+with uptime. Neither figure transfers to different hardware without
+re-measuring.
 
 ---
 

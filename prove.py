@@ -477,6 +477,92 @@ def check_load(results: list[Result], url: str, key: str, minutes: float) -> Non
     results.append(r)
 
 
+#   The soak takes an hour of wall clock and a quiet machine, so CI can
+#   never run it. What CI CAN check is that one was run, that it is recent,
+#   and that its verdict is published rather than quietly dropped - which is
+#   exactly the failure this gate exists to prevent. A FAILING soak is
+#   therefore surfaced loudly in the detail line while the CHECK passes,
+#   because the check's claim is "a current longevity result is published",
+#   not "the system has no memory defect". Conflating those two would make
+#   main un-mergeable over a known, documented, tracked defect - and would
+#   tempt the next person to delete the gate rather than fix the leak.
+SOAK_MAX_AGE_DAYS = 30
+
+
+def check_soak(results: list[Result]) -> None:
+    r = Result(
+        id="performance.longevity",
+        name="Longevity run published",
+        category="performance",
+        claim="a soak was run recently and its verdict is published, pass or fail",
+        command="python loadtest/soak.py --minutes 60 --concurrency 2",
+    )
+    runs = sorted((ROOT / "loadtest" / "runs").glob("*/soak-results.json"))
+    if not runs:
+        r.outcome = FAIL
+        r.detail = "no soak run is archived under loadtest/runs/"
+        results.append(r)
+        return
+
+    newest, data = None, None
+    for path in runs:
+        d = read_json(path) or {}
+        if not d.get("started_at"):
+            continue
+        if newest is None or d["started_at"] > newest["started_at"]:
+            newest, data = d, path
+    if newest is None:
+        r.outcome = FAIL
+        r.detail = "archived soak results carry no started_at timestamp"
+        results.append(r)
+        return
+
+    started = datetime.fromisoformat(newest["started_at"])
+    age = (datetime.now(timezone.utc) - started).days
+    worst = max(
+        (m.get("slope_mb_per_hour") or 0.0)
+        for m in (newest.get("memory") or {}).values()
+    ) if newest.get("memory") else 0.0
+
+    r.numbers = {
+        "run": data.parent.name,
+        "minutes": newest.get("actual_minutes"),
+        "requests": newest.get("requests"),
+        "verdict": newest.get("verdict"),
+        "age_days": age,
+        "worst_memory_slope_mb_per_hour": round(worst, 1),
+        "pii_to_cloud": newest.get("pii_to_cloud"),
+        "attacks_answered": newest.get("attacks_answered"),
+    }
+
+    if age > SOAK_MAX_AGE_DAYS:
+        r.outcome = FAIL
+        r.detail = (f"newest soak is {age} days old, over the "
+                    f"{SOAK_MAX_AGE_DAYS}-day limit - run another")
+        results.append(r)
+        return
+
+    # The compliance assertions are absolutes. A soak that leaked would fail
+    # this check outright, however recent it is.
+    if newest.get("pii_to_cloud") or newest.get("attacks_answered"):
+        r.outcome = FAIL
+        r.detail = (f"{data.parent.name} breached a compliance absolute: "
+                    f"pii_to_cloud={newest.get('pii_to_cloud')} "
+                    f"attacks_answered={newest.get('attacks_answered')}")
+        results.append(r)
+        return
+
+    r.outcome = PASS
+    verdict = newest.get("verdict", "?")
+    r.detail = (f"{data.parent.name}: {newest.get('actual_minutes')} min, "
+                f"{newest.get('requests')} requests, {age}d old, "
+                f"verdict {verdict}")
+    if verdict != "PASS":
+        r.detail += (f" - OPEN DEFECT, worst memory slope "
+                     f"{worst:+.0f} MB/hour (see PERFORMANCE-REPORT.md)")
+    results.append(r)
+
+
 # --------------------------------------------------------------------------
 # What it passed ON
 # --------------------------------------------------------------------------
@@ -815,6 +901,8 @@ def main() -> int:
     if args.category in (None, "governance"):
         check_figures(results)
         check_preflight(results, args.url, args.key)
+    if args.category in (None, "performance"):
+        check_soak(results)
     if (args.full or args.with_load) and args.category in (None, "performance"):
         check_load(results, args.url, args.key, args.minutes)
 
