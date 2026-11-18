@@ -54,7 +54,7 @@ about a customer.
 | Measure | Result |
 |---|---|
 | Personal data reaching cloud under load | **0** |
-| False alarms on real customer messages | **0 of 136** |
+| False alarms by the pattern layer on ordinary messages | **0** across 20 benign messages locked as tests and the 12 real support messages in the load test's compliance path. The **safety model** refused **8 of those 12** before it was narrowed |
 | Hand-written adversarial prompts held | **988 of 1,000** (976 by patterns alone) — **all of them short; see the caveat below** |
 | Model-generated attacks held | **49 of 50** |
 | Personal-data detector | F1 **1.000** on the evaluation set — the gate refuses **2 of every 3** candidates. **One account-number format only; see F-P14** |
@@ -155,7 +155,7 @@ switching is a config line, not a release.
 | Cloud | `claude-sonnet-5-5` ($0.003/1k) | Unchanged — swappable by config |
 | PII detection | Presidio + spaCy, single process | Replicated — the measured bottleneck at 2.9 req/s |
 | Service | FastAPI / Python 3.13, one node | Managed Kubernetes, GitOps, OPA |
-| Observability | 107 Prometheus metrics + audit trail | + Grafana, per-segment cost attribution |
+| Observability | 49 Prometheus metrics, 195 series with histogram buckets, + audit trail | + Grafana, per-segment cost attribution |
 | Security testing | 1,000-attack corpus in CI | + garak, PyRIT, mTLS, workload identity |
 | Load testing | k6 2.3.0, 3 scenarios, thresholds as code | k6 in CI against this baseline |
 | Hardware | One laptop, 2 cores | Multi-region, stated RTO/RPO |
