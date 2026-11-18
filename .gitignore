@@ -56,3 +56,6 @@ loadtest/bin/
 .idea/
 Thumbs.db
 desktop.ini
+
+# A short diagnostic soak writes here instead of over a published result.
+loadtest/soak-smoke.json

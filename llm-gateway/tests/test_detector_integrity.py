@@ -187,3 +187,44 @@ def test_the_scoring_harness_catches_a_quietly_broken_guard(monkeypatch):
         f"a silently broken guard scored {after:.3f}, which would still have "
         f"passed the {bar} bar - the gate would not have caught it"
     )
+
+
+# ---------------------------------------------------------------------------
+# The registry is a DECISION, not a by-product of measuring.
+# ---------------------------------------------------------------------------
+
+REGISTRY = REPO_ROOT / "evals" / "registry.json"
+
+
+@pytest.mark.scenario("SC-20")
+@pytest.mark.governance
+def test_exactly_one_detector_is_promoted_and_it_passed_the_gate():
+    """Catches a de-promotion that nothing else could see.
+
+    `evals/gate.py` used to write `promoted` as `--promote == name`, so
+    ANY run without that flag set every candidate to false. `prove.py`
+    runs exactly that on every evidence pass, which meant proving the
+    gate worked quietly cleared the promotion it had just justified.
+
+    It survived because `dashboard/data.json` is committed and CI checks
+    the committed file rather than regenerating it. The repository held a
+    registry saying nothing was promoted and a dashboard saying the
+    composite detector was, and all 45 published figures still verified.
+
+    This test reads the registry directly, so the two cannot disagree
+    again without CI going red.
+    """
+    assert REGISTRY.is_file(), "evals/registry.json is missing"
+    reg = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    candidates = reg["candidates"]
+
+    promoted = [n for n, c in candidates.items() if c.get("promoted")]
+    assert len(promoted) == 1, (
+        f"expected exactly one promoted detector, found {promoted or 'none'} "
+        f"- a run of gate.py without --promote must carry the standing "
+        f"decision forward, not clear it")
+
+    winner = candidates[promoted[0]]
+    assert winner["gate"] == "PASS", (
+        f"{promoted[0]} is promoted but its gate says {winner['gate']}: "
+        f"{winner.get('blocking_reasons')}")

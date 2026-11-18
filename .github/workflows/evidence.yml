@@ -138,7 +138,8 @@ jobs:
                   # headline instead. A FAILING soak must never be invisible
                   # just because the check that publishes it passed.
                   head.append(f"soak {n.get('run')} {n.get('minutes')}min "
-                              f"verdict {n.get('verdict')}")
+                              f"verdict {n.get('verdict')} "
+                              f"[corpus: {n.get('corpus')}]")
           print(f"::notice title=Evidence::"
                 f"{s['PASS']} passed, {s['FAIL']} failed, {s['SKIP']} skipped, "
                 f"{s['ERROR']} errored in {d['elapsed_s']}s | "
