@@ -576,6 +576,72 @@ Two smaller observations from the same probe:
 python -c "import sys,yaml;sys.path.insert(0,'llm-gateway');from factory import build_classifier;c=build_classifier(yaml.safe_load(open('llm-gateway/config.yaml'))['classifier']);print(c.classify('Account 4471-9082-3356 was charged twice'))"
 ```
 
+## F-P15 — the safety model is shown the operator's system prompt, and refuses a buffering complaint as a violent crime
+
+**Found 2026-11-18 by a timed dry run of the demo, two hours before it was
+due to be presented. Acts 4 and 5 — the two acts the demo rests on — were
+printing FAIL.**
+
+`llm-gateway/main.py:364` builds one string from every message in the
+request:
+
+```python
+text = "\n".join(m.get("content", "") for m in req.messages)
+```
+
+Role is not considered. That single string is what the size check, the
+personal-data classifier and **both input guardrails** receive. So when a
+caller sends a system message, `llama-guard3:1b` is not asked whether the
+customer's text is harmful — it is asked about the operator's instruction
+concatenated with the customer's text, as though one person wrote both.
+
+| What the safety model was shown | Verdict | HTTP |
+|---|---|---|
+| `You are a concise TV support writer. Two short sentences.`<br>`My account 8841-22719 keeps buffering since you moved me from satellite to streaming. Call me back on 214-555-0183.` | `hazard:S1` — **Violent Crimes** | **400** |
+| the complaint alone | `hazard:S7` — advisory | 200 |
+
+Five of five in the scenario harness, then three of three reproducing it
+directly, and four of four allowed with the system line removed. Deterministic,
+not an intermittent model wobble.
+
+Note what was working. The privacy pipeline was correct in every blocked
+request: `has_pii` true, `ACCOUNT_NUMBER` and `PHONE_NUMBER` found,
+`pii_stays_onprem` fired, `claude` excluded from the chain before any call,
+`local` attempted. The governance decision was right and the guard vetoed it
+afterwards — the same overlapping-scope fault that `guardrails.py:423`
+already describes for S7, now reappearing as S1, which is **not** on the
+advisory list and therefore blocks.
+
+**Why this is a design error and not only a bug.** A guard whose job is to
+judge untrusted input should not be shown the operator's own configuration.
+The system prompt is the application speaking to itself. Treating it as
+customer content means the application's own words can change whether a
+customer is served, which is both wrong and an attack surface.
+
+**What was changed, and what was not.** The demo helper stopped sending a
+system message (`demo/scenario.py`), because a real support path would carry
+a style instruction in its own task template rather than accept it from the
+caller and forward it to a safety classifier. **The gateway is unchanged and
+the defect is still present** for any caller that sends a system message.
+
+**The fix, and the trap in it.** Build the safety model's payload from
+user-role content only — but keep the pattern-matching injection guard
+scanning every role. Narrowing both guards would let an attacker put the
+hostile instruction in a system message and bypass the safety model
+completely, which is a worse defect than the one being fixed. So the change
+is: safety model sees user turns, patterns see everything, and the red team
+re-runs afterwards to prove no attack that previously held now gets through.
+Not a one-line edit, and deliberately not made in the last hour before a
+presentation.
+
+**Reproduce:**
+
+```bash
+python -c "import httpx,json;H={'Authorization':'Bearer demo-secret-key'};T='My account 8841-22719 keeps buffering since you moved me from satellite to streaming. Call me back on 214-555-0183.';S='You are a concise TV support writer. Two short sentences.';print([httpx.post('http://127.0.0.1:8000/v1/chat/completions',headers=H,timeout=180,json={'task':'support_draft','messages':m}).status_code for m in ([{'role':'system','content':S},{'role':'user','content':T}],[{'role':'user','content':T}])])"
+```
+
+Prints `[400, 200]`.
+
 ## What held up
 
 Worth recording, because an exercise that only produces bad news is usually
