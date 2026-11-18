@@ -41,12 +41,12 @@ a customer.
 
 | | Measured |
 |---|---|
-| Adversarial prompts (hand-written) | 1,000 — **976 held** by patterns, **988** by the full chain |
+| Adversarial prompts (hand-written) | 1,000 — **976 held** by patterns, **988** by the full chain. **All short; see below** |
 | Model-generated attacks, curated | 50 — **49 held** |
 | False alarms on ordinary customer messages | 136 tested — **0** |
 | Personal data reaching cloud under load | **0** |
 | Personal-data detector | F1 **1.000**; the gate **refuses 2 of 3** candidates |
-| Tests | **159**, hermetic, green in CI on every push |
+| Tests | **174**, hermetic, green in CI on every push |
 | Scenario coverage | **23 of 23**, traced by parsing code and spec |
 | Published figures | **45 of 45** asserted against their source runs |
 | Longevity, run 1 — 60 minutes under load | **489 requests**, 0 personal data to cloud, 0 attacks answered |
@@ -62,9 +62,9 @@ This is the part I'd want scrutinised. Every test carries a discipline marker
 
 | Discipline | Scenarios | Tests | What is proven | In CI |
 |---|---|---|---|---|
-| Governance | 6 | 25 | Data residency, auditability, refusal behaviour, fail-closed on classifier loss | yes |
+| Governance | 6 | 27 | Data residency, auditability, refusal behaviour, fail-closed on classifier loss | yes |
 | Security | 5 | 63 | Authentication, caller override, prompt injection, obfuscation, timing side-channel | yes |
-| Performance | 3 | 32 | Chain deadlines, load shedding, latency bounds, saturation | yes |
+| Performance | 3 | 45 | Chain deadlines, load shedding, latency bounds, saturation | yes |
 | Quality | 1 | 15 | Output drift, reply-format guardrails, detector promotion gate | yes |
 | Cost | 2 | 7 | Routing economics and the cost ledger | yes |
 | Resilience | 2 | 7 | Fallback chains, error taxonomy, graceful degradation | yes |
@@ -131,6 +131,22 @@ request/second ceiling, not a guess.
 No multi-turn attacks; the output path is more lightly tested than the input
 path; and the evaluation dataset was written by the same person who wrote the
 guards.
+
+**The most useful thing I did after that was lengthen the test data, and it
+broke my own headline figure.** Every prompt in the 1,000-attack corpus is
+short — the hostile instruction is the whole message. Rewriting the corpus at
+realistic support-message length, 40 to 1,500 characters instead of 40 to 62,
+dropped the hold rate from **100% on short attacks to 40% on long ones**.
+Three distinct bodies defeated both the pattern matcher and the safety model,
+including one that simply asks the assistant to play a character in a film.
+Fifteen attacks across three lengths is a small sample and I would not quote
+the rate — but each failure reproduces on demand, so the gap is real. **The
+corpus was measuring the guard against the corpus.** The same change found a
+legitimate customer complaint being refused as a violent crime, and confirmed
+the chain-deadline defect is worse at realistic length: 50% of the
+personal-data path shed, against the 30.1% I reported from short inputs.
+
+I would rather show you this than a clean number I had not stress-tested.
 
 **The longevity gap is now closed, and it found two defects.** A 60-minute
 run on 2026-11-17 showed one component retaining **~4.0MB per request and

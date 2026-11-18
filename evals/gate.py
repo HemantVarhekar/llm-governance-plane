@@ -58,6 +58,30 @@ def main() -> int:
     rows = load_rows()
     results = [evaluate(n, c, rows) for n, c in CANDIDATES.items()]
 
+    # WHO IS PROMOTED IS A DECISION. RE-EVALUATING MUST NOT UNDO IT.
+    #
+    # It did. `promoted` was written as `args.promote == name`, so any run
+    # WITHOUT --promote set every candidate to false - and prove.py runs
+    # exactly that, `gate.py --all --json`, on every evidence pass. So the
+    # act of proving the gate works quietly de-promoted the detector it
+    # had just proved.
+    #
+    # It stayed hidden because dashboard/data.json is committed and CI
+    # checks the committed file rather than regenerating it. The repository
+    # therefore held a registry saying nothing was promoted and a dashboard
+    # saying composite was, and 45 of 45 figures passed. Found by running
+    # collect.py and prove.py in the same sitting for the first time.
+    #
+    # Evaluating measures. Promoting decides. The decision is carried
+    # forward unless this run is the one changing it.
+    previous: dict = {}
+    if REGISTRY.is_file():
+        try:
+            previous = (json.loads(REGISTRY.read_text(encoding="utf-8"))
+                        .get("candidates") or {})
+        except Exception:                                   # noqa: BLE001
+            previous = {}
+
     registry = {
         "evaluated_at": datetime.now(timezone.utc).isoformat(),
         "dataset": "evals/dataset.jsonl",
@@ -78,13 +102,22 @@ def main() -> int:
 
     for r in results:
         passed, failures = gate(r)
-        registry["candidates"][r["classifier"]] = {
+        name = r["classifier"]
+        if args.promote:
+            # This run IS the decision: exactly one winner, the rest out.
+            is_promoted = (args.promote == name)
+        else:
+            # Carry the standing decision forward - but a candidate that
+            # has fallen below threshold loses its promotion here, which
+            # is the whole point of re-evaluating.
+            is_promoted = bool(previous.get(name, {}).get("promoted")) and passed
+        registry["candidates"][name] = {
             "precision": r["precision"], "recall": r["recall"], "f1": r["f1"],
             "entity_recall": r["entity_recall"],
             "median_latency_ms": r["median_latency_ms"],
             "gate": "PASS" if passed else "BLOCKED",
             "blocking_reasons": failures,
-            "promoted": args.promote == r["classifier"],
+            "promoted": is_promoted,
         }
         if not args.json:
             mark = "PASS   " if passed else "BLOCKED"

@@ -1,6 +1,33 @@
 # Load testing
 
-Two harnesses, on purpose.
+## One corpus, read by everything
+
+[`corpus.json`](corpus.json) holds every request body. The k6 load test and
+`soak.py` both read it, so a latency figure from one is comparable with a
+figure from the other.
+
+They did not always. Each harness used to carry its own hard-coded strings —
+six in the soak, fifteen in k6, overlapping but not identical — and nothing in
+the repository said their numbers described different traffic.
+
+| Kind | Bodies | What it is for | Expected |
+|---|---|---|---|
+| `ordinary` | 18 | Support traffic with no personal data | 200 |
+| `pii` | 22 | Nine identifier types; 12 bodies carry three or more at once | 200, **on-premises** |
+| `borderline` | 14 | Looks like personal data and is not. A detection is a **false positive** | 200, no detection |
+| `attack` | 13 | Refused by the input guard, including injections buried at the end of long plausible bodies | **400** |
+| `oversize` | 2 | Past the 4,000-character limit; the guard must fire before any work | **413** |
+
+Bodies run 40 to 1,528 characters, median 350. **The band label and the body
+length are checked against each other by a test** (`test_corpus.py`), so a body
+cannot be edited out of its band and quietly invalidate a length slice.
+
+`soak.py` interleaves the kinds when it loads the file. The file is grouped by
+kind because that is how a person reads it; sending it in that order means a
+short run only ever exercises the first group, and a long one delivers the mix
+in clumps that any time-based analysis then mistakes for a trend.
+
+## Two harnesses, on purpose.
 
 | | `run.py` | `run_k6.py` + `gateway.k6.js` |
 |---|---|---|

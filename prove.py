@@ -524,6 +524,19 @@ def check_soak(results: list[Result]) -> None:
         for m in (newest.get("memory") or {}).values()
     ) if newest.get("memory") else 0.0
 
+    # WHICH CORPUS PRODUCED THIS. Without it, the report can describe one
+    # set of test data while the published numbers came from another, and
+    # nothing would catch the mismatch - a reader would simply assume the
+    # figures came from the data described above them. Run 1 predates the
+    # shared corpus and records nothing, so it reports "unrecorded", which
+    # is the honest answer and visibly different from a number.
+    corpus = newest.get("corpus") or {}
+    if corpus.get("entries"):
+        corpus_note = (f"{corpus['entries']} entries, median "
+                       f"{corpus.get('chars_median')} chars")
+    else:
+        corpus_note = "unrecorded (predates loadtest/corpus.json)"
+
     r.numbers = {
         "run": data.parent.name,
         "minutes": newest.get("actual_minutes"),
@@ -533,6 +546,7 @@ def check_soak(results: list[Result]) -> None:
         "worst_memory_slope_mb_per_hour": round(worst, 1),
         "pii_to_cloud": newest.get("pii_to_cloud"),
         "attacks_answered": newest.get("attacks_answered"),
+        "corpus": corpus_note,
     }
 
     if age > SOAK_MAX_AGE_DAYS:
@@ -556,7 +570,7 @@ def check_soak(results: list[Result]) -> None:
     verdict = newest.get("verdict", "?")
     r.detail = (f"{data.parent.name}: {newest.get('actual_minutes')} min, "
                 f"{newest.get('requests')} requests, {age}d old, "
-                f"verdict {verdict}")
+                f"corpus {corpus_note}, verdict {verdict}")
     if verdict != "PASS":
         r.detail += (f" - OPEN DEFECT, worst memory slope "
                      f"{worst:+.0f} MB/hour (see PERFORMANCE-REPORT.md)")

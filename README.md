@@ -55,14 +55,25 @@ about a customer.
 |---|---|
 | Personal data reaching cloud under load | **0** |
 | False alarms on real customer messages | **0 of 136** |
-| Hand-written adversarial prompts held | **988 of 1,000** (976 by patterns alone) |
+| Hand-written adversarial prompts held | **988 of 1,000** (976 by patterns alone) — **all of them short; see the caveat below** |
 | Model-generated attacks held | **49 of 50** |
 | Personal-data detector | F1 **1.000** — the gate refuses **2 of every 3** candidates |
-| Tests | **159**, hermetic, green in CI on every push |
+| Tests | **174**, hermetic, green in CI on every push |
 | Scenario coverage | **23 of 23**, traced from code and spec |
 | Published figures | **45 of 45**, asserted against their source runs |
 | Longevity, run 1 — 60 minutes under load | **489 requests**: 0 personal data to cloud, 0 attacks answered, 81 of 81 refused |
 | Memory under sustained load | **FAIL** — one component retains ~4.0MB per request and never releases it |
+| Attacks held when **wrapped in a plausible 1,250-character complaint** | **2 of 5** — see F-P10 |
+
+> **The 97.6% is measured against short attacks, and that matters.** Every
+> prompt in the 1,000-attack corpus is bare: the hostile instruction is the
+> whole message. Lengthening the test data to realistic support-message size
+> dropped the hold rate from **100% on short attacks to 40% on long ones**,
+> with three distinct bodies defeating both the pattern matcher and the safety
+> model. 15 attacks across three lengths is a small sample and the *rate* is
+> indicative — but each failure reproduces on a named body, so the **gap is
+> not**. The corpus was measuring the guard against the corpus.
+> [`PERFORMANCE-FINDINGS.md`](PERFORMANCE-FINDINGS.md) F-P10.
 
 ### Coverage, by discipline
 
@@ -71,9 +82,9 @@ one runs on every push.
 
 | Discipline | Scenarios | Tests | What it proves | In CI |
 |---|---|---|---|---|
-| Governance | 6 | 25 | Data residency, auditability, refusal behaviour, fail-closed on classifier loss | ✅ |
+| Governance | 6 | 27 | Data residency, auditability, refusal behaviour, fail-closed on classifier loss | ✅ |
 | Security | 5 | 63 | Auth, caller override, prompt injection, obfuscation, timing side-channel | ✅ |
-| Performance | 3 | 32 | Chain deadlines, load shedding, latency bounds, saturation | ✅ |
+| Performance | 3 | 45 | Chain deadlines, load shedding, latency bounds, saturation | ✅ |
 | Quality | 1 | 15 | Output drift, reply-format guardrails, detector promotion gate | ✅ |
 | Cost | 2 | 7 | Routing economics and the cost ledger | ✅ |
 | Resilience | 2 | 7 | Fallback chains, error taxonomy, graceful degradation | ✅ |
@@ -81,9 +92,17 @@ one runs on every push.
 | Reliability | 1 | 5 | Startup configuration validation | ✅ |
 | Operability | 1 | 3 | Live config reload without restart | ✅ |
 
-Counts sum to 160 against 159 unique tests: one test is deliberately both
+Counts sum to 175 against **174 unique tests**: one test is deliberately both
 `security` and `performance`, because an oversized payload is a
 denial-of-service vector *and* a latency concern.
+
+> **Two of these numbers were stale before this change, and the mechanism is
+> worth naming.** The table said 25 governance tests against a real 26, and
+> 159 total against a collected 160. `verify.py` asserts 45 published figures
+> against their source runs, but **it reads no markdown**, so a number written
+> in a README has nothing checking it. This is the second time it has bitten —
+> the figure count itself was stale a commit ago. The numbers are corrected;
+> the gate that would stop it recurring is not yet built.
 
 ### Gates that also run on every push
 
