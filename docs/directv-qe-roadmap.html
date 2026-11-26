@@ -155,7 +155,8 @@ figcaption{font-size:13px;color:var(--muted)}
 .dg .exit{stroke:var(--risk);stroke-width:3}
 .dg .hc{font-family:var(--f-mono);font-size:13px;font-weight:500}
 @media (prefers-reduced-motion:no-preference){.dg{transition:min-width .15s ease}}
-/* executive brief deck */
+/* executive brief deck. [hidden] must win over .slide{display:flex}: outside the artifact viewer no reset does this, so every slide showed at once in Chrome */
+[hidden]{display:none!important}
 .deck{display:flex;flex-direction:column;gap:12px}
 .deck:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:12px}
 .deck-stage{container-type:inline-size;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px}
