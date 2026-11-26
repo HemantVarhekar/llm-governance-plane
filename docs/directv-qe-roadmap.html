@@ -1,0 +1,1442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html,body{margin:0}</style>
+<title>Autonomous QE Roadmap v3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (max 1080px), people and timeline first, then the how; diagrams in zoomable frames */
+:root{
+  --bg:#F4F6F9; --surface:#FFFFFF; --fg:#13202D; --muted:#566576; --line:#D9E0E8;
+  --accent:#0A6C8C; --accent-soft:#E3F1F6;
+  --ok:#2C7A4B; --ok-soft:#E4F3EA; --warn:#9A6200; --warn-soft:#FBF0DC; --risk:#B03D2B; --risk-soft:#FBE7E3;
+  --l0:#C9D2DC; --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --f-display:"Space Grotesk",system-ui,sans-serif; --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D131A; --surface:#141C25; --fg:#E4EAF1; --muted:#97A5B5; --line:#26323F;
+  --accent:#55B6D6; --accent-soft:#16303B;
+  --ok:#6CC596; --ok-soft:#15301F; --warn:#E0AA4A; --warn-soft:#33270F; --risk:#EE8A78; --risk-soft:#3A1D18; --l0:#2D3A48; --s1:#3987e5; --s2:#d95926; --s3:#199e70; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D131A; --surface:#141C25; --fg:#E4EAF1; --muted:#97A5B5; --line:#26323F;
+  --accent:#55B6D6; --accent-soft:#16303B;
+  --ok:#6CC596; --ok-soft:#15301F; --warn:#E0AA4A; --warn-soft:#33270F; --risk:#EE8A78; --risk-soft:#3A1D18; --l0:#2D3A48; --s1:#3987e5; --s2:#d95926; --s3:#199e70; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3,h4{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(28px,4.4vw,42px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:600}
+h3{font-size:18px;font-weight:600}
+h4{font-size:15px;font-weight:600}
+p{margin:0;max-width:72ch}
+a{color:var(--accent)}
+section{display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:8px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.grid2>*,.grid3>*{min-width:0}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--bg)}
+tr:last-child td{border-bottom:none}
+td.n,th.n{white-space:nowrap}
+td.r,th.r{text-align:right}
+tr.tot td{font-weight:600;background:var(--bg)}
+tr.hl td{background:var(--accent-soft)}
+.chip{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:2px 8px;border-radius:99px;white-space:nowrap;border:1px solid transparent}
+.c-high{background:var(--ok-soft);color:var(--ok)}
+.c-med{background:var(--warn-soft);color:var(--warn)}
+.c-low{background:var(--risk-soft);color:var(--risk)}
+.c-unk{background:var(--bg);color:var(--muted);border-color:var(--line)}
+.c-as{background:var(--accent-soft);color:var(--accent)}
+.meter{display:inline-flex;gap:3px;vertical-align:middle}
+.meter i{width:14px;height:8px;border-radius:2px;background:var(--l0);display:block}
+.meter i.on{background:var(--accent)}
+.hero{display:flex;flex-direction:column;gap:16px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.ladder{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:8px}
+.rung{padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);min-width:0}
+.rung b{font-family:var(--f-display);font-size:18px;display:block}
+.rung span{font-size:12px;color:var(--muted);display:block;line-height:1.35}
+.rung.now{border-color:var(--muted)}
+.rung.tgt{border-color:var(--accent);background:var(--accent-soft)}
+.rung.bnd{border-style:dashed;border-color:var(--accent)}
+@media (max-width:620px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.kpi{border-left:3px solid var(--accent);padding:4px 0 4px 12px;min-width:0}
+.kpi b{font-family:var(--f-display);font-size:24px;display:block}
+.kpi span{font-size:13px;color:var(--muted)}
+.month{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.month header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--bg)}
+.month header .m{font-family:var(--f-mono);font-size:12px;color:var(--accent);letter-spacing:.06em}
+.month header h3{flex:1 1 280px}
+.mrows{display:grid;grid-template-columns:170px minmax(0,1fr)}
+.mrows>div{padding:10px 20px;border-bottom:1px solid var(--line)}
+.mrows>div:nth-child(odd){font-family:var(--f-mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:12px}
+.mrows>div:nth-last-child(-n+2){border-bottom:none}
+.mrows .gate{background:var(--accent-soft)}
+.mrows .mdl{background:var(--bg)}
+@media (max-width:620px){.mrows{grid-template-columns:1fr}.mrows>div:nth-child(odd){padding-bottom:0;border-bottom:none}}
+.callout{border-left:3px solid var(--warn);background:var(--warn-soft);padding:12px 16px;border-radius:0 8px 8px 0}
+.callout.ok{border-color:var(--ok);background:var(--ok-soft)}
+.callout.info{border-color:var(--accent);background:var(--accent-soft)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details summary{cursor:pointer;padding:14px 20px;font-family:var(--f-display);font-weight:600;font-size:17px}
+details summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details>.body{padding:0 20px 20px;display:flex;flex-direction:column;gap:14px}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+.toc a{text-decoration:none}
+.toc a:hover{text-decoration:underline}
+.qa{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-bottom:1px solid var(--line)}
+.qa:last-child{border-bottom:none}
+.qa b{font-family:var(--f-display)}
+/* before/after strip */
+.strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.strip>div{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--bg);min-width:0}
+.strip>div.to{border-color:var(--accent)}
+.strip b{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.strip>div.to b{color:var(--accent)}
+@media (max-width:700px){.strip{grid-template-columns:1fr}}
+/* agent cards */
+.agents{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.agent{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.agent header{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.agent dl{margin:0;display:grid;grid-template-columns:88px minmax(0,1fr);gap:4px 10px;font-size:13.5px}
+.agent dt{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:2px}
+.agent dd{margin:0}
+.kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.kind{border-top:3px solid var(--accent);background:var(--surface);border-radius:0 0 10px 10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.kind:nth-child(2){border-top-color:var(--ok)}
+.kind:nth-child(3){border-top-color:var(--warn)}
+/* diagrams */
+figure{margin:0;display:flex;flex-direction:column;gap:8px}
+figcaption{font-size:13px;color:var(--muted)}
+.dgbox{border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.dgbar{display:flex;gap:6px;align-items:center;justify-content:flex-end;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--bg)}
+.dgbar span{margin-right:auto;font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.dgbar button{font:500 13px var(--f-body);color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer;min-width:36px}
+.dgbar button:hover{border-color:var(--accent)}
+.dgbar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dgscroll{overflow:auto;padding:12px;max-height:80vh}
+.dgbox:fullscreen{background:var(--bg);display:flex;flex-direction:column}
+.dgbox:fullscreen .dgscroll{max-height:none;flex:1}
+.dg{display:block;width:100%;height:auto;color:var(--fg);font-family:var(--f-body)}
+.dg text{fill:var(--fg);font-size:15px}
+.dg .t2{fill:var(--muted);font-size:12.5px}
+.dg .lbl{fill:var(--muted);font-size:13px}
+.dg .ttl{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;fill:var(--accent)}
+.dg .box{fill:var(--surface);stroke:var(--muted);stroke-width:1.2}
+.dg .box.acc{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8}
+.dg .box.ext{stroke-dasharray:5 4}
+.dg .grp{fill:none;stroke:var(--line);stroke-width:1.2}
+.dg .ln{fill:none;stroke:var(--muted);stroke-width:1.5}
+.dg .lp{fill:none;stroke:var(--accent);stroke-width:2.2}
+.dg .ah{fill:var(--muted)}
+.dg .ahl{fill:var(--accent)}
+.dg .grid{stroke:var(--line);stroke-width:1}
+.dg .g-ai{fill:var(--accent)}
+.dg .g-sh{fill:var(--warn)}
+.dg .g-rs{fill:var(--ok)}
+.dg .g-hc{fill:var(--l0)}
+.dg .g-run{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1}
+.dg .g-buf{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:5 4}
+.dg .g-txt{fill:var(--bg);font-size:12px;font-weight:600}
+.dg .g-txt2{fill:var(--fg);font-size:12px}
+.dg .exit{stroke:var(--risk);stroke-width:3}
+.dg .hc{font-family:var(--f-mono);font-size:13px;font-weight:500}
+@media (prefers-reduced-motion:no-preference){.dg{transition:min-width .15s ease}}
+/* executive brief deck */
+.deck{display:flex;flex-direction:column;gap:12px}
+.deck:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:12px}
+.deck-stage{container-type:inline-size;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.slide{aspect-ratio:16/9;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3.6cqw 4.6cqw;display:flex;flex-direction:column;gap:1.8cqw;overflow:hidden;font-size:1.75cqw;line-height:1.45;min-width:0}
+.slide p{max-width:none}
+.slide .notes{display:none}
+.s-eye{font-family:var(--f-mono);font-size:1.15cqw;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.slide h3{font-size:3.3cqw;font-weight:600}
+.s-sm{font-size:1.35cqw;color:var(--muted)}
+.slide ul{gap:.6cqw;padding-left:2.2cqw}
+.s-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.6cqw;margin-top:auto}
+.s-stat{border-top:3px solid var(--accent);padding-top:1cqw;min-width:0}
+.s-stat b{display:block;font-family:var(--f-display);font-size:3.6cqw;line-height:1.15}
+.s-stat span{font-size:1.35cqw;color:var(--muted)}
+.s-cols{display:grid;grid-template-columns:1.3fr 1fr;gap:3cqw;align-items:start}
+.s-cols>*{min-width:0}
+.s-callout{background:var(--accent-soft);border-radius:1cqw;padding:2.2cqw;font-size:2cqw;font-family:var(--f-display);font-weight:500;line-height:1.35}
+.s-ba{width:100%;border-collapse:collapse;font-size:1.5cqw}
+.s-ba th,.s-ba td{padding:.8cqw 1.2cqw;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.s-ba th{font-size:1.1cqw;background:none}
+.s-ba td:first-child{font-family:var(--f-mono);font-size:1.2cqw;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.s-ba td:last-child{font-weight:500}
+.s-tl{display:grid;grid-template-columns:6fr 4fr 4fr 2fr 2fr;gap:.6cqw}
+.s-tl>div{background:var(--accent-soft);border-top:4px solid var(--accent);border-radius:.6cqw;padding:1.2cqw;min-width:0;font-size:1.35cqw}
+.s-tl>div.buf{background:none;border:1.5px dashed var(--accent);border-top:4px solid var(--accent)}
+.s-tl b{display:block;font-family:var(--f-display);font-size:1.7cqw;line-height:1.25}
+.s-tl .m{display:block;font-family:var(--f-mono);font-size:1.1cqw;color:var(--muted)}
+.s-tl .x{display:block;margin-top:.6cqw;color:var(--risk);font-size:1.2cqw}
+.s-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.6cqw}
+.s-card{border:1px solid var(--line);border-radius:1cqw;padding:1.6cqw;background:var(--bg);font-size:1.45cqw;min-width:0}
+.s-card b{display:block;font-family:var(--f-display);font-size:1.8cqw;margin-bottom:.4cqw}
+.s-grid6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.6cqw 2.4cqw}
+.s-t{border-left:3px solid var(--ok);padding:.3cqw 0 .3cqw 1.2cqw;min-width:0}
+.s-t b{display:block;font-family:var(--f-display);font-size:2.6cqw;line-height:1.2}
+.s-t span{font-size:1.35cqw;color:var(--muted)}
+.s-gates{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1.2cqw}
+.s-gate{border-top:4px solid var(--accent);padding-top:1cqw;font-size:1.35cqw;min-width:0}
+.s-gate .m{display:block;font-family:var(--f-mono);font-size:1.2cqw;color:var(--accent)}
+.s-gate b{display:block;font-family:var(--f-display);font-size:1.7cqw;margin:.3cqw 0;line-height:1.25}
+.s-legend{display:flex;gap:2.4cqw;font-size:1.35cqw;flex-wrap:wrap;color:var(--fg)}
+.s-legend i{display:inline-block;width:1.2cqw;height:1.2cqw;border-radius:2px;vertical-align:-.1cqw;margin-right:.6cqw}
+.s-chart{display:block;width:100%;height:auto}
+.s-chart text{fill:var(--muted);font-size:13px;font-family:var(--f-body)}
+.s-chart .tot{fill:var(--fg);font-weight:600;font-size:14px}
+.s-chart .gl{stroke:var(--line);stroke-width:1}
+.s-chart .base{stroke:var(--muted);stroke-width:1}
+.b1{fill:var(--s1)} .b2{fill:var(--s2)} .b3{fill:var(--s3)}
+.sw1{background:var(--s1)} .sw2{background:var(--s2)} .sw3{background:var(--s3)}
+.s-chart .col:hover rect.hit{fill:var(--accent-soft);fill-opacity:.5}
+.deck-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.deck-bar button{font:500 13.5px var(--f-body);color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+.deck-bar button:hover{border-color:var(--accent)}
+.deck-bar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.deck-bar button.pri{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.deck-count{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);min-width:60px;text-align:center}
+.deck-bar .sp{flex:1}
+.deck-notes{background:var(--warn-soft);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:12px 16px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.deck-notes b{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--warn)}
+.deck:fullscreen{background:var(--bg);justify-content:center;align-items:center;padding:24px}
+.deck:fullscreen .deck-stage{width:min(100%,calc((100vh - 96px)*16/9))}
+.deck:fullscreen .deck-notes{display:none}
+@media (max-width:700px){
+  .slide{aspect-ratio:auto;font-size:14px;padding:18px;gap:12px}
+  .slide h3{font-size:21px}
+  .s-eye{font-size:11px}
+  .s-sm{font-size:12.5px}
+  .slide ul{gap:4px;padding-left:18px}
+  .s-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .s-stat{padding-top:6px}
+  .s-stat b{font-size:22px}
+  .s-stat span{font-size:12px}
+  .s-cols{grid-template-columns:1fr;gap:12px}
+  .s-callout{font-size:15px;padding:14px;border-radius:8px}
+  .s-ba{font-size:13px}
+  .s-ba th,.s-ba td{padding:6px 8px}
+  .s-ba th{font-size:10.5px}
+  .s-ba td:first-child{font-size:10.5px;white-space:normal}
+  .s-tl,.s-cards,.s-gates{grid-template-columns:1fr;gap:8px}
+  .s-tl>div{font-size:13px;padding:10px}
+  .s-tl b{font-size:15px} .s-tl .m{font-size:11px} .s-tl .x{font-size:12px}
+  .s-card{font-size:13px;padding:12px;border-radius:8px}
+  .s-card b{font-size:15px}
+  .s-grid6{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .s-t b{font-size:20px} .s-t span{font-size:12px}
+  .s-gate{font-size:13px;padding-top:6px} .s-gate .m{font-size:11px} .s-gate b{font-size:15px}
+  .s-legend{font-size:12px;gap:12px} .s-legend i{width:10px;height:10px;margin-right:4px}
+}
+</style>
+
+<div class="wrap">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="eyebrow">Proposal for the CTO · Quality Engineering &amp; MLOps</div>
+  <h1>From AI-assisted to agentic quality engineering in 18 months</h1>
+  <p>This plan moves DIRECTV's QA organisation from L1 to L4 across about 60 applications, and to a bounded L5 where the risk is low. At the same time it moves the testing work from IBM to DIRECTV's own team in Pune. We start with the five applications that matter most to revenue, prove the approach there in six months, and then bring the rest across in three waves. Each wave starts only when the one before it has hit its numbers.</p>
+  <div class="ladder" aria-label="Maturity ladder">
+    <div class="rung now"><b>L1</b><span>AI-assisted. <strong>Where we are today</strong>, as discussed in the interview</span></div>
+    <div class="rung"><b>L2</b><span>AI-augmented. Tests repair themselves, visual AI checks screens</span></div>
+    <div class="rung"><b>L3</b><span>AI-driven. AI picks which tests run and spots anomalies</span></div>
+    <div class="rung tgt"><b>L4</b><span>Agentic. Agents write, run and triage tests. <strong>The target</strong></span></div>
+    <div class="rung bnd"><b>L5</b><span>Autonomous. <strong>Only</strong> for low-risk changes</span></div>
+  </div>
+  <nav class="toc" aria-label="Contents">
+    <a href="#brief"><strong>Executive brief</strong></a><a href="#summary">Summary</a><a href="#timeline">Timeline</a><a href="#people">People by stage</a><a href="#team">Final team</a><a href="#move">IBM to India</a><a href="#context">What we know</a><a href="#market">Market</a><a href="#levels">Levels</a><a href="#top5">Top 5 apps</a><a href="#platform">Platform</a><a href="#ai">Models &amp; agents</a><a href="#model-options">Model options</a><a href="#stlc">Testing lifecycle</a><a href="#months">Months 1–6</a><a href="#apps">Per-app changes</a><a href="#waves">Waves 2–4</a><a href="#zero">Near-zero &amp; failover</a><a href="#kpis">Scorecard</a><a href="#risks">Risks</a><a href="#assumptions">Assumptions</a><a href="#faq">Questions</a><a href="#start">Getting started</a><a href="#sources">Sources</a>
+  </nav>
+</header>
+
+<!-- EXECUTIVE BRIEF -->
+<section id="brief">
+  <div class="eyebrow">Executive brief · for the CTO conversation</div>
+  <h2>The whole plan in nine slides</h2>
+  <p class="small muted">A summary of the detailed plan below, with no new facts. Use Present for full screen, and the arrow keys to move between slides. Talking points are hidden unless you turn them on.</p>
+  <div class="deck" id="deck" tabindex="0" aria-roledescription="slide deck" aria-label="Executive brief">
+    <div class="deck-stage">
+
+      <article class="slide" aria-label="Slide 1">
+        <div class="s-eye">DIRECTV · Quality Engineering &amp; MLOps · Proposal</div>
+        <h3>From AI-assisted to agentic quality engineering in 18 months</h3>
+        <p>Take QA from L1 to L4 across about 60 applications, and to a bounded L5 where risk is low, while moving the work from IBM to DIRECTV's own team in Pune.</p>
+        <div class="s-stats">
+          <div class="s-stat"><b>Month 6</b><span>L4 on the top 5 apps</span></div>
+          <div class="s-stat"><b>16 / 18</b><span>planned / latest month for all 60 apps and IBM's exit</span></div>
+          <div class="s-stat"><b>110 → 68</b><span>QA people: 8 in the US, 60 in Pune</span></div>
+          <div class="s-stat"><b>0</b><span>target Sev-1s from defects testing should have caught</span></div>
+        </div>
+        <div class="notes"><ul><li>Open with the outcome: L4 on the top 5 in six months, and the whole portfolio by month 16, with two months of buffer.</li><li>Say up front that every number is a proposal we re-check against the month 1 baseline.</li></ul></div>
+      </article>
+
+      <article class="slide" aria-label="Slide 2">
+        <div class="s-eye">Why this matters now</div>
+        <h3>The business is under pressure, and peaks are unforgiving</h3>
+        <div class="s-cols">
+          <ul>
+            <li>About 8.2M subscribers in Q1 2026, with about 222K lost that quarter (analyst estimates).</li>
+            <li>TPG has owned all of DIRECTV since July 2025 and has said it will invest in streaming.</li>
+            <li>Live sports, and NFL Sunday Ticket for business venues through EverPass, bring hard traffic peaks.</li>
+            <li>Streaming and the shared video backend carry the growth. Satellite is large but shrinking.</li>
+          </ul>
+          <div class="s-callout">QE will be judged on two things: the cost of each release, and the outages it prevents at peak events. Everything in this plan maps to one of the two.</div>
+        </div>
+        <div class="notes"><ul><li>Keep this slide short. It shows you understand the business before you talk about testing.</li><li>Land the two measures. Every later slide ties back to them.</li></ul></div>
+      </article>
+
+      <article class="slide" aria-label="Slide 3">
+        <div class="s-eye">What changes for DIRECTV</div>
+        <h3>Today versus month 18</h3>
+        <table class="s-ba">
+          <thead><tr><th></th><th>Today</th><th>Month 18</th></tr></thead>
+          <tbody>
+            <tr><td>People</td><td>About 110, all IBM</td><td>68 DIRECTV staff: 8 in the US, 60 in Pune</td></tr>
+            <tr><td>AI level</td><td>L1: AI as a coding assistant</td><td>L4, with bounded L5 for low-risk changes</td></tr>
+            <tr><td>Writing tests</td><td>People script every test</td><td>Agents draft tests and people review them</td></tr>
+            <tr><td>Running tests</td><td>Full regression every time</td><td>Only what each change needs, plus a full nightly run</td></tr>
+            <tr><td>Release decision</td><td>A sign-off meeting</td><td>An evidence pack and a human decision, and policy for low-risk changes</td></tr>
+            <tr><td>Incidents</td><td>Reviewed afterwards</td><td>Each one becomes a new test within 5 working days</td></tr>
+          </tbody>
+        </table>
+        <div class="notes"><ul><li>This slide answers "what's actually different?". Walk down the right-hand column.</li><li>Stress that people still approve every high-risk decision.</li></ul></div>
+      </article>
+
+      <article class="slide" aria-label="Slide 4">
+        <div class="s-eye">The journey</div>
+        <h3>Prove it on five apps, then scale in waves</h3>
+        <div class="s-tl">
+          <div><span class="m">Months 1–6</span><b>Top 5 → L4</b>Build the platform and prove it on the apps that matter most<span class="x">IBM leaves these apps after month 8</span></div>
+          <div><span class="m">Months 7–10</span><b>Wave 2 · 15 apps → L4</b>Using the onboarding kit<span class="x">IBM leaves after month 12</span></div>
+          <div><span class="m">Months 11–14</span><b>Wave 3 · 15 apps → L3/L4</b>App teams onboard themselves<span class="x">IBM leaves after month 16</span></div>
+          <div><span class="m">15–16</span><b>Wave 4 · ~25 → L3</b>Moved to Pune first<span class="x">IBM out after month 14</span></div>
+          <div class="buf"><span class="m">17–18</span><b>L5 + buffer</b>Hardening and handover</div>
+        </div>
+        <p class="s-sm">One rule keeps production safe: an app never changes owner and AI level in the same step. Each wave starts only when the one before it passes its exit test.</p>
+        <div class="notes"><ul><li>Point out that critical apps level up under IBM first and then move, while low-risk apps move first.</li><li>Months 17–18 are buffer, not extra scope.</li></ul></div>
+      </article>
+
+      <article class="slide" aria-label="Slide 5">
+        <div class="s-eye">People</div>
+        <h3>The team grows during the overlap, then settles at 68</h3>
+        <div class="s-legend" aria-hidden="true"><span><i class="sw2"></i>IBM</span><span><i class="sw1"></i>DIRECTV India (Pune)</span><span><i class="sw3"></i>DIRECTV US</span></div>
+        <div id="hc-chart"></div>
+        <p class="s-sm">Both teams overlap while each wave is in shadow. The total settles at 68 from month 18, and at about 55 once L5 is steady. Stages aren't evenly spaced, and exact numbers are in section 3.</p>
+        <div class="notes"><ul><li>Address cost directly: the overlap peak is the price of moving without outages.</li><li>68 depends on the month 10 checkpoint. If agents fall short, we hold at about 80.</li></ul></div>
+      </article>
+
+      <article class="slide" aria-label="Slide 6">
+        <div class="s-eye">How the AI works</div>
+        <h3>Three kinds of AI, and people approve at set checkpoints</h3>
+        <div class="s-cards">
+          <div class="s-card"><b>Models we train</b>Ten small models built on DIRECTV's own test, defect and telemetry data. They choose tests, score risk and spot anomalies. They're cheap and explainable.</div>
+          <div class="s-card"><b>Open models we host</b>Open-weight language, embedding and forecasting models inside DIRECTV's cloud, so data never leaves. The month 1 bake-off picks them.</div>
+          <div class="s-card"><b>Ten agents</b>Each does one job, such as designing, coding, triaging or building the release evidence, and stops at a named human checkpoint.</div>
+        </div>
+        <p class="s-sm">The loop: data → models → agents → release → production incidents back into the data as new tests and labels.</p>
+        <div class="notes"><ul><li>Clarify that most of the "AI" is small models we train ourselves. The language models are open-weight and stay in DIRECTV's cloud.</li><li>Mention that there are options for every model, including US and European ones if model origin matters to the CISO.</li></ul></div>
+      </article>
+
+      <article class="slide" aria-label="Slide 7">
+        <div class="s-eye">Near-zero production issues</div>
+        <h3>Measurable targets, owned with SRE and engineering</h3>
+        <div class="s-grid6">
+          <div class="s-t"><b>0</b><span>Sev-1s per quarter from defects testing should have caught</span></div>
+          <div class="s-t"><b>≤ 1</b><span>escaped Sev-2 a month across the portfolio</span></div>
+          <div class="s-t"><b>&lt; 5%</b><span>change failure rate</span></div>
+          <div class="s-t"><b>0</b><span>customer-facing incidents at the biggest live events</span></div>
+          <div class="s-t"><b>99.95%</b><span>playback and entitlement availability</span></div>
+          <div class="s-t"><b>100%</b><span>of incidents and failovers turned into a test within 5 days</span></div>
+        </div>
+        <p class="s-sm">Loopback: on 9 critical dependencies, every failover is tested all the way back to the primary, and every real one adds a test to the suite.</p>
+        <div class="notes"><ul><li>Don't promise zero defects. Promise these numbers, shared with SRE and engineering.</li><li>If asked about failover, name an example: a cloud region switch tested both ways before every big event.</li></ul></div>
+      </article>
+
+      <article class="slide" aria-label="Slide 8">
+        <div class="s-eye">You stay in control</div>
+        <h3>A decision gate at every stage</h3>
+        <div class="s-gates">
+          <div class="s-gate"><span class="m">Month 1</span><b>Baseline</b>Signed off, top 5 confirmed, real automation measured</div>
+          <div class="s-gate"><span class="m">Month 6</span><b>Go for wave 2</b>Top 5 pass the L4 exit test against the baseline</div>
+          <div class="s-gate"><span class="m">Month 10</span><b>Confirm 68</b>Agent output measured. If it's short, hold at about 80.</div>
+          <div class="s-gate"><span class="m">Month 14</span><b>Wave 4 ready?</b>If not, use the buffer and narrow L5</div>
+          <div class="s-gate"><span class="m">Month 18</span><b>Final model</b>Bounded L5 live, IBM out, team at 68</div>
+        </div>
+        <p class="s-sm">AI never releases on its own during a live event. L5 covers only low-risk change types, after 95% agreement with human decisions in shadow.</p>
+        <div class="notes"><ul><li>This slide reassures a CTO: there's a decision at each stage, and the plan can slow down safely.</li><li>Offer to report against the scorecard at every gate.</li></ul></div>
+      </article>
+
+      <article class="slide" aria-label="Slide 9">
+        <div class="s-eye">The ask</div>
+        <h3>Decisions for the first 30 days</h3>
+        <div class="s-cols">
+          <ul>
+            <li>Confirm the top 5 apps and the start date.</li>
+            <li>Agree, with the CISO, which AI models may be used and where data can go.</li>
+            <li>Approve a target team of 68 (8 US, 60 Pune), with about 80 as the safety net, and release the first 26 Pune requisitions.</li>
+            <li>Fund the overlap peak (about 136 people around month 6) and the US receiver lab.</li>
+            <li>Give procurement a mandate for IBM's exit schedule and knowledge transfer.</li>
+            <li>Agree the near-zero targets with SRE and engineering.</li>
+          </ul>
+          <div class="s-callout">Month 1 delivers the baseline and a costed business case, so every later decision is made on DIRECTV's own numbers.</div>
+        </div>
+        <div class="notes"><ul><li>Close by asking for the month 1 decisions, especially the CISO decision on AI models and the Pune requisitions.</li><li>End on the business case: you'll come back with real numbers in 30 days.</li></ul></div>
+      </article>
+
+    </div>
+    <div class="deck-bar">
+      <button type="button" data-d="prev" aria-label="Previous slide">← Prev</button>
+      <span class="deck-count" aria-live="polite">1 / 9</span>
+      <button type="button" data-d="next" aria-label="Next slide">Next →</button>
+      <span class="sp"></span>
+      <button type="button" data-d="notes" aria-pressed="false">Show talking points</button>
+      <button type="button" class="pri" data-d="present">Present ⛶</button>
+    </div>
+    <div class="deck-notes" hidden><b>Talking points (for you, not the screen)</b><div class="deck-notes-body"></div></div>
+  </div>
+</section>
+
+<!-- 1 SUMMARY -->
+<section id="summary">
+  <div class="eyebrow">1 · Summary</div>
+  <h2>The short version</h2>
+  <div class="grid2">
+    <div class="panel small">
+      <h4>Where things stand</h4>
+      <ul>
+        <li>About 60 applications are tested by about 110 QA engineers, all supplied by IBM.</li>
+        <li>Automation is quoted at about 90%. I've read that as regression automation and assumed in-sprint automation is nearer 60%.</li>
+        <li>AI is used today as a coding assistant (L1). It isn't yet part of how testing decisions are made.</li>
+        <li>The goal is L4 or better within 18 months, while the work moves from IBM to DIRECTV India.</li>
+      </ul>
+    </div>
+    <div class="panel small">
+      <h4>What I'm proposing</h4>
+      <ul>
+        <li><strong>Months 1–6:</strong> take the top 5 apps from L1 to L4 and build the shared AI platform.</li>
+        <li><strong>Months 7–10:</strong> 15 more apps to L4, using a repeatable onboarding kit.</li>
+        <li><strong>Months 11–14:</strong> 15 more apps to L3, and L4 where the data supports it.</li>
+        <li><strong>Months 15–16:</strong> the remaining ~25 low-risk apps to L3.</li>
+        <li><strong>Months 17–18:</strong> bounded L5, final handover and schedule buffer.</li>
+        <li><strong>Throughout:</strong> each wave moves from IBM to Pune through shadow and reverse shadow. IBM is out by month 16 on plan and month 18 at the latest.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b>L4 by month 6</b><span>on the top 5 apps (month 8 at the latest)</span></div>
+    <div class="kpi"><b>16 / 18 months</b><span>planned / latest date for the whole portfolio and IBM's exit</span></div>
+    <div class="kpi"><b>110 → 68</b><span>QA people at month 18: 8 in the US, 60 in Pune</span></div>
+    <div class="kpi"><b>~55</b><span>once L5 is running steadily, within about 6 months after that</span></div>
+  </div>
+  <p class="small muted">Targets are starting proposals. We'll check every one against the baseline we measure in month 1, and restate any that don't hold.</p>
+</section>
+
+<!-- 2 TIMELINE -->
+<section id="timeline">
+  <div class="eyebrow">2 · How long it takes</div>
+  <h2>Fastest, likely and latest dates for each milestone</h2>
+  <p>Each milestone has three estimates: the fastest realistic date, the most likely date, and the latest date we'd accept. From those I've worked out the median and the mean. The latest date for the whole journey is month 18. All figures are months from programme start.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Milestone</th><th class="r">Fastest</th><th class="r">Most likely</th><th class="r">Median</th><th class="r">Mean</th><th class="r">Latest (max)</th></tr></thead>
+    <tbody>
+      <tr><td>Top 5 apps at L2 (self-healing, visual AI, flaky tests under control)</td><td class="r">2</td><td class="r">2</td><td class="r">2.3</td><td class="r">2.3</td><td class="r">3</td></tr>
+      <tr><td>Top 5 apps at L3 (AI chooses tests, anomaly gates live)</td><td class="r">3</td><td class="r">4</td><td class="r">4.0</td><td class="r">4.0</td><td class="r">5</td></tr>
+      <tr class="hl"><td><strong>Top 5 apps at L4</strong> (agents write, run and triage)</td><td class="r">5</td><td class="r">6</td><td class="r">6.3</td><td class="r">6.3</td><td class="r">8</td></tr>
+      <tr><td>Wave 2 (15 apps) at L4</td><td class="r">9</td><td class="r">10</td><td class="r">10.3</td><td class="r">10.3</td><td class="r">12</td></tr>
+      <tr><td>Top 5 apps at bounded L5 (low-risk changes only)</td><td class="r">10</td><td class="r">13</td><td class="r">13.5</td><td class="r">13.7</td><td class="r">18</td></tr>
+      <tr><td>Wave 3 (15 apps) at L3, L4 where the data allows</td><td class="r">12</td><td class="r">14</td><td class="r">14.0</td><td class="r">14.0</td><td class="r">16</td></tr>
+      <tr><td>Wave 4 (~25 low-risk apps) at L3</td><td class="r">14</td><td class="r">16</td><td class="r">16.0</td><td class="r">16.0</td><td class="r">18</td></tr>
+      <tr><td>Wave 2 apps at bounded L5</td><td class="r">14</td><td class="r">16</td><td class="r">16.0</td><td class="r">16.0</td><td class="r">18</td></tr>
+      <tr class="hl"><td><strong>IBM fully exited</strong>, with DIRECTV India running all 60 apps</td><td class="r">13</td><td class="r">16</td><td class="r">15.7</td><td class="r">15.7</td><td class="r">18</td></tr>
+      <tr class="hl"><td><strong>Whole portfolio at target</strong> (L4 on Tier 1–2, L3+ on Tier 3)</td><td class="r">14</td><td class="r">16</td><td class="r">16.0</td><td class="r">16.0</td><td class="r">18</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">How these were worked out: a three-point estimate (fastest, most likely, latest) treated as a triangular distribution. Mean = (fastest + most likely + latest) ÷ 3. These are planning estimates based on how comparable programmes usually run, not measured DIRECTV data. We re-estimate them after the month 1 baseline.</p>
+</section>
+
+<!-- 3 PEOPLE BY STAGE -->
+<section id="people">
+  <div class="eyebrow">3 · People needed at each stage</div>
+  <h2>Headcount through the journey</h2>
+  <p>This is the planned path, which lands close to the median dates above. Both teams are paid while a wave is in shadow, so the total rises before it falls. The overlap is what lets us move the work without outages, and it needs to be in the budget from day 1.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Stage</th><th class="r">IBM</th><th class="r">DIRECTV India</th><th class="r">DIRECTV US</th><th class="r">Total</th><th>What's happening</th><th>Who joins in Pune</th></tr></thead>
+    <tbody>
+      <tr><td class="n">Month 0</td><td class="r">110</td><td class="r">0</td><td class="r">1</td><td class="r">111</td><td>Programme starts. Pune requisitions open on day 1.</td><td>None yet. Notice periods in India usually run 60–90 days.</td></tr>
+      <tr><td class="n">Month 3</td><td class="r">110</td><td class="r">10</td><td class="r">4</td><td class="r">124</td><td>Top 5 reach L3 under IBM. Platform being built.</td><td>Head of QE India, 2 managers, 4 platform engineers, 3 SDET leads for the top 5</td></tr>
+      <tr class="hl"><td class="n">Month 6</td><td class="r">104</td><td class="r">26</td><td class="r">6</td><td class="r"><strong>136 (peak)</strong></td><td>Top 5 at L4. India shadows IBM on the top 5.</td><td>Performance, environments and data specialists, and the top-5 app pods</td></tr>
+      <tr><td class="n">Month 9</td><td class="r">78</td><td class="r">44</td><td class="r">8</td><td class="r">130</td><td>India runs the top 5, and IBM has left them. Wave 2 goes to L4 under IBM.</td><td>Resilience, security and the wave 2 pods</td></tr>
+      <tr><td class="n">Month 13</td><td class="r">36</td><td class="r">56</td><td class="r">8</td><td class="r">100</td><td>IBM has left wave 2. Wave 4 is moving to Pune ahead of its AI work.</td><td>Wave 3 pods and the Tier 3 pool</td></tr>
+      <tr><td class="n">Month 16</td><td class="r">20</td><td class="r">60</td><td class="r">8</td><td class="r">88</td><td>IBM leaves wave 3, the last one, at the end of the month.</td><td>Last of the Tier 3 pool</td></tr>
+      <tr class="tot"><td class="n">Month 18</td><td class="r">0</td><td class="r">60</td><td class="r">8</td><td class="r">68</td><td>Whole portfolio at target. Bounded L5 is live on qualifying apps.</td><td>Backfill only</td></tr>
+      <tr><td class="n">L5 steady state (about month 24)</td><td class="r">0</td><td class="r">47</td><td class="r">8</td><td class="r">55</td><td>Agents carry more of the routine work. The team shrinks through attrition, not layoffs.</td><td>No new hires</td></tr>
+    </tbody>
+  </table></div>
+  <h3>How the pace changes the people picture</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Pace</th><th class="r">IBM fully out</th><th class="r">Peak team (both)</th><th class="r">Team reaches 68</th><th class="r">Team reaches ~55 (L5)</th><th>What drives it</th></tr></thead>
+    <tbody>
+      <tr><td>Fastest</td><td class="r">Month 13</td><td class="r">~130 in month 6</td><td class="r">Month 14–15</td><td class="r">Month 20</td><td>Every gate passes first time and Pune hiring runs ahead of plan</td></tr>
+      <tr class="hl"><td>Planned (median)</td><td class="r">Month 16</td><td class="r">~136 in month 6</td><td class="r">Month 17–18</td><td class="r">Month 22</td><td>The plan as written</td></tr>
+      <tr><td>Latest (max)</td><td class="r">Month 18</td><td class="r">~136 in months 6–7</td><td class="r">Month 18</td><td class="r">Month 24</td><td>One wave slips and uses the 2-month buffer</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">Going faster doesn't need more people, because the limit is how fast Pune can hire and absorb knowledge. Its benefit is a shorter overlap: every month IBM leaves earlier saves that month's IBM cost. DIRECTV's IBM rates aren't known to me, so I haven't put a money figure on it.</p>
+</section>
+
+<!-- 4 FINAL TEAM -->
+<section id="team">
+  <div class="eyebrow">4 · The final team</div>
+  <h2>68 people at month 18, about 55 once L5 is steady</h2>
+  <p>Yes, this is the whole QA organisation once the journey is done: 68 people, 8 in the US and 60 in Pune, with no IBM. It excludes developers' own unit and contract tests, SRE, and penetration testing, which stay where they are today. I built it bottom-up from application tiers and shared functions, and every number traces back to an assumption you can change.</p>
+  <div class="callout info small"><strong>Tier assumption (to confirm in week 1):</strong> of the ~60 apps, 10 are Tier 1 (customer-facing and revenue-critical), 20 are Tier 2 and 30 are Tier 3 (internal or rarely changed). At L4 a Tier 1 app needs about 1.8 people, a Tier 2 app about 0.7, and a Tier 3 app about 0.27 in a shared pool.</div>
+  <div class="tbl"><table>
+    <thead><tr><th rowspan="2">Function</th><th rowspan="2">What they own</th><th colspan="3" class="r">At L4 (month 18)</th><th colspan="3" class="r">At L5 steady state</th></tr>
+    <tr><th class="r">US</th><th class="r">India</th><th class="r">Total</th><th class="r">US</th><th class="r">India</th><th class="r">Total</th></tr></thead>
+    <tbody>
+      <tr><td>Leadership &amp; governance</td><td>Director (US), Head of QE India, QE managers</td><td class="r">1</td><td class="r">4</td><td class="r">5</td><td class="r">1</td><td class="r">3</td><td class="r">4</td></tr>
+      <tr><td>AI QE platform &amp; MLOps</td><td>Models, agents, data lake, MLflow, guardrails</td><td class="r">0</td><td class="r">6</td><td class="r">6</td><td class="r">0</td><td class="r">6</td><td class="r">6</td></tr>
+      <tr><td>Performance &amp; live events</td><td>Performance Center, k6, capacity forecasts, event sign-off</td><td class="r">1</td><td class="r">3</td><td class="r">4</td><td class="r">1</td><td class="r">2</td><td class="r">3</td></tr>
+      <tr><td>Resilience, failover &amp; DR</td><td>Chaos experiments, failover and failback drills</td><td class="r">0</td><td class="r">2</td><td class="r">2</td><td class="r">0</td><td class="r">2</td><td class="r">2</td></tr>
+      <tr><td>Security testing</td><td>SAST, DAST and SCA gates and triage</td><td class="r">0</td><td class="r">2</td><td class="r">2</td><td class="r">0</td><td class="r">2</td><td class="r">2</td></tr>
+      <tr><td>Environments, test data &amp; virtual services</td><td>On-demand environments, synthetic data, service virtualisation</td><td class="r">0</td><td class="r">3</td><td class="r">3</td><td class="r">0</td><td class="r">2</td><td class="r">2</td></tr>
+      <tr><td>Device &amp; receiver lab</td><td>Satellite receivers and Gemini. It has to be in the US because the satellite signal can't be received in India. Pune works on it remotely.</td><td class="r">2</td><td class="r">0</td><td class="r">2</td><td class="r">2</td><td class="r">0</td><td class="r">2</td></tr>
+      <tr><td>Production quality ops</td><td>Synthetic monitoring, the incident-to-test loop, and the US prime-time shift on event days</td><td class="r">2</td><td class="r">2</td><td class="r">4</td><td class="r">2</td><td class="r">2</td><td class="r">4</td></tr>
+      <tr><td>Tier 1 app pods (10 apps)</td><td>SDETs who supervise and review agent work. Two US leads sit with the app and backend engineering teams.</td><td class="r">2</td><td class="r">16</td><td class="r">18</td><td class="r">2</td><td class="r">12</td><td class="r">14</td></tr>
+      <tr><td>Tier 2 app pods (20 apps)</td><td>About two apps per engineer</td><td class="r">0</td><td class="r">14</td><td class="r">14</td><td class="r">0</td><td class="r">10</td><td class="r">10</td></tr>
+      <tr><td>Tier 3 pool (30 apps)</td><td>One shared team. Agents do most of the work and people review it.</td><td class="r">0</td><td class="r">8</td><td class="r">8</td><td class="r">0</td><td class="r">6</td><td class="r">6</td></tr>
+      <tr class="tot"><td>Total</td><td></td><td class="r">8</td><td class="r">60</td><td class="r">68</td><td class="r">8</td><td class="r">47</td><td class="r">55</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="panel small">
+      <h4>How we get from 110 to 68</h4>
+      <ul>
+        <li><strong>Agents write the first draft.</strong> Engineers review agent-written tests and triage instead of writing every test and reading every failure. That's what takes Tier 1 from about 2.4 people per app to 1.8.</li>
+        <li><strong>Pool the low-risk apps.</strong> The 30 Tier 3 apps share one team of 8 instead of having owners spread thin.</li>
+        <li><strong>Buy what's commodity.</strong> Self-healing, visual AI and a device cloud for streaming devices. The physical lab covers only receivers and Gemini.</li>
+        <li><strong>Leaner shared teams.</strong> Each manager covers 12–15 people, and on-demand environments cut the manual environment work.</li>
+      </ul>
+    </div>
+    <div class="panel small">
+      <h4>What 68 depends on</h4>
+      <ul>
+        <li>By the month 10 checkpoint, at least 60% of agent-drafted tests are accepted and triage is at least 85% accurate. If not, we hold at about <strong>80</strong> (US 9, India 71) until it is.</li>
+        <li>The tier mix is close to 10 / 20 / 30. Each extra Tier 1 app adds about 1.8 people.</li>
+        <li>Tool and device-cloud licences go up as headcount comes down. That cost is part of the month 1 business case.</li>
+        <li>Pune attrition of 12–15% a year is backfilled. That's an assumption about the Pune market.</li>
+        <li>The move to about 55 at L5 happens only when L5 has run for a full quarter without an escaped Sev-1.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5 MOVE -->
+<section id="move">
+  <div class="eyebrow">5 · Moving the work from IBM to DIRECTV India</div>
+  <h2>Wave by wave, mapped to the timeline</h2>
+  <p>Every wave goes through the same five steps: <strong>plan</strong> the exit with procurement, <strong>capture</strong> what IBM knows in the knowledge base, <strong>shadow</strong> (IBM runs the app and Pune watches, 4–6 weeks), <strong>reverse shadow</strong> (Pune runs it and IBM watches, 4–6 weeks), then <strong>exit</strong> with 30 days of hypercare. One rule protects production: Pune takes over an app only when it isn't in the middle of changing level.</p>
+  <figure>
+    <div class="dgbox" data-dg>
+      <div class="dgbar"><span>Planned path · months 1–18</span><button type="button" data-z="-" aria-label="Zoom out">−</button><button type="button" data-z="0" aria-label="Reset zoom">100%</button><button type="button" data-z="+" aria-label="Zoom in">+</button><button type="button" data-z="f" aria-label="Full screen">⛶</button></div>
+      <div class="dgscroll">
+        <svg class="dg" data-min="860" viewBox="0 0 1000 440" role="img" aria-label="Gantt chart: top 5 apps reach L4 under IBM in months 1 to 6 and move to India by month 8; wave 2 reaches L4 in months 7 to 10 and moves by month 12; wave 3 reaches L3 or L4 in months 11 to 14 and moves by month 16; wave 4 moves to India first, by month 14, then reaches L3 in months 15 to 16; months 17 to 18 are hardening and buffer. Team size falls from 136 at month 6 to 68 at month 18.">
+          <!-- month grid -->
+          <g>
+            <line class="grid" x1="170" y1="32" x2="170" y2="352"/><line class="grid" x1="305" y1="32" x2="305" y2="352"/><line class="grid" x1="440" y1="32" x2="440" y2="352"/><line class="grid" x1="575" y1="32" x2="575" y2="352"/><line class="grid" x1="710" y1="32" x2="710" y2="352"/><line class="grid" x1="845" y1="32" x2="845" y2="352"/><line class="grid" x1="980" y1="32" x2="980" y2="352"/>
+          </g>
+          <g class="lbl" text-anchor="middle">
+            <text class="lbl" x="192" y="22">1</text><text class="lbl" x="237" y="22">2</text><text class="lbl" x="282" y="22">3</text><text class="lbl" x="327" y="22">4</text><text class="lbl" x="372" y="22">5</text><text class="lbl" x="417" y="22">6</text><text class="lbl" x="462" y="22">7</text><text class="lbl" x="507" y="22">8</text><text class="lbl" x="552" y="22">9</text><text class="lbl" x="597" y="22">10</text><text class="lbl" x="642" y="22">11</text><text class="lbl" x="687" y="22">12</text><text class="lbl" x="732" y="22">13</text><text class="lbl" x="777" y="22">14</text><text class="lbl" x="822" y="22">15</text><text class="lbl" x="867" y="22">16</text><text class="lbl" x="912" y="22">17</text><text class="lbl" x="957" y="22">18</text>
+          </g>
+          <text class="ttl" x="8" y="22">MONTH</text>
+          <!-- lane labels -->
+          <g>
+            <text x="8" y="53" style="font-size:13px">Platform</text>
+            <text x="8" y="89" style="font-size:13px">Wave 1 · AI level</text>
+            <text x="8" y="115" style="font-size:13px">Wave 1 · move</text>
+            <text x="8" y="153" style="font-size:13px">Wave 2 · AI level</text>
+            <text x="8" y="179" style="font-size:13px">Wave 2 · move</text>
+            <text x="8" y="217" style="font-size:13px">Wave 3 · AI level</text>
+            <text x="8" y="243" style="font-size:13px">Wave 3 · move</text>
+            <text x="8" y="281" style="font-size:13px">Wave 4 · move</text>
+            <text x="8" y="307" style="font-size:13px">Wave 4 · AI level</text>
+            <text x="8" y="345" style="font-size:13px">All apps</text>
+          </g>
+          <!-- platform -->
+          <rect class="g-ai" x="170" y="40" width="270" height="18" rx="3"/><text class="g-txt" x="180" y="53">build</text>
+          <rect class="g-run" x="440" y="40" width="540" height="18" rx="3"/><text class="g-txt2" x="450" y="53">run and improve</text>
+          <!-- wave 1 -->
+          <rect class="g-ai" x="170" y="76" width="270" height="18" rx="3"/><text class="g-txt" x="180" y="89">L1 → L4 (top 5)</text>
+          <rect class="g-sh" x="350" y="102" width="90" height="18" rx="3"/><text class="g-txt" x="358" y="115">shadow</text>
+          <rect class="g-rs" x="440" y="102" width="90" height="18" rx="3"/><text class="g-txt" x="448" y="115">reverse</text>
+          <rect class="g-hc" x="530" y="102" width="45" height="18" rx="3"/>
+          <line class="exit" x1="530" y1="98" x2="530" y2="124"/>
+          <!-- wave 2 -->
+          <rect class="g-ai" x="440" y="140" width="180" height="18" rx="3"/><text class="g-txt" x="450" y="153">L1 → L4 (15 apps)</text>
+          <rect class="g-sh" x="530" y="166" width="90" height="18" rx="3"/><text class="g-txt" x="538" y="179">shadow</text>
+          <rect class="g-rs" x="620" y="166" width="90" height="18" rx="3"/><text class="g-txt" x="628" y="179">reverse</text>
+          <rect class="g-hc" x="710" y="166" width="45" height="18" rx="3"/>
+          <line class="exit" x1="710" y1="162" x2="710" y2="188"/>
+          <!-- wave 3 -->
+          <rect class="g-ai" x="620" y="204" width="180" height="18" rx="3"/><text class="g-txt" x="630" y="217">→ L3 / L4 (15 apps)</text>
+          <rect class="g-sh" x="710" y="230" width="90" height="18" rx="3"/><text class="g-txt" x="718" y="243">shadow</text>
+          <rect class="g-rs" x="800" y="230" width="90" height="18" rx="3"/><text class="g-txt" x="808" y="243">reverse</text>
+          <rect class="g-hc" x="890" y="230" width="45" height="18" rx="3"/>
+          <line class="exit" x1="890" y1="226" x2="890" y2="252"/>
+          <!-- wave 4 (move first) -->
+          <rect class="g-sh" x="665" y="268" width="90" height="18" rx="3"/><text class="g-txt" x="673" y="281">shadow</text>
+          <rect class="g-rs" x="755" y="268" width="45" height="18" rx="3"/>
+          <rect class="g-hc" x="800" y="268" width="45" height="18" rx="3"/>
+          <line class="exit" x1="800" y1="264" x2="800" y2="290"/>
+          <rect class="g-ai" x="800" y="294" width="90" height="18" rx="3"/><text class="g-txt" x="808" y="307">→ L3 (~25)</text>
+          <!-- hardening -->
+          <rect class="g-buf" x="890" y="332" width="90" height="18" rx="3"/><text class="g-txt2" x="896" y="345" style="font-size:11.5px">L5 + buffer</text>
+          <!-- headcount row -->
+          <line class="grid" x1="8" y1="366" x2="980" y2="366"/>
+          <text x="8" y="392" style="font-size:13px">Team size</text>
+          <text class="t2" x="8" y="408">IBM + DIRECTV</text>
+          <g class="hc" text-anchor="middle">
+            <text class="hc" x="176" y="392">111</text>
+            <text class="hc" x="305" y="392">124</text>
+            <text class="hc" x="440" y="392">136</text>
+            <text class="hc" x="575" y="392">130</text>
+            <text class="hc" x="755" y="392">100</text>
+            <text class="hc" x="890" y="392">88</text>
+            <text class="hc" x="968" y="392">68</text>
+          </g>
+          <g class="t2" text-anchor="middle">
+            <text class="t2" x="176" y="408">m0</text><text class="t2" x="305" y="408">m3</text><text class="t2" x="440" y="408">m6</text><text class="t2" x="575" y="408">m9</text><text class="t2" x="755" y="408">m13</text><text class="t2" x="890" y="408">m16</text><text class="t2" x="968" y="408">m18</text>
+          </g>
+          <!-- legend -->
+          <g transform="translate(170,424)">
+            <rect class="g-ai" x="0" y="-10" width="14" height="10" rx="2"/><text class="t2" x="20" y="0">AI level work</text>
+            <rect class="g-sh" x="130" y="-10" width="14" height="10" rx="2"/><text class="t2" x="150" y="0">IBM runs, Pune watches</text>
+            <rect class="g-rs" x="320" y="-10" width="14" height="10" rx="2"/><text class="t2" x="340" y="0">Pune runs, IBM watches</text>
+            <rect class="g-hc" x="510" y="-10" width="14" height="10" rx="2"/><text class="t2" x="530" y="0">Hypercare</text>
+            <line class="exit" x1="620" y1="-12" x2="620" y2="2"/><text class="t2" x="628" y="0">IBM leaves the wave</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <figcaption>The most critical apps level up first while IBM still runs them, then move. Wave 4 is the reverse: these low-risk apps move to Pune first, then get templated AI testing. Either way, an app never changes owner and level in the same step.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <thead><tr><th>Wave</th><th>Apps</th><th>IBM people (assumed)</th><th class="n">AI level work</th><th class="n">Shadow</th><th class="n">Reverse shadow</th><th class="n">IBM leaves</th><th>Order</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Top 5</td><td>~32</td><td class="n">m1–6 → L4</td><td class="n">m5–6</td><td class="n">m7–8</td><td class="n">End of m8</td><td>AI first, then move</td></tr>
+      <tr><td>2</td><td>15 (Tier 1–2)</td><td>~42</td><td class="n">m7–10 → L4</td><td class="n">m9–10</td><td class="n">m11–12</td><td class="n">End of m12</td><td>AI first, then move</td></tr>
+      <tr><td>3</td><td>15 (Tier 2)</td><td>~20</td><td class="n">m11–14 → L3/L4</td><td class="n">m13–14</td><td class="n">m15–16</td><td class="n">End of m16</td><td>AI first, then move</td></tr>
+      <tr><td>4</td><td>~25 (Tier 3)</td><td>~16</td><td class="n">m15–16 → L3</td><td class="n">m12–13</td><td class="n">m14</td><td class="n">End of m14</td><td>Move first, then AI</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">How IBM's 110 people split across the waves is my assumption. We replace it with IBM's real allocation in weeks 1–2. IBM's contract terms (exit notice, knowledge-transfer duties, non-solicit) aren't known, and procurement reviews them in month 1. An optional small IBM surge contract can cover the first NFL season after the exit.</p>
+</section>
+
+<!-- 6 CONTEXT -->
+<section id="context">
+  <div class="eyebrow">6 · What this plan stands on</div>
+  <h2>What we know, what we're assuming, and what we still need to find out</h2>
+  <p>Facts about the market come from the public sources in section 22. Facts about DIRECTV's internal set-up come from the interview conversation. Where I didn't have a fact, I've used a reasonable baseline assumption and marked it as one.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Item</th><th>Status</th><th>Working basis</th><th>How we confirm it</th></tr></thead>
+    <tbody>
+      <tr><td>Applications in QA scope</td><td><span class="chip c-high">Stated</span></td><td>About 60</td><td>Week 1: full list with owners and a criticality tier</td></tr>
+      <tr><td>QA team</td><td><span class="chip c-high">Stated</span></td><td>About 110, all IBM</td><td>Weeks 1–2: who works on which app, skills, location</td></tr>
+      <tr><td>Automation level</td><td><span class="chip c-as">Assumed</span></td><td>90% read as regression automation. In-sprint assumed at about 60%.</td><td>Month 1: measured by journey and risk, not by test count</td></tr>
+      <tr><td>AI maturity today</td><td><span class="chip c-high">Stated</span></td><td>L1</td><td>Month 1 assessment per app</td></tr>
+      <tr><td>Names of the 60 applications</td><td><span class="chip c-unk">Not public</span></td><td>Based on DIRECTV's public products, the likely top 5 are listed in section 9</td><td>Confirm or swap in week 1</td></tr>
+      <tr><td>Criticality mix</td><td><span class="chip c-as">Assumed</span></td><td>10 Tier 1, 20 Tier 2, 30 Tier 3</td><td>Week 1 tiering. Headcount moves with it.</td></tr>
+      <tr><td>IBM people per wave</td><td><span class="chip c-as">Assumed</span></td><td>~32 / ~42 / ~20 / ~16</td><td>IBM allocation data in weeks 1–2</td></tr>
+      <tr><td>IBM contract terms</td><td><span class="chip c-unk">Unknown</span></td><td>Assumed to be a multi-year statement of work that can be renegotiated</td><td>Procurement and legal in month 1</td></tr>
+      <tr><td>Tool stack</td><td><span class="chip c-med">Partly known</span></td><td>Performance Center is in use (from the job description). Everything else is unknown.</td><td>Month 1 tool inventory</td></tr>
+      <tr><td>Incident history and root causes</td><td><span class="chip c-unk">Unknown</span></td><td>None yet</td><td>12 months of RCAs pulled in month 1</td></tr>
+      <tr><td>Peak concurrent streams, active vs. inactive subscribers</td><td><span class="chip c-unk">Not public</span></td><td>DIRECTV doesn't publish these</td><td>From telemetry in month 1</td></tr>
+      <tr><td>Approved AI models and budget</td><td><span class="chip c-unk">Unknown</span></td><td>Working assumption: open-weight models hosted in DIRECTV's own cloud account</td><td>CTO and CISO decision</td></tr>
+      <tr><td>Agent productivity at DIRECTV</td><td><span class="chip c-as">Assumed</span></td><td>At least 50% of agent-drafted tests accepted by month 6</td><td>Measured monthly and re-checked at month 10</td></tr>
+      <tr><td>Programme start</td><td><span class="chip c-as">Assumed</span></td><td>Q1 2027, which sets the sports-calendar overlaps</td><td>Re-plan the freeze windows once the date is fixed</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 7 MARKET -->
+<section id="market">
+  <div class="eyebrow">7 · The business we're protecting</div>
+  <h2>Products, subscribers and direction</h2>
+  <p>DIRECTV is privately owned and stopped regular subscriber reporting after it was spun out from AT&amp;T in 2021. Most recent numbers come from analysts, so each one carries a confidence tag.</p>
+
+  <h3>Products in the market</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Product</th><th>What it is</th><th>Why it matters for QE</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td><strong>DIRECTV via Satellite</strong></td><td>The original direct-to-home service with set-top receivers. Since June 2025, some markets have offered new customers streaming only.</td><td>A large base that's shrinking. Receiver software, guide and DVR need long-running soak tests.</td><td><span class="chip c-high">High</span></td></tr>
+      <tr><td><strong>DIRECTV via Internet / STREAM</strong></td><td>Live TV over the internet, with unlimited cloud DVR on STREAM packages, through the DIRECTV app</td><td>The growth bet. Performance is the product: start time, rebuffering, channel change.</td><td><span class="chip c-high">High</span></td></tr>
+      <tr><td><strong>DIRECTV app</strong></td><td>Runs on Roku, Fire TV, Apple TV, Samsung (2017+), LG (2021+), Android TV, Vizio, Meta Quest, mobile and web. Unlimited streams at home and 3 at once away from home.</td><td>The largest device matrix in the portfolio.</td><td><span class="chip c-high">High</span></td></tr>
+      <tr><td><strong>Gemini / Gemini Air</strong></td><td>DIRECTV's own Android TV devices. Gemini launched in April 2023. Gemini Air is for internet-only customers.</td><td>DIRECTV owns the firmware, so it also owns update failures, memory leaks and boot time.</td><td><span class="chip c-high">High</span></td></tr>
+      <tr><td><strong>Genre Packs</strong></td><td>MySports, MyEntertainment, MyKids, MyNews, MiEspañol. Advertised from $20.99.</td><td>More package combinations to test, which suits AI-generated test combinations.</td><td><span class="chip c-high">High</span></td></tr>
+      <tr><td><strong>MyFree DIRECTV</strong></td><td>Free, ad-supported channels. DIRECTV's own pages quote between 95+ and 130+ channels.</td><td>The top of the sign-up funnel. Ad insertion and signed-out users.</td><td><span class="chip c-med">Medium</span></td></tr>
+      <tr><td><strong>DIRECTV FOR BUSINESS</strong></td><td>Bars, restaurants and hotels. A multi-year deal announced in July 2026 makes DIRECTV the commercial partner for NFL Sunday Ticket with EverPass. One source puts the base at 300,000+ venues.</td><td>Revenue is concentrated in the NFL season, and it depends on the EverPass integration.</td><td><span class="chip c-high">High</span> deal · <span class="chip c-med">Medium</span> count</td></tr>
+      <tr><td><strong>Sports rights</strong></td><td>Partners include ESPN, DAZN, MLB, NHL, Apple and EverPass. Local NBA and NHL coverage grew to 9 more teams in October 2026.</td><td>Live sports bring the sharpest traffic spikes and the biggest churn risk.</td><td><span class="chip c-med">Medium</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Subscribers</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>When</th><th>Figure</th><th>Source</th><th>Confidence</th></tr></thead>
+    <tbody>
+      <tr><td class="n">End Q2 2021</td><td>~15.4M video subscribers at the spin-out</td><td>AT&amp;T press release</td><td><span class="chip c-high">High</span></td></tr>
+      <tr><td class="n">Spring 2025</td><td>~1.5M DIRECTV STREAM subscribers (estimate)</td><td>nScreenMedia, using RingDigital data</td><td><span class="chip c-low">Low</span></td></tr>
+      <tr><td class="n">2025</td><td>~11M total, satellite plus streaming</td><td>Variety</td><td><span class="chip c-med">Medium</span></td></tr>
+      <tr><td class="n">End Q2 2025</td><td>~8.8M video subscribers</td><td>Industry forum quoting analysts</td><td><span class="chip c-low">Low</span></td></tr>
+      <tr><td class="n">Q3 2025</td><td>~288K lost in the quarter</td><td>MoffettNathanson, via TheStreet</td><td><span class="chip c-med">Medium</span></td></tr>
+      <tr><td class="n">Q1 2026</td><td>~8.2M subscribers, ~222K lost in the quarter, ~13.2% of US pay TV</td><td>MoffettNathanson, via press and a newsletter</td><td><span class="chip c-med">Medium</span></td></tr>
+      <tr><td class="n">Peak concurrency</td><td colspan="2">Not public</td><td><span class="chip c-unk">Unknown</span></td></tr>
+      <tr><td class="n">Active vs. inactive</td><td colspan="2">Not public</td><td><span class="chip c-unk">Unknown</span></td></tr>
+      <tr><td class="n">Satellite vs. streaming split</td><td colspan="2">Not public, apart from the estimate above</td><td><span class="chip c-unk">Unknown</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">The ~11M and ~8.2M figures come from different sources and probably count differently. I use ~8.2M as the best recent number.</p>
+
+  <h3>Revenue and direction</h3>
+  <div class="grid2">
+    <div class="panel small">
+      <h4>The last 3 years, on record</h4>
+      <ul>
+        <li><strong>2023:</strong> Gemini launched in April. Residential NFL Sunday Ticket moved to YouTube from the 2023 season.</li>
+        <li><strong>Sept–Nov 2024:</strong> DIRECTV agreed to buy Dish and Sling, then called it off on Nov 22, 2024 after Dish bondholders rejected the debt exchange.</li>
+        <li><strong>June 2025:</strong> streaming-only offer for new customers in some markets.</li>
+        <li><strong>July 2, 2025:</strong> TPG completed its purchase of AT&amp;T's 70% stake and now owns all of DIRECTV. TPG has said it will invest more in streaming.</li>
+        <li><strong>2025 revenue:</strong> about $17.6B, with borrowings above $8B. <span class="chip c-low">Low</span> This is from one secondary source, since DIRECTV doesn't publish accounts.</li>
+        <li><strong>March 2026:</strong> EchoStar agreed a Dish debt restructuring, which analysts said could revive a merger. I found no new signed deal. <span class="chip c-med">Medium</span></li>
+      </ul>
+    </div>
+    <div class="panel small">
+      <h4>The next 3 years: my scenarios</h4>
+      <p>I couldn't find a published forecast for DIRECTV. Going from 8.8M to 8.2M over three quarters is roughly a 9% decline a year, which gives the trend line below.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Scenario</th><th>2027</th><th>2028</th><th>2029</th></tr></thead>
+        <tbody>
+          <tr><td>Trend (−9% a year)</td><td>~7.5M</td><td>~6.8M</td><td>~6.2M</td></tr>
+          <tr><td>Streaming offsets some loss (−4% a year)</td><td>~7.9M</td><td>~7.6M</td><td>~7.3M</td></tr>
+          <tr><td>Dish merger comes back</td><td colspan="3">The customer base and app count could roughly double. The wave model can absorb that.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <div class="callout info small"><strong>What this means for QE:</strong> streaming and the shared video backend carry the growth. Satellite stays large but shrinks. Sports and business venues anchor revenue and have hard calendar peaks. An owner carrying debt will judge QE on two things: cost per release, and outages avoided during big events. This plan is built around both.</div>
+</section>
+
+<!-- 8 LEVELS -->
+<section id="levels">
+  <div class="eyebrow">8 · Levels</div>
+  <h2>What each level means, and how we know an app has reached it</h2>
+  <p>Automation percentage and AI maturity measure different things. With 90% automated regression at L1, the scripts exist, but people still decide what to test, write every test, read every failure and approve every release. Each level has an exit test that every app has to pass.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Level</th><th>Who does the work</th><th>Exit test for each app (all must pass)</th></tr></thead>
+    <tbody>
+      <tr><td class="n"><span class="meter"><i class="on"></i><i></i><i></i><i></i><i></i></span> L1 AI-assisted</td><td>People, with an AI assistant</td><td>At least 80% of engineers use the approved AI assistant every week. There's a shared prompt library and a signed AI usage policy.</td></tr>
+      <tr><td class="n"><span class="meter"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span> L2 AI-augmented</td><td>People, with tools that fix themselves</td><td>Self-healing is on for all UI suites. Visual AI covers the top journeys. Flaky tests are under 3%. Synthetic test data is available on demand.</td></tr>
+      <tr><td class="n"><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span> L3 AI-driven</td><td>AI decides <em>what</em> runs. People do the rest.</td><td>AI test selection on every pull request catches at least 95% of what the full nightly run catches. A performance anomaly model gates builds. Every change gets a risk score.</td></tr>
+      <tr><td class="n"><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> L4 Agentic</td><td>Agents write, run and triage. People approve.</td><td>At least 50% of new tests are drafted by agents and accepted in review. At least 85% of failures are sorted correctly without a person. People approve only at set checkpoints.</td></tr>
+      <tr><td class="n"><span class="meter"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> L5 Autonomous (bounded)</td><td>Rules and models release low-risk changes</td><td>Stable at L4 for 3+ months. In shadow mode, the agent's go/no-go matches the human decision at least 95% of the time. Automatic canary rollback is proven. Never used during a live-event change freeze.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 9 TOP 5 -->
+<section id="top5">
+  <div class="eyebrow">9 · Where we start</div>
+  <h2>The top 5 applications for months 1–6</h2>
+  <p>DIRECTV's internal application list isn't public. Based on its publicly available products, and on how pay-TV platforms are usually built, these are the five most likely to matter most. We confirm or swap them in week 1. Each is scored 1–5 on six criteria.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Application (inferred)</th><th>Revenue</th><th>Customers hit</th><th>Change rate</th><th>Blast radius</th><th>AI readiness</th><th>Peak risk</th><th>Total</th></tr></thead>
+    <tbody>
+      <tr><td>A3</td><td><strong>Video platform backend</strong>: identity, entitlement, DRM, stream sessions, cloud DVR, guide data</td><td>5</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td><td><strong>29</strong></td></tr>
+      <tr><td>A1</td><td><strong>DIRECTV app</strong> on about 10 device platforms</td><td>5</td><td>5</td><td>5</td><td>4</td><td>3</td><td>5</td><td><strong>27</strong></td></tr>
+      <tr><td>A4</td><td><strong>Digital commerce &amp; account</strong>: buy flow, packages, payments, self-service</td><td>5</td><td>4</td><td>5</td><td>3</td><td>5</td><td>4</td><td><strong>26</strong></td></tr>
+      <tr><td>A2</td><td><strong>Satellite receivers &amp; Gemini</strong>: firmware, on-screen guide, DVR, software updates</td><td>4</td><td>5</td><td>3</td><td>4</td><td>2</td><td>4</td><td><strong>22</strong></td></tr>
+      <tr><td>A5</td><td><strong>DIRECTV FOR BUSINESS</strong>: venue orders, activation, Sunday Ticket via EverPass</td><td>5</td><td>2</td><td>3</td><td>3</td><td>3</td><td>5</td><td><strong>21</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">Likely candidates for wave 2, also inferred: customer care desktop, installation scheduling, billing, search and recommendations, and the ad stack for MyFree DIRECTV.</p>
+  <div class="callout small"><strong>Why start with the most critical apps?</strong> That's where the value shows, and the backend (A3) feeds A1, A2 and A5, so improving it protects three other apps. To keep it safe, AI runs in shadow first. We don't remove any existing test gate until the model has beaten it for a full month.</div>
+</section>
+
+<!-- 10 PLATFORM -->
+<section id="platform">
+  <div class="eyebrow">10 · The shared platform</div>
+  <h2>The quality intelligence platform</h2>
+  <p>We build one platform in months 1–6 and reuse it for every later wave. That's what makes onboarding 15 apps in 4 months realistic. Use the buttons to zoom or go full screen.</p>
+  <figure>
+    <div class="dgbox" data-dg>
+      <div class="dgbar"><span>Data → models → agents → release → back to data</span><button type="button" data-z="-" aria-label="Zoom out">−</button><button type="button" data-z="0" aria-label="Reset zoom">100%</button><button type="button" data-z="+" aria-label="Zoom in">+</button><button type="button" data-z="f" aria-label="Full screen">⛶</button></div>
+      <div class="dgscroll">
+        <svg class="dg" data-min="900" viewBox="0 0 1060 500" role="img" aria-label="Seven data sources feed a quality data lake. The lake feeds a feature store, training and MLflow registry, a validation gate and model serving. Model scores and a knowledge base feed the agent orchestrator, which runs tests through CI/CD quality gates, then human checkpoints, then a canary release and production monitoring. Incidents from production loop back into the data lake as new labels and tests.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="ahl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ahl" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <!-- sources -->
+          <rect class="grp" x="8" y="10" width="196" height="360" rx="10"/>
+          <text class="ttl" x="20" y="32">DATA SOURCES</text>
+          <g>
+            <rect class="box" x="20" y="44" width="172" height="36" rx="6"/><text x="32" y="67" style="font-size:14px">Jira &amp; defects</text>
+            <rect class="box" x="20" y="90" width="172" height="36" rx="6"/><text x="32" y="113" style="font-size:14px">Git commits &amp; PRs</text>
+            <rect class="box" x="20" y="136" width="172" height="36" rx="6"/><text x="32" y="159" style="font-size:14px">CI/CD test results</text>
+            <rect class="box" x="20" y="182" width="172" height="36" rx="6"/><text x="32" y="205" style="font-size:14px">Perf Center &amp; k6</text>
+            <rect class="box" x="20" y="228" width="172" height="36" rx="6"/><text x="32" y="251" style="font-size:14px">APM, logs, traces</text>
+            <rect class="box" x="20" y="274" width="172" height="36" rx="6"/><text x="32" y="297" style="font-size:14px">Video QoE telemetry</text>
+            <rect class="box" x="20" y="320" width="172" height="36" rx="6"/><text x="32" y="343" style="font-size:14px">Device &amp; crash data</text>
+          </g>
+          <!-- bus -->
+          <path class="ln" d="M192,62 H224 M192,108 H224 M192,154 H224 M192,200 H224 M192,246 H224 M192,292 H224 M192,338 H224 M224,62 V338"/>
+          <path class="ln" d="M224,200 H248" marker-end="url(#ah)"/>
+          <!-- top row -->
+          <rect class="box" x="250" y="170" width="130" height="60" rx="8"/><text x="315" y="196" text-anchor="middle">Quality</text><text x="315" y="216" text-anchor="middle">data lake</text>
+          <rect class="box" x="414" y="170" width="130" height="60" rx="8"/><text x="479" y="196" text-anchor="middle">Feature</text><text x="479" y="216" text-anchor="middle">store</text>
+          <rect class="box" x="578" y="170" width="130" height="60" rx="8"/><text x="643" y="196" text-anchor="middle">Training +</text><text x="643" y="216" text-anchor="middle">MLflow registry</text>
+          <rect class="box acc" x="742" y="170" width="130" height="60" rx="8"/><text x="807" y="194" text-anchor="middle">Validation gate</text><text class="t2" x="807" y="214" text-anchor="middle">accuracy, drift, bias</text>
+          <rect class="box" x="906" y="170" width="130" height="60" rx="8"/><text x="971" y="196" text-anchor="middle">Model</text><text x="971" y="216" text-anchor="middle">serving</text>
+          <path class="ln" d="M380,200 H412" marker-end="url(#ah)"/><text class="lbl" x="397" y="160" text-anchor="middle">features</text>
+          <path class="ln" d="M544,200 H576" marker-end="url(#ah)"/><text class="lbl" x="561" y="160" text-anchor="middle">train</text>
+          <path class="ln" d="M708,200 H740" marker-end="url(#ah)"/><text class="lbl" x="725" y="160" text-anchor="middle">evaluate</text>
+          <path class="ln" d="M872,200 H904" marker-end="url(#ah)"/><text class="lbl" x="889" y="160" text-anchor="middle">promote</text>
+          <text class="t2" x="643" y="128" text-anchor="middle">Models M1–M10: small models trained on DIRECTV's own data</text>
+          <!-- knowledge base -->
+          <rect class="box" x="578" y="285" width="200" height="56" rx="8"/><text x="678" y="308" text-anchor="middle">RAG knowledge base</text><text class="t2" x="678" y="328" text-anchor="middle">test assets, RCAs, runbooks</text>
+          <path class="ln" d="M370,230 V313 H576" marker-end="url(#ah)"/><text class="lbl" x="473" y="305" text-anchor="middle">index documents</text>
+          <path class="ln" d="M778,313 H940 V398" marker-end="url(#ah)"/><text class="lbl" x="860" y="305" text-anchor="middle">context</text>
+          <!-- bottom row (right to left) -->
+          <rect class="box acc" x="906" y="400" width="130" height="60" rx="8"/><text x="971" y="426" text-anchor="middle">Agent</text><text x="971" y="446" text-anchor="middle">orchestrator</text>
+          <rect class="box" x="742" y="400" width="130" height="60" rx="8"/><text x="807" y="426" text-anchor="middle">CI/CD</text><text x="807" y="446" text-anchor="middle">quality gates</text>
+          <rect class="box acc" x="578" y="400" width="130" height="60" rx="8"/><text x="643" y="426" text-anchor="middle">Human</text><text x="643" y="446" text-anchor="middle">checkpoints</text>
+          <rect class="box" x="414" y="400" width="130" height="60" rx="8"/><text x="479" y="426" text-anchor="middle">Release</text><text class="t2" x="479" y="446" text-anchor="middle">canary 1% → 100%</text>
+          <rect class="box" x="250" y="400" width="130" height="60" rx="8"/><text x="315" y="426" text-anchor="middle">Production</text><text x="315" y="446" text-anchor="middle">monitoring</text>
+          <path class="ln" d="M1000,230 V398" marker-end="url(#ah)"/><text class="lbl" x="1008" y="290" style="font-size:12px">scores</text>
+          <text class="t2" x="971" y="478" text-anchor="middle">Agents AG1–AG10</text>
+          <path class="ln" d="M906,430 H874" marker-end="url(#ah)"/><text class="lbl" x="889" y="392" text-anchor="middle">runs tests</text>
+          <path class="ln" d="M742,430 H710" marker-end="url(#ah)"/><text class="lbl" x="725" y="392" text-anchor="middle">evidence</text>
+          <path class="ln" d="M578,430 H546" marker-end="url(#ah)"/><text class="lbl" x="561" y="392" text-anchor="middle">approve</text>
+          <path class="ln" d="M414,430 H382" marker-end="url(#ah)"/><text class="lbl" x="397" y="392" text-anchor="middle">telemetry</text>
+          <!-- loopback -->
+          <path class="lp" d="M290,400 V232" marker-end="url(#ahl)"/>
+          <text class="lbl" x="298" y="300" style="fill:var(--accent);font-weight:600">loopback</text>
+          <text class="lbl" x="298" y="317" style="fill:var(--accent)">new tests</text>
+        </svg>
+      </div>
+    </div>
+    <figcaption>The top row is where models learn from DIRECTV's own data. The bottom row is where agents use those models to test each change. The blue line is the loopback: every production incident or failover becomes a new test and a new training label.</figcaption>
+  </figure>
+  <div class="grid3">
+    <div class="panel small"><h4>Guardrails</h4><p>AI models run inside DIRECTV's own cloud account. No customer personal data goes into prompts, and test data is synthetic. Every agent action is logged, and agents get only the access they need.</p></div>
+    <div class="panel small"><h4>Build or buy</h4><p>Buy the commodity pieces: self-healing, visual AI, device cloud. Build the models that learn from DIRECTV's own defects, incidents and telemetry, because nobody can sell us those.</p></div>
+    <div class="panel small"><h4>MLOps standard</h4><p>Every model has a versioned dataset, an evaluation gate, a drift monitor, a retraining trigger and a named owner. QE's own models follow the same rules as the product's.</p></div>
+  </div>
+</section>
+
+<!-- 11 MODELS & AGENTS -->
+<section id="ai">
+  <div class="eyebrow">11 · The AI in this plan</div>
+  <h2>What we build, what we use, and where people stay in charge</h2>
+  <p>The plan uses three kinds of AI. Mixing them up leads to the wrong cost and risk conversation, so here they are separately.</p>
+  <div class="kinds">
+    <div class="kind small"><h4>1. Models we train (M1–M10)</h4><p>Small, focused models trained on DIRECTV's own test, defect and telemetry data, using open-source libraries such as LightGBM and XGBoost. They're cheap to run on ordinary servers, easy to explain, and nobody else has them.</p></div>
+    <div class="kind small"><h4>2. Pre-trained open models we host</h4><p>Large language models, embedding models and time-series models that we use as they are, without training them. We host them in DIRECTV's cloud and give them DIRECTV context through search over our own documents (RAG).</p></div>
+    <div class="kind small"><h4>3. Agents (AG1–AG10)</h4><p>An LLM connected to tools such as Jira, Git and the test runners, with tightly limited permissions. Each agent does one job and stops at a human checkpoint. Agents use the models from 1 and 2.</p></div>
+  </div>
+
+  <h3>Models we train</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>ID</th><th>Model</th><th>The question it answers</th><th>Built on (open source, licence)</th><th>Success measure</th><th class="n">Live by</th></tr></thead>
+    <tbody>
+      <tr><td>M1</td><td>Test selection</td><td>Which tests does this change need?</td><td>Coverage mapping plus a LightGBM ranking model (MIT)</td><td>Catches 95%+ of what the full run catches, with 40% less PR test time</td><td class="n">Month 4</td></tr>
+      <tr><td>M2</td><td>Change risk</td><td>How likely is this change to cause a defect, and why?</td><td>XGBoost (Apache 2.0), with SHAP (MIT) to explain each score</td><td>AUC 0.80+</td><td class="n">Month 4</td></tr>
+      <tr><td>M3</td><td>Performance anomaly</td><td>Is this build slower than it should be?</td><td>Prophet (MIT) seasonal baseline plus scikit-learn isolation forest (BSD)</td><td>Precision 0.80+, catches slow drift across releases</td><td class="n">Month 4</td></tr>
+      <tr><td>M4</td><td>Flaky test classifier</td><td>Is this failure real or flaky?</td><td>LightGBM on rerun history, plus simple rules</td><td>Flaky rate under 3%</td><td class="n">Month 2</td></tr>
+      <tr><td>M5</td><td>Failure clustering</td><td>Have we seen this failure before?</td><td>BGE-M3 embeddings (MIT) plus HDBSCAN clustering (scikit-learn)</td><td>85%+ sorted into the right category</td><td class="n">Month 4</td></tr>
+      <tr><td>M6</td><td>Live-event traffic forecast</td><td>How much traffic will Sunday's game bring?</td><td>Prophet with event-calendar features. Chronos (Apache 2.0) is tested as a challenger.</td><td>Peak forecast within ±10%</td><td class="n">Month 4</td></tr>
+      <tr><td>M7</td><td>Video quality anomaly</td><td>Are viewers seeing worse video on a device, CDN or region?</td><td>Isolation forest on start time and rebuffering. VMAF (BSD+Patent) scores picture quality in test.</td><td>Finds problems before customers complain</td><td class="n">Month 5</td></tr>
+      <tr><td>M8</td><td>Crash clustering</td><td>What's crashing after this firmware wave?</td><td>Stack-trace clean-up, then BGE-M3 embeddings and HDBSCAN</td><td>Top crash causes ranked within an hour</td><td class="n">Month 5</td></tr>
+      <tr><td>M9</td><td>Synthetic subscribers</td><td>Can I get realistic test accounts with no real customer data?</td><td>Rules from the package catalogue, plus a Gaussian copula model via SDV (source-available, so legal checks the licence)</td><td>Covers every package × device × region combination in scope</td><td class="n">Month 2</td></tr>
+      <tr><td>M10</td><td>Go/no-go recommender</td><td>Is this release ready, and what's the evidence?</td><td>Policy rules plus an XGBoost score with SHAP reasons. It recommends and never decides.</td><td>95%+ agreement with human decisions in shadow</td><td class="n">Month 6 (shadow)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Pre-trained models the agents run on</h3>
+  <div class="grid2">
+    <div class="panel small">
+      <h4>Shortlist for the month 1 bake-off</h4>
+      <ul>
+        <li><strong>Writing and fixing test code:</strong> Qwen3-Coder (Apache 2.0)</li>
+        <li><strong>Reasoning (triage, test plans, release evidence):</strong> gpt-oss-120b (Apache 2.0)</li>
+        <li><strong>High-volume, simple classification:</strong> gpt-oss-20b (Apache 2.0)</li>
+        <li><strong>Search over test assets and RCAs:</strong> BGE-M3 embeddings (MIT)</li>
+        <li><strong>Agent workflow and tooling:</strong> LangGraph (MIT), MLflow (Apache 2.0), Evidently for drift (Apache 2.0)</li>
+      </ul>
+    </div>
+    <div class="panel small">
+      <h4>How we choose</h4>
+      <ul>
+        <li>All are open-weight and can run inside DIRECTV's cloud, so code and test data never leave it.</li>
+        <li>We test them on about 200 real DIRECTV tasks in month 1 and choose on measured results. Newer versions replace them as they come out.</li>
+        <li>If the CISO approves, a hosted frontier model from DIRECTV's existing cloud provider can handle the hardest tasks. Which providers DIRECTV already allows is unknown to me.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 id="model-options">Options for each job</h3>
+  <p>The shortlist above is where I'd start, but each job has good alternatives, and the month 1 bake-off decides. Every option here is open-weight and can run on DIRECTV's own servers. Licences are as I understand them and need a legal check.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Job</th><th>Start with</th><th>Alternatives</th><th>Hardware to start</th><th>How we judge it</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Writing and fixing test code</strong><br><span class="muted small">AG3, AG4</span></td><td>Qwen3-Coder 30B-A3B <span class="chip c-high">Apache 2.0</span></td><td><ul><li>Qwen3-Coder 480B-A35B (Apache 2.0) if we need more accuracy</li><li>Devstral Small, from Mistral (Apache 2.0)</li><li>gpt-oss-120b (Apache 2.0), which also codes well</li></ul></td><td>1 data-centre GPU</td><td>Share of agent pull requests that reviewers accept</td></tr>
+      <tr><td><strong>Reasoning: triage, test plans, release evidence</strong><br><span class="muted small">AG1, AG2, AG6, AG7, AG10</span></td><td>gpt-oss-120b <span class="chip c-high">Apache 2.0</span></td><td><ul><li>Qwen3-235B-A22B (Apache 2.0), larger and needs several GPUs</li><li>Mistral Small 3.x (Apache 2.0), smaller and cheaper</li><li>Llama 3.3 70B (Meta licence: commercial use allowed, not OSI open source)</li><li>DeepSeek-R1 (MIT), very large</li></ul></td><td>1 × 80 GB GPU</td><td>Triage accuracy against engineer decisions, and tool use on long logs</td></tr>
+      <tr><td><strong>High-volume classification and routing</strong><br><span class="muted small">AG5, AG9 pre-filter, M4 support</span></td><td>gpt-oss-20b <span class="chip c-high">Apache 2.0</span></td><td><ul><li>Qwen3 8B (Apache 2.0)</li><li>Phi-4-mini, from Microsoft (MIT)</li><li>IBM Granite small models (Apache 2.0)</li></ul></td><td>16 GB of memory</td><td>Accuracy and cost per 1,000 test results</td></tr>
+      <tr><td><strong>Reading screenshots and screen recordings</strong><br><span class="muted small">AG6 evidence, TV screen checks</span></td><td>Qwen2.5-VL 7B <span class="chip c-med">Apache 2.0, to confirm</span></td><td><ul><li>Mistral Small 3.1 (Apache 2.0, reads images)</li><li>Gemma 3, from Google (Gemma terms of use)</li><li>Llama 3.2 Vision (Meta licence)</li></ul></td><td>1 GPU</td><td>Correct reading of failure screenshots. This supports the bought visual AI tool and doesn't replace it.</td></tr>
+      <tr><td><strong>Search over test assets, RCAs and runbooks</strong><br><span class="muted small">Knowledge base (RAG)</span></td><td>BGE-M3 embeddings <span class="chip c-high">MIT</span> + bge-reranker-v2-m3 <span class="chip c-high">Apache 2.0</span></td><td><ul><li>Qwen3-Embedding (Apache 2.0)</li><li>multilingual-e5-large (MIT)</li><li>nomic-embed-text (Apache 2.0)</li></ul></td><td>CPU or a shared GPU</td><td>Whether the right document comes back in the top 5 results</td></tr>
+      <tr><td><strong>Forecasting</strong><br><span class="muted small">M3 baselines, M6 traffic</span></td><td>Prophet <span class="chip c-high">MIT</span></td><td><ul><li>Chronos-Bolt, from Amazon (Apache 2.0)</li><li>TimesFM, from Google (Apache 2.0)</li><li>LightGBM with calendar features</li></ul></td><td>CPU</td><td>Error on past live events. A challenger replaces the baseline only if it beats it.</td></tr>
+      <tr><td><strong>Serving the models</strong></td><td>vLLM <span class="chip c-high">Apache 2.0</span></td><td><ul><li>Hugging Face TGI</li><li>llama.cpp or Ollama (MIT) for laptops and development</li></ul></td><td>n/a</td><td>One gateway, so agents can switch models without code changes</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout small"><strong>Model origin:</strong> Qwen and DeepSeek come from Chinese companies. Some US enterprises don't allow models from certain countries, even when they're self-hosted. If that's DIRECTV's policy, every job above still has US or European options: gpt-oss, Llama, Phi, Gemma, Granite and Mistral. The plan works with any of them.</div>
+  <div class="grid3">
+    <div class="panel small" style="border-color:var(--accent)"><h4>Option A · Self-hosted open-weight (where I'd start)</h4><ul><li>Code and test data never leave DIRECTV's account.</li><li>Predictable, fixed cost.</li><li>The hardest tasks may be slightly weaker than on the best hosted models.</li><li>Needs GPU servers and someone to run them. Roughly 4–8 data-centre GPUs including redundancy (my estimate, sized properly in the bake-off).</li></ul></div>
+    <div class="panel small"><h4>Option B · Hybrid</h4><ul><li>Self-hosted by default, plus a hosted frontier model from DIRECTV's existing cloud provider for the hardest 10–20% of tasks.</li><li>Best quality where it counts.</li><li>Pay-per-use cost, a second set of data rules, and CISO approval needed.</li></ul></div>
+    <div class="panel small"><h4>Option C · Hosted only</h4><ul><li>Fastest start, with no GPUs to run.</li><li>Data goes to a provider under contract.</li><li>Cost grows with usage, and it's harder to switch later.</li></ul></div>
+  </div>
+  <p class="small muted">Recommendation: start with option A and keep option B ready in case the bake-off shows a quality gap on the hardest tasks.</p>
+
+  <h3>The ten agents</h3>
+  <p class="small muted">Each agent does one job and stops at a checkpoint where a named person approves. As trust is earned, we move the checkpoint, but never for high-risk changes.</p>
+  <div class="agents">
+    <article class="agent"><header><h4>AG1 · Requirements analyst</h4><span class="chip c-as">Month 2, suggests only</span></header><dl><dt>How</dt><dd>Reads each new story and its API spec, drafts acceptance criteria and NFRs, and lists open questions.</dd><dt>You approve</dt><dd>The product owner accepts or edits.</dd><dt>Runs on</dt><dd>Reasoning LLM + knowledge base</dd></dl></article>
+    <article class="agent"><header><h4>AG2 · Test designer</h4><span class="chip c-as">Month 3</span></header><dl><dt>How</dt><dd>Turns stories, API specs and package rules into test scenarios, ranked by the change-risk score (M2).</dd><dt>You approve</dt><dd>The QE lead approves the plan.</dd><dt>Runs on</dt><dd>Reasoning LLM + M2</dd></dl></article>
+    <article class="agent"><header><h4>AG3 · Test coder</h4><span class="chip c-as">Month 3</span></header><dl><dt>How</dt><dd>Writes Playwright, Appium, API and k6 tests in our framework and opens a pull request.</dd><dt>You approve</dt><dd>Normal code review before merge.</dd><dt>Runs on</dt><dd>Code LLM</dd></dl></article>
+    <article class="agent"><header><h4>AG4 · Self-heal</h4><span class="chip c-as">Month 4</span></header><dl><dt>How</dt><dd>Spots broken locators and timing waits, fixes them, and opens a repair pull request.</dd><dt>You approve</dt><dd>Locator-only fixes merge on their own. Anything else is reviewed.</dd><dt>Runs on</dt><dd>Code LLM + M4</dd></dl></article>
+    <article class="agent"><header><h4>AG5 · Test orchestrator</h4><span class="chip c-as">Month 4</span></header><dl><dt>How</dt><dd>Chooses and schedules the right suites for each change and environment.</dd><dt>You approve</dt><dd>Works within set rules. The full nightly run stays as the safety net.</dd><dt>Runs on</dt><dd>M1 + M2 + rules</dd></dl></article>
+    <article class="agent"><header><h4>AG6 · Failure triage</h4><span class="chip c-as">Month 4</span></header><dl><dt>How</dt><dd>Groups failures, finds the likely cause, and drafts a defect with logs, traces and screenshots.</dd><dt>You approve</dt><dd>An engineer confirms the defect before it's raised.</dd><dt>Runs on</dt><dd>Reasoning LLM + M5</dd></dl></article>
+    <article class="agent"><header><h4>AG7 · Performance analyst</h4><span class="chip c-as">Month 5</span></header><dl><dt>How</dt><dd>Reads Performance Center and APM results and writes the comparison against the baseline and the event forecast.</dd><dt>You approve</dt><dd>The performance architect signs off.</dd><dt>Runs on</dt><dd>Reasoning LLM + M3, M6, M7</dd></dl></article>
+    <article class="agent"><header><h4>AG8 · Environment &amp; data</h4><span class="chip c-as">Month 5</span></header><dl><dt>How</dt><dd>Provides synthetic accounts and virtual services, recorded from real traffic, on request.</dd><dt>You approve</dt><dd>No approval needed in lower environments. It never touches production.</dd><dt>Runs on</dt><dd>M9 + service virtualisation tools</dd></dl></article>
+    <article class="agent"><header><h4>AG9 · Security triage</h4><span class="chip c-as">Month 3, suggests only</span></header><dl><dt>How</dt><dd>Removes duplicate scanner findings, ranks the rest by real risk, and drafts fixes.</dd><dt>You approve</dt><dd>AppSec accepts or rejects each risk.</dd><dt>Runs on</dt><dd>Reasoning LLM + scanner output</dd></dl></article>
+    <article class="agent"><header><h4>AG10 · Release readiness</h4><span class="chip c-as">Month 6, shadow</span></header><dl><dt>How</dt><dd>Builds the evidence pack for each release candidate and recommends go or no-go.</dd><dt>You approve</dt><dd>The release manager decides. Only low-risk change types are allowed under L5.</dd><dt>Runs on</dt><dd>Reasoning LLM + M10</dd></dl></article>
+  </div>
+</section>
+
+<!-- 12 STLC -->
+<section id="stlc">
+  <div class="eyebrow">12 · The testing lifecycle</div>
+  <h2>How each stage of testing changes</h2>
+  <p>This compares today with the L4 target, plus the narrow L5 slice. L2 and L3 are steps along the way and appear in the month plan below.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Stage</th><th>Today (L1)</th><th>At L4</th><th>At L5 (low-risk changes only)</th><th>Powered by</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Requirements</strong></td><td>People read stories, and use the AI assistant now and then</td><td>Acceptance criteria and NFRs drafted for every story, and gaps flagged early</td><td>Drafts accepted automatically for low-risk stories</td><td><span class="chip c-as">AG1</span> <span class="chip c-as">M2</span></td></tr>
+      <tr><td><strong>Test planning</strong></td><td>A manual plan for each release</td><td>A plan proposed for each change, scoped by risk, and approved by the lead</td><td>Plan generated and checked against policy</td><td><span class="chip c-as">AG2</span> <span class="chip c-as">M2</span></td></tr>
+      <tr><td><strong>Test design &amp; build</strong></td><td>Engineers script tests with an AI assistant</td><td>Agents draft tests as pull requests and engineers review them. Broken tests repair themselves.</td><td>Agent tests merge when they pass review policy</td><td><span class="chip c-as">AG3</span> <span class="chip c-as">AG4</span></td></tr>
+      <tr><td><strong>Environments &amp; data</strong></td><td>Tickets to request environments and data</td><td>Synthetic accounts and virtual services on demand</td><td>A short-lived environment for each change</td><td><span class="chip c-as">AG8</span> <span class="chip c-as">M9</span></td></tr>
+      <tr><td><strong>Functional testing</strong></td><td>Full regression every time</td><td>Only the tests each change needs, plus a full nightly run</td><td>Runs continuously and schedules itself</td><td><span class="chip c-as">AG5</span> <span class="chip c-as">M1</span> <span class="chip c-as">M4</span></td></tr>
+      <tr><td><strong>Performance</strong></td><td>Scheduled Performance Center runs</td><td>Performance checks on every PR, anomaly gates, load sized from event forecasts, analysis written for you</td><td>Builds blocked or promoted on performance evidence</td><td><span class="chip c-as">AG7</span> <span class="chip c-as">M3</span> <span class="chip c-as">M6</span></td></tr>
+      <tr><td><strong>Security</strong></td><td>Periodic scans</td><td>Scans in every pipeline, nightly DAST, findings ranked by real risk</td><td>Low-severity findings handled by policy</td><td><span class="chip c-as">AG9</span></td></tr>
+      <tr><td><strong>Resilience &amp; longevity</strong></td><td>Occasional soak tests</td><td>Standard soak tests, chaos experiments, crash trends after each update, failover drills</td><td>Continuous chaos inside error budgets</td><td><span class="chip c-as">M7</span> <span class="chip c-as">M8</span></td></tr>
+      <tr><td><strong>Defects</strong></td><td>People read every failure</td><td>Failures grouped and drafted as defects, then confirmed by an engineer</td><td>Known patterns routed automatically</td><td><span class="chip c-as">AG6</span> <span class="chip c-as">M5</span></td></tr>
+      <tr><td><strong>Release</strong></td><td>A manual sign-off meeting</td><td>Evidence pack and recommendation, and people decide</td><td>Low-risk changes released by policy with canary rollback</td><td><span class="chip c-as">AG10</span> <span class="chip c-as">M10</span></td></tr>
+      <tr><td><strong>Production feedback</strong></td><td>Incidents reviewed afterwards</td><td>Every incident becomes a new test within 5 working days</td><td>A fully closed loop</td><td><span class="chip c-as">AG2</span> <span class="chip c-as">M7</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 13 MONTHS -->
+<section id="months">
+  <div class="eyebrow">13 · Months 1–6 on the top 5 apps</div>
+  <h2>Month-by-month plan</h2>
+  <p>This assumes a Q1 2027 start, so months 4–6 overlap the NBA and NHL playoffs. Pilot changes to A1 and A3 respect event change freezes. The "Models in use" row in each month shows which open-source models go live.</p>
+
+  <article class="month">
+    <header><span class="m">MONTH 1</span><h3>Foundation and baseline</h3><span class="meter" title="L1"><i class="on"></i><i></i><i></i><i></i><i></i></span></header>
+    <div class="mrows">
+      <div>Governance</div><div>AI usage policy, approved AI models, data-access approvals, a RACI with IBM, and a steering group (CTO, CISO, Engineering, Product, Procurement).</div>
+      <div>Discovery</div><div>List all 60 apps by criticality tier and confirm the top 5. Map their main customer journeys, such as sign in → guide → live channel → DVR playback, or choose package → pay → activate.</div>
+      <div>Baseline</div><div>Pull 6–12 months of CI, Jira, Performance Center, APM and RCA data. Measure real coverage by risk, flaky rate, cycle time, escaped defects and cost per release.</div>
+      <div>Functional</div><div>Split regression from in-sprint automation for each app, and tag tests to journeys.</div>
+      <div>Performance</div><div>List the Performance Center scripts, baseline p95 and p99 on critical APIs, and build the live-event calendar.</div>
+      <div>Security</div><div>Map SAST, SCA, DAST and penetration-test coverage for the top 5. Mark the payment-card (PCI DSS) and personal-data scope in A4.</div>
+      <div>Resilience</div><div>Review 12 months of Sev-1 and Sev-2 root causes. List the soak tests for receivers and Gemini.</div>
+      <div class="mdl">Models in use</div><div class="mdl">No AI in the pipeline yet. Bake-off of Qwen3-Coder, gpt-oss-120b and gpt-oss-20b, plus any CISO-approved hosted model, on about 200 real DIRECTV tasks. BGE-M3 indexes test assets and runbooks into the knowledge base.</div>
+      <div>People &amp; IBM</div><div>Open the Pune requisitions on day 1. With notice periods, people join in months 3–4, so a small US core and interim specialists cover months 1–3. Start recording IBM walkthroughs. Procurement reviews IBM's exit and knowledge-transfer clauses.</div>
+      <div class="gate">Exit gate</div><div class="gate">Baseline report signed off. Data access live for all 5 apps. Top 5 confirmed.</div>
+    </div>
+  </article>
+
+  <article class="month">
+    <header><span class="m">MONTH 2</span><h3>Cut the noise (L2)</h3><span class="meter" title="L2"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></header>
+    <div class="mrows">
+      <div>Functional</div><div>Self-healing locators on the web, mobile and TV suites. Visual AI on the guide, player, Genre Pack screens and checkout across devices. Accessibility checks on the main journeys.</div>
+      <div>Automation</div><div>Flaky tests quarantined automatically. Playwright is the standard for web, and Appium on a device cloud for mobile and TV.</div>
+      <div>Performance</div><div>k6 performance smoke tests on every pull request for A3 and A4, with a stored baseline for each endpoint.</div>
+      <div>Security</div><div>SAST, SCA and secrets scanning in all 5 pipelines. AG9 starts in suggest-only mode.</div>
+      <div>Data</div><div>Synthetic subscribers covering base packages, Genre Packs, add-ons and business venue accounts. Entitlement, payments and third-party services recorded and virtualised.</div>
+      <div class="mdl">Models in use</div><div class="mdl">M4 flaky classifier (LightGBM). M9 synthetic data (catalogue rules plus a Gaussian copula). AG1 on the reasoning model chosen in the bake-off, in suggest mode on A3 and A4.</div>
+      <div>People &amp; IBM</div><div>Two ML/MLOps engineers and one agent engineer join. A 12-week AI QE academy starts for IBM and DIRECTV engineers on the top 5.</div>
+      <div class="gate">Exit gate</div><div class="gate">Self-healing on all 5 apps. Flaky rate under 5% and falling. Visual AI on the top journeys. Synthetic data on demand.</div>
+    </div>
+  </article>
+
+  <article class="month">
+    <header><span class="m">MONTH 3</span><h3>AI-driven, in shadow</h3><span class="meter" title="L2→L3"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></header>
+    <div class="mrows">
+      <div>Functional</div><div>AI test selection runs in shadow on A3 and A4. The full suite still runs, and we compare what the model would have missed.</div>
+      <div>Automation</div><div>Agents draft tests as pull requests on A3 and A4. We track the acceptance rate for each reviewer.</div>
+      <div>Performance</div><div>The anomaly model runs in shadow on nightly results. A streaming load profile with a live-event spike (a fast ramp at kick-off) is measured against video quality.</div>
+      <div>Security</div><div>Nightly DAST on A3 and A4. Threat modelling of the entitlement and DRM flows.</div>
+      <div>Resilience</div><div>Chaos on paper first, then in staging: a slow DRM licence server, entitlement timeouts, one CDN failing. Soak tests of 24–72 hours on Gemini and receiver builds.</div>
+      <div class="mdl">Models in use</div><div class="mdl">M1 test selection (LightGBM, shadow). M2 change risk (XGBoost). M3 performance anomaly (Prophet + isolation forest, shadow). M5 failure clustering (BGE-M3 + HDBSCAN). AG2 on the reasoning model and AG3 on Qwen3-Coder. MLflow registry and evaluation gates live.</div>
+      <div>People &amp; IBM</div><div>The first Pune joiners arrive. IBM engineers start reviewing agent pull requests, so their job shifts from writing tests to reviewing them.</div>
+      <div class="gate">Exit gate</div><div class="gate">Test selection catches 95%+ in shadow. Anomaly precision 0.7+. At least 30% of agent pull requests accepted.</div>
+    </div>
+  </article>
+
+  <article class="month">
+    <header><span class="m">MONTH 4</span><h3>AI-driven, live (L3)</h3><span class="meter" title="L3"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></header>
+    <div class="mrows">
+      <div>Functional</div><div>AI test selection goes live on A3 and A4, with the nightly full run as the safety net. Shadow mode extends to A1, A2 and A5.</div>
+      <div>Automation</div><div>The self-heal agent opens repair pull requests. Locator-only fixes merge automatically.</div>
+      <div>Performance</div><div>The anomaly gate blocks builds on clear regressions. The traffic forecast sizes the capacity test for the next big event.</div>
+      <div>Security</div><div>Findings ranked by risk. We track time to triage.</div>
+      <div>Resilience</div><div>Pre-production game day on the A3 backend.</div>
+      <div class="mdl">Models in use</div><div class="mdl">M1 and M3 move from shadow to live. M6 traffic forecast (Prophet, with Chronos as challenger). AG4 on Qwen3-Coder. AG5 rules engine. AG6 triage on gpt-oss-120b.</div>
+      <div>People &amp; IBM</div><div>IBM's work on A3 and A4 is re-scoped, but only because the month 3 gate passed. Manual test roles move to review, exploratory testing and supervising agents.</div>
+      <div class="gate">Exit gate</div><div class="gate">40% faster pull-request feedback. No escaped defect traced to test selection. Triage accuracy 80%+.</div>
+    </div>
+  </article>
+
+  <article class="month">
+    <header><span class="m">MONTH 5</span><h3>Agents at work on A3 and A4</h3><span class="meter" title="L4 pilot"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></header>
+    <div class="mrows">
+      <div>Functional</div><div>The full agent flow runs on A3 and A4: story → requirements → test design → test code → run → triage → report. People approve at two points, the test plan and the merge.</div>
+      <div>Automation</div><div>A1, A2 and A5 go live at L3. Device coverage follows the risk score and the device share in real telemetry.</div>
+      <div>Performance</div><div>The performance agent writes comparison reports. The video quality model goes live on streaming telemetry.</div>
+      <div>Security</div><div>Abuse tests under load, such as credential stuffing during a login spike. Checks on the 3-stream limit away from home.</div>
+      <div>Longevity</div><div>Crash clustering on Gemini firmware canary waves.</div>
+      <div class="mdl">Models in use</div><div class="mdl">M7 video quality anomaly (isolation forest, with VMAF in test). M8 crash clustering (BGE-M3 + HDBSCAN). AG7 on gpt-oss-120b. AG8 on M9 and service virtualisation.</div>
+      <div>People &amp; IBM</div><div>Pune starts shadowing IBM on the top 5.</div>
+      <div class="gate">Exit gate</div><div class="gate">On A3 and A4: 50%+ of new tests drafted by agents and accepted. Triage accuracy 85%+. No rise in escaped defects.</div>
+    </div>
+  </article>
+
+  <article class="month">
+    <header><span class="m">MONTH 6</span><h3>L4 on all five, L5 in shadow, decision on wave 2</h3><span class="meter" title="L4 + L5 shadow"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on" style="opacity:.4"></i></span></header>
+    <div class="mrows">
+      <div>Functional</div><div>L4 extends to A1, A2 (device cloud and receiver lab) and A5. EverPass is covered with virtual services.</div>
+      <div>Release</div><div>An evidence pack for every release candidate. L5 runs in shadow: we record the agent's go/no-go next to the human decision and measure how often they agree.</div>
+      <div>Resilience</div><div>Production game day on the streaming backend, with a small blast radius, stop conditions and error-budget limits.</div>
+      <div>Longevity</div><div>A 72-hour soak pass becomes a release gate for Gemini firmware.</div>
+      <div class="mdl">Models in use</div><div class="mdl">M10 go/no-go (rules + XGBoost with SHAP reasons, shadow). AG10 on gpt-oss-120b. All models retrained on the new labels from months 3–5.</div>
+      <div>Scale-out</div><div>The wave 2 onboarding kit: pipeline templates, per-app model retraining, agent configuration, a playbook and a checklist. The next 15 apps are chosen.</div>
+      <div>People &amp; IBM</div><div>Reverse shadow on the top 5 starts in month 7. An outcome-based contract with IBM is drafted for the remaining waves.</div>
+      <div class="gate">Exit gate (CTO review)</div><div class="gate">Scorecard against baseline (section 17). If an app misses its L4 test, that app gets 4–6 more weeks while the wave goes ahead. The buffer in months 17–18 absorbs it.</div>
+    </div>
+  </article>
+</section>
+
+<!-- 14 APPS -->
+<section id="apps">
+  <div class="eyebrow">14 · The top 5 in detail</div>
+  <h2>What changes for each application</h2>
+  <p>The five apps depend on each other. The backend (A3) sits in the middle, so a fault there reaches three other apps. That's why it goes first and why its failover gets the most attention.</p>
+  <figure>
+    <div class="dgbox" data-dg>
+      <div class="dgbar"><span>How the top 5 connect</span><button type="button" data-z="-" aria-label="Zoom out">−</button><button type="button" data-z="0" aria-label="Reset zoom">100%</button><button type="button" data-z="+" aria-label="Zoom in">+</button><button type="button" data-z="f" aria-label="Full screen">⛶</button></div>
+      <div class="dgscroll">
+        <svg class="dg" data-min="760" viewBox="0 0 900 420" role="img" aria-label="A1 DIRECTV app, A2 receivers and Gemini, and A5 DIRECTV FOR BUSINESS all call A3, the video platform backend. A4 commerce writes entitlements into A3. A3 depends on external CDN and DRM licence services, A4 on a payment gateway, and A5 on EverPass.">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <rect class="box" x="20" y="30" width="210" height="60" rx="8"/><text x="36" y="56">A1 DIRECTV app</text><text class="t2" x="36" y="76">~10 device platforms</text>
+          <rect class="box" x="20" y="150" width="210" height="60" rx="8"/><text x="36" y="176">A2 Receivers &amp; Gemini</text><text class="t2" x="36" y="196">firmware, guide, DVR</text>
+          <rect class="box" x="20" y="270" width="210" height="60" rx="8"/><text x="36" y="296">A5 FOR BUSINESS</text><text class="t2" x="36" y="316">venues, Sunday Ticket</text>
+          <rect class="box acc" x="345" y="120" width="210" height="120" rx="8"/><text x="361" y="150">A3 Video platform</text><text x="361" y="170">backend</text><text class="t2" x="361" y="196">identity · entitlement</text><text class="t2" x="361" y="214">DRM · sessions · DVR · guide</text>
+          <rect class="box" x="345" y="310" width="210" height="60" rx="8"/><text x="361" y="336">A4 Commerce &amp; account</text><text class="t2" x="361" y="356">packages, payments</text>
+          <rect class="box ext" x="670" y="120" width="210" height="50" rx="8"/><text x="686" y="150">CDN (multi-CDN)</text>
+          <rect class="box ext" x="670" y="190" width="210" height="50" rx="8"/><text x="686" y="220">DRM licence service</text>
+          <rect class="box ext" x="670" y="315" width="210" height="50" rx="8"/><text x="686" y="345">Payment gateway</text>
+          <rect class="box ext" x="20" y="360" width="210" height="44" rx="8"/><text x="36" y="387">EverPass</text>
+          <text class="ttl" x="670" y="105">EXTERNAL (dashed)</text>
+          <path class="ln" d="M230,60 H290 V148 H343" marker-end="url(#ah2)"/><text class="lbl" x="238" y="52">sign-in, rights, DRM</text>
+          <path class="ln" d="M230,180 H343" marker-end="url(#ah2)"/><text class="lbl" x="286" y="172" text-anchor="middle">guide, DVR</text>
+          <path class="ln" d="M230,300 H290 V215 H343" marker-end="url(#ah2)"/><text class="lbl" x="238" y="320">venue rights</text>
+          <path class="ln" d="M450,310 V242" marker-end="url(#ah2)"/><text class="lbl" x="458" y="282">sets rights</text>
+          <path class="ln" d="M555,145 H668" marker-end="url(#ah2)"/><text class="lbl" x="612" y="137" text-anchor="middle">stream session</text>
+          <path class="ln" d="M555,215 H668" marker-end="url(#ah2)"/><text class="lbl" x="612" y="207" text-anchor="middle">licence</text>
+          <path class="ln" d="M555,340 H668" marker-end="url(#ah2)"/><text class="lbl" x="612" y="332" text-anchor="middle">charge</text>
+          <path class="ln" d="M125,330 V358" marker-end="url(#ah2)"/><text class="lbl" x="133" y="349">activations</text>
+        </svg>
+      </div>
+    </div>
+    <figcaption>A3 is the shared dependency, and the dashed boxes are third parties we virtualise in test and drill for failover. This is inferred from how streaming platforms are usually built. DIRECTV's real architecture is confirmed in month 1.</figcaption>
+  </figure>
+  <p class="small muted">The NFR targets below are starting proposals. We replace them with DIRECTV's own SLOs after the baseline.</p>
+
+  <details open>
+    <summary>A1 · DIRECTV app (streaming clients)</summary>
+    <div class="body small">
+      <div class="strip">
+        <div><b>Today (assumed)</b>The full UI regression runs on every release. People pick which devices to cover and read every failure.</div>
+        <div class="to"><b>Month 6 · L4</b>Tests chosen for each change. Agents draft device-aware tests. Locators repair themselves. Visual AI on the top devices. Video quality gate on beta telemetry.</div>
+        <div class="to"><b>Month 18 · bounded L5</b>Low-risk UI copy and config changes go out by policy with a staged rollout. The device list is refreshed monthly from telemetry.</div>
+      </div>
+      <div class="grid2">
+        <div><h4>What changes</h4><ul><li><strong>Functional:</strong> journeys tagged. Visual AI on the guide, player and Genre Pack screens. Accessibility checks.</li><li><strong>Performance:</strong> start time and channel change measured on real devices in CI.</li><li><strong>Security:</strong> tests for abuse of the 3-stream limit and for token replay.</li><li><strong>Longevity:</strong> 8-hour playback soak on low-end devices to catch memory growth.</li><li><strong>Release:</strong> staged rollout per platform behind feature flags.</li></ul></div>
+        <div><h4>Proposed NFRs</h4><ul><li>Video start time p95 under 2.5 s</li><li>Rebuffer ratio under 0.5%</li><li>Channel change p95 under 1.5 s</li><li>Memory growth over 8 hours under 10% on low-end devices</li></ul></div>
+      </div>
+      <div class="callout small"><strong>Assumptions and data limits:</strong> the device list comes from DIRECTV's public support page. Device share per platform isn't public, so we assume app telemetry can provide it. App store review times (Roku, Apple, Google) mean a bad release can't be pulled back instantly, so feature flags matter more here than anywhere else. Access to crash data is unknown.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>A2 · Satellite receivers and Gemini / Gemini Air</summary>
+    <div class="body small">
+      <div class="strip">
+        <div><b>Today (assumed)</b>Testing in a lab on physical boxes, part manual and part scripted. Soak tests are occasional.</div>
+        <div class="to"><b>Month 6 · L4 on Gemini</b>A remote-controlled US lab with automated remote and video capture. A 72-hour soak gate. Firmware canary waves watched by crash clustering.</div>
+        <div class="to"><b>Month 18</b>Gemini stays at L4. Older receivers stay at L3 because the base is shrinking and the return is lower. No L5 on firmware.</div>
+      </div>
+      <div class="grid2">
+        <div><h4>What changes</h4><ul><li><strong>Automation:</strong> hardware-in-the-loop with remote control and HDMI capture, so Pune can drive US boxes remotely.</li><li><strong>Longevity:</strong> soak tests of 24–72 hours, reboot cycles and full-storage tests.</li><li><strong>Release:</strong> firmware goes out in waves of 0.1% → 1% → 10%, with an automatic stop on a crash spike and a rollback test every release.</li><li><strong>Performance:</strong> boot time and remote response measured per build.</li></ul></div>
+        <div><h4>Proposed NFRs</h4><ul><li>Cold boot to live TV p95 under 45 s</li><li>No memory leak over 72 hours</li><li>Update failure rate under 0.1%, with automatic rollback</li><li>Guide refresh with no visible stall</li></ul></div>
+      </div>
+      <div class="callout small"><strong>Assumptions and data limits:</strong> the lab's size and receiver models are unknown. The satellite signal is only available in the US, so the lab stays there. Access to the firmware build pipeline is unknown, and vendor middleware may limit what we can instrument. This app has the weakest AI readiness of the five, so it reaches L4 last.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>A3 · Video platform backend</summary>
+    <div class="body small">
+      <div class="strip">
+        <div><b>Today (assumed)</b>Functional API tests, with Performance Center runs scheduled before big releases.</div>
+        <div class="to"><b>Month 6 · L4</b>Contract tests between services. k6 on every PR. Anomaly gate. Load sized from event forecasts. Chaos in staging. Agents write API tests.</div>
+        <div class="to"><b>Month 18 · bounded L5</b>Quarterly failover drills in production. Low-risk config changes released by policy outside event windows.</div>
+      </div>
+      <div class="grid2">
+        <div><h4>What changes</h4><ul><li><strong>Functional:</strong> contract tests between every pair of services, written by agents from the API specs.</li><li><strong>Performance:</strong> the live-event spike (login and entitlement at kick-off) tested at 3× the forecast peak.</li><li><strong>Resilience:</strong> chaos for DRM delays, entitlement timeouts and CDN loss, with failover and failback drills (section 16).</li><li><strong>Security:</strong> threat models for entitlement and DRM. Nightly DAST.</li></ul></div>
+        <div><h4>Proposed NFRs</h4><ul><li>Entitlement check p95 under 300 ms at 3× forecast peak</li><li>DRM licence p99 under 800 ms</li><li>Playback survives a recommendations outage</li><li>Error rate under 0.1% during the spike</li></ul></div>
+      </div>
+      <div class="callout small"><strong>Assumptions and data limits:</strong> the list of services is inferred from how streaming platforms are usually built, and the real architecture is unknown. Peak concurrency isn't public, so load targets are set once we have telemetry. Chaos testing in production needs SRE agreement.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>A4 · Digital commerce and account</summary>
+    <div class="body small">
+      <div class="strip">
+        <div><b>Today (assumed)</b>Buy-flow regression, with package and promotion combinations largely tested by hand.</div>
+        <div class="to"><b>Month 6 · L4</b>Agents generate package × promotion × region combinations from the rules. Synthetic subscribers. Payments virtualised. PCI-scoped tests.</div>
+        <div class="to"><b>Month 18 · bounded L5</b>L5 only for UI copy and non-pricing config. Pricing and payment changes always need a person to approve.</div>
+      </div>
+      <div class="grid2">
+        <div><h4>What changes</h4><ul><li><strong>Functional:</strong> every package and promotion combination generated from the catalogue rules instead of chosen by hand.</li><li><strong>Data:</strong> synthetic accounts only, with no real customer data in test.</li><li><strong>Performance:</strong> promotion and season-start peaks.</li><li><strong>Security:</strong> PCI DSS scope, masking of personal data, and zero critical findings at release.</li></ul></div>
+        <div><h4>Proposed NFRs</h4><ul><li>Checkout p95 under 2 s end to end</li><li>Payment success 99.5%+ (gateway virtualised in test)</li><li>No personal data in lower environments</li><li>Zero critical findings at release</li></ul></div>
+      </div>
+      <div class="callout small"><strong>Assumptions and data limits:</strong> the catalogue and rules format is unknown, the PCI scope is unknown, and the promotion calendar is unknown. Prices come from DIRECTV's public pages and change often.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>A5 · DIRECTV FOR BUSINESS</summary>
+    <div class="body small">
+      <div class="strip">
+        <div><b>Today (assumed)</b>A testing push before the NFL season, with the EverPass integration tested end to end alongside the partner.</div>
+        <div class="to"><b>Month 6 · L4</b>A virtual EverPass for every scenario. Activation surge tests. A daily entitlement reconciliation check.</div>
+        <div class="to"><b>Month 18 · L4</b>No L5. Revenue is concentrated in one season, so every release keeps a person's approval.</div>
+      </div>
+      <div class="grid2">
+        <div><h4>What changes</h4><ul><li><strong>Functional:</strong> venue rights tested by sports package, including the automatic renewal batch.</li><li><strong>Performance:</strong> the season-start activation surge at forecast volume.</li><li><strong>Resilience:</strong> queued activations with a manual fallback if EverPass is down.</li><li><strong>Release:</strong> everything certified before the late-summer activation window.</li></ul></div>
+        <div><h4>Proposed NFRs</h4><ul><li>Venue activation under 5 minutes end to end</li><li>Renewal batch finishes in its window at forecast volume</li><li>DIRECTV and EverPass entitlements always match</li></ul></div>
+      </div>
+      <div class="callout small"><strong>Assumptions and data limits:</strong> EverPass interface details aren't public. The venue count (~300K) has medium confidence. The commercial order system is unknown.</div>
+    </div>
+  </details>
+</section>
+
+<!-- 15 WAVES -->
+<section id="waves">
+  <div class="eyebrow">15 · Scaling out</div>
+  <h2>Waves 2–4 and the last two months</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Wave</th><th class="n">Months</th><th>Apps</th><th>Target</th><th>How</th><th>Calendar risk (Q1 2027 start)</th></tr></thead>
+    <tbody>
+      <tr><td>1 Pilot</td><td class="n">1–6</td><td>5</td><td>L4</td><td>Build the platform and prove it</td><td>NBA and NHL playoffs (months 4–6)</td></tr>
+      <tr><td>2</td><td class="n">7–10</td><td>15 (Tier 1–2)</td><td>L4</td><td>Onboarding kit. Three squads of five apps, starting two weeks apart.</td><td>NFL and college football start (months 8–10). Freeze windows for anything A1, A3 or A5 depend on.</td></tr>
+      <tr><td>3</td><td class="n">11–14</td><td>15 (Tier 2)</td><td>L3, L4 where the data allows</td><td>The kit, with app teams onboarding themselves and the central team reviewing</td><td>Holiday peak and end of the football season (months 11–13)</td></tr>
+      <tr><td>4</td><td class="n">15–16</td><td>~25 (Tier 3)</td><td>L3</td><td>Already moved to Pune by month 14. Templated pipelines, shared models, light agents.</td><td>Low</td></tr>
+      <tr><td>Hardening</td><td class="n">17–18</td><td>All</td><td>Bounded L5 where apps qualify</td><td>L5 live for low-risk change types. Final operating model. Handover.</td><td>Also the schedule buffer</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout small"><strong>On wave 4:</strong> 25 apps in two months works only if they really are low-risk and the kit is mature by then. Moving them to Pune first (by month 14) takes the pressure off. If the month 14 review shows they aren't ready, wave 4 moves into months 17–18 and L5 narrows to the top 5 and wave 2. That still lands within 18 months.</div>
+</section>
+
+<!-- 16 ZERO -->
+<section id="zero">
+  <div class="eyebrow">16 · Near-zero production issues and a loopback for every failover</div>
+  <h2>Defining near-zero so we can measure it</h2>
+  <p>Zero defects isn't a promise anyone can keep. Some outages can't be caught by testing at all, such as a third-party feed, a CDN, or rain fade on satellite. So near-zero is a set of numbers that QE, SRE and engineering own together.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Measure</th><th>Proposed target (set after the baseline)</th></tr></thead>
+    <tbody>
+      <tr><td>Sev-1 incidents caused by a defect that testing should have caught</td><td>0 per quarter</td></tr>
+      <tr><td>Sev-2 escaped defects across the portfolio</td><td>No more than 1 a month</td></tr>
+      <tr><td>Change failure rate (DORA)</td><td>Under 5%</td></tr>
+      <tr><td>Customer-facing incidents during the biggest live events</td><td>0</td></tr>
+      <tr><td>Playback and entitlement availability</td><td>99.95%</td></tr>
+      <tr><td>Incidents and failovers turned into an automated test within 5 working days</td><td>100%</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid3">
+    <div class="panel small"><h4>Prevent and detect</h4><p>Risk-based test selection, performance gates, contract tests and 72-hour soak tests stop issues before release.</p></div>
+    <div class="panel small"><h4>Contain and survive</h4><p>Canary releases at 1% → 5% → 25% → 100%, rolled back automatically if the error budget starts burning. Feature flags. A tested failover path for every critical dependency.</p></div>
+    <div class="panel small"><h4>Learn (the loopback)</h4><p>Every Sev-1 or Sev-2 and every production failover produces a test that reproduces it, a chaos experiment, and a new training label for the risk model.</p></div>
+  </div>
+  <h3>Failover and failback matrix</h3>
+  <p class="small">Here "loopback" means two things. Every failover is tested all the way back to the primary (failback), and every real failover feeds a new test back into the suite. All recovery targets are proposals.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Dependency</th><th>Failover we test</th><th>Pass condition</th><th>Failback check</th><th>How often</th></tr></thead>
+    <tbody>
+      <tr><td>Cloud region (video backend)</td><td>Traffic moved to the second region</td><td>Back within 5 minutes, playback continues</td><td>Sessions, DVR and entitlement data match after the return</td><td>Quarterly, and before each big event</td></tr>
+      <tr><td>CDN</td><td>Traffic steered between CDNs by region</td><td>Switch in under 60 s, no rebuffering spike</td><td>Traffic moves back without errors</td><td>Monthly, on a small share of real traffic</td></tr>
+      <tr><td>DRM licence service</td><td>Secondary licence servers</td><td>Playback start failures stay under 0.5%</td><td>Key and licence state reconciled</td><td>Quarterly</td></tr>
+      <tr><td>Identity and entitlement</td><td>Cached-entitlement grace mode</td><td>Signed-in customers keep watching</td><td>Cache reconciled, with no free or blocked access left behind</td><td>Quarterly</td></tr>
+      <tr><td>Guide data</td><td>Serve the last good copy</td><td>The guide is never blank</td><td>Refresh with no duplicate or missing listings</td><td>Twice a year</td></tr>
+      <tr><td>Main databases</td><td>Replica promoted</td><td>No more than 1 minute of data at risk</td><td>Old primary re-synced and rejoined</td><td>Quarterly</td></tr>
+      <tr><td>Payment gateway</td><td>Second processor, or queue and retry</td><td>No lost orders</td><td>Queue replayed and matched to billing</td><td>Twice a year, and before promotion peaks</td></tr>
+      <tr><td>EverPass</td><td>Queued activations with a manual fallback</td><td>Venues activated within the agreed time</td><td>Entitlements match on both sides</td><td>Before every NFL season</td></tr>
+      <tr><td>Receiver and Gemini updates</td><td>Canary wave stopped and rolled back</td><td>Wave stopped within an hour of a crash spike</td><td>Fixed build re-applied to affected devices</td><td>Every firmware release</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small muted">Who owns what: SRE owns the failover mechanisms and runbooks. QE owns the drills, the evidence and the loopback tests. Engineering owns the fixes. Near-zero needs all three, so it can't come from QE headcount alone.</p>
+</section>
+
+<!-- 17 KPIS -->
+<section id="kpis">
+  <div class="eyebrow">17 · Scorecard</div>
+  <h2>How you'll know it's working</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Measure</th><th>Baseline</th><th>Month 6 (top 5)</th><th>Month 18 (all apps)</th></tr></thead>
+    <tbody>
+      <tr><td>Regression cycle time</td><td><span class="chip c-unk">Month 1</span></td><td>−50%</td><td>−70%</td></tr>
+      <tr><td>In-sprint automation</td><td>~60% <span class="chip c-as">assumed</span></td><td>80%</td><td>90%</td></tr>
+      <tr><td>Sev-1 and Sev-2 escaped defects</td><td><span class="chip c-unk">Month 1</span></td><td>−30%</td><td>−50%</td></tr>
+      <tr><td>Flaky test rate</td><td><span class="chip c-unk">Month 1</span></td><td>Under 3%</td><td>Under 2%</td></tr>
+      <tr><td>Agent-drafted tests accepted</td><td>0%</td><td>50%+</td><td>70%+</td></tr>
+      <tr><td>Failures sorted correctly without a person</td><td>n/a</td><td>85%+</td><td>90%+</td></tr>
+      <tr><td>Performance regressions caught before production</td><td><span class="chip c-unk">Month 1</span></td><td>90%+</td><td>95%+</td></tr>
+      <tr><td>Change failure rate (DORA)</td><td><span class="chip c-unk">Month 1</span></td><td>−25%</td><td>Under 5%</td></tr>
+      <tr><td>Customer-facing incidents at big events</td><td><span class="chip c-unk">Month 1</span></td><td>0 in pilot scope</td><td>0</td></tr>
+      <tr><td>QA headcount</td><td>~110 (IBM)</td><td>~136 at peak overlap</td><td>68 (8 US, 60 Pune)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 18 RISKS -->
+<section id="risks">
+  <div class="eyebrow">18 · Risks</div>
+  <h2>What could knock this off course</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Risk</th><th>Likelihood</th><th>What we do about it</th></tr></thead>
+    <tbody>
+      <tr><td>Knowledge leaves with IBM staff</td><td><span class="chip c-low">High</span></td><td>Knowledge is captured before anyone moves. Each wave exits only after Pune passes reverse shadow.</td></tr>
+      <tr><td>Defect and commit data too poorly linked to train the selection and risk models</td><td><span class="chip c-med">Medium</span></td><td>A data audit in month 1. Rule-based selection until the data is good enough.</td></tr>
+      <tr><td>Customer data or DRM secrets reach an AI model</td><td><span class="chip c-med">Medium</span></td><td>Models hosted in DIRECTV's cloud, synthetic data, prompt filtering, CISO sign-off</td></tr>
+      <tr><td>Pune hiring is slower than planned</td><td><span class="chip c-med">Medium</span></td><td>Requisitions open on day 1, interim specialists cover months 1–3, and IBM's exit dates follow readiness, not the calendar</td></tr>
+      <tr><td>Clashes with live sports and the NFL season</td><td><span class="chip c-low">High</span></td><td>A freeze calendar in every wave plan. No AI gate changes during event windows.</td></tr>
+      <tr><td>Engineers trust AI output too much</td><td><span class="chip c-med">Medium</span></td><td>Accuracy measured per agent, the full nightly run as a safety net, audit sampling</td></tr>
+      <tr><td>Agents don't reach the productivity that 68 assumes</td><td><span class="chip c-med">Medium</span></td><td>Month 10 checkpoint. If they're short, hold at about 80 until they catch up.</td></tr>
+      <tr><td>A Dish merger comes back and doubles the scope</td><td><span class="chip c-low">Low–Medium</span></td><td>The wave model and onboarding kit absorb more apps</td></tr>
+      <tr><td>Lock-in to one AI vendor</td><td><span class="chip c-med">Medium</span></td><td>Open-weight models, open standards (OpenTelemetry, MLflow), and our own models on our own data</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 19 ASSUMPTIONS -->
+<section id="assumptions">
+  <div class="eyebrow">19 · Key assumptions</div>
+  <h2>The assumptions behind this plan and how we'll check them</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Assumption or constraint</th><th>Why it matters</th><th>How the plan handles it</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>The AI change and the move to Pune can run side by side</td><td>Changing who does the work and how it's done at the same time is the biggest risk in the plan.</td><td>An app never changes owner and level in the same step. Critical apps level up under IBM first, and low-risk apps move first.</td></tr>
+      <tr><td>2</td><td>People can join quickly</td><td>Notice periods in India usually run 60–90 days.</td><td>Requisitions open on day 1. A US core and interim specialists cover months 1–3.</td></tr>
+      <tr><td>3</td><td>All testing can happen from Pune</td><td>The US satellite signal can't be received in India, and streaming content is limited to the US.</td><td>A US device and receiver lab with remote access, test accounts cleared for US routing, and a check with legal on content rights.</td></tr>
+      <tr><td>4</td><td>Live events can be supported from India</td><td>US prime-time sports fall in the early morning in India.</td><td>An event-day shift with 2 people in the US and 2 in Pune. Event sign-off is finished before the event window.</td></tr>
+      <tr><td>5</td><td>Pune can use production-like data</td><td>US personal data and payment-card scope accessed from offshore need controls.</td><td>Synthetic data only, virtual desktops, no production personal data in test, CISO sign-off.</td></tr>
+      <tr><td>6</td><td>"90% automated" and "L1" are accurate</td><td>Both were stated in the interview and haven't been measured.</td><td>Re-measured in month 1, with scope and headcount restated at the month 1 gate.</td></tr>
+      <tr><td>7</td><td>Agents deliver the productivity behind 68</td><td>A 50–60% acceptance rate is a target, not yet proven at DIRECTV.</td><td>Headcount is a range (about 80, 68 or 55) and reviewed at month 10 against measured output.</td></tr>
+      <tr><td>8</td><td>QE can deliver near-zero production issues</td><td>Not on its own. Many incidents come from config, third parties or infrastructure.</td><td>Near-zero is a set of shared targets with SRE and engineering (section 16).</td></tr>
+      <tr><td>9</td><td>The tier mix is 10 / 20 / 30</td><td>Each extra Tier 1 app adds about 1.8 people.</td><td>Tiering in week 1. If it's 15 / 20 / 25, add about 8 people.</td></tr>
+      <tr><td>10</td><td>The move saves money from the start</td><td>Shadow periods pay two teams at once, peaking at about 136 people.</td><td>The overlap is in the budget openly. Savings start around month 9 and reach full run rate after month 18.</td></tr>
+      <tr><td>11</td><td>IBM supports knowledge transfer fully</td><td>Exit, knowledge-transfer and non-solicit terms are unknown.</td><td>Procurement and legal review in month 1. Knowledge-transfer duties are written into the exit schedule.</td></tr>
+      <tr><td>12</td><td>The new Pune team stays together</td><td>Attrition in a competitive market can drain knowledge again.</td><td>The knowledge base keeps knowledge with DIRECTV. A career ladder, the academy, and budget for 12–15% backfill.</td></tr>
+      <tr><td>13</td><td>18 months is enough for both changes</td><td>It's tight, and wave 4 and IBM's exit land near the end.</td><td>Planned finish is month 16. Months 17–18 are buffer, and an optional IBM surge covers the first NFL season after the exit.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 20 FAQ -->
+<section id="faq">
+  <div class="eyebrow">20 · Questions you may have</div>
+  <h2>Likely questions, with straight answers</h2>
+  <div class="panel">
+    <div class="qa"><b>Can the most critical apps really reach L4 in six months?</b><p class="small">The six-month claim covers five apps, not the whole portfolio. Months 3 and 4 run in shadow, so no existing gate is removed until the model has beaten it. L4 has a measurable exit test, and if one app misses, only that app gets more time.</p></div>
+    <div class="qa"><b>Is the 90% automation figure real?</b><p class="small">We'll know in month 1. Counting tests can hide gaps in what's actually covered, so we re-measure by journey and risk. If the real figure is lower, month 2 grows and we'll say so at the month 1 gate.</p></div>
+    <div class="qa"><b>Why not move everything to Pune in one go?</b><p class="small">IBM's people hold the knowledge of 60 applications. A single cutover during sports season is the most likely way to cause the outages we're trying to prevent. Each wave moves through its own shadow and reverse shadow, and IBM leaves a wave only after Pune passes the gate.</p></div>
+    <div class="qa"><b>Will AI release software on its own during a live game?</b><p class="small">No. L5 covers only defined low-risk change types, starts only after 95% agreement in shadow, needs automatic canary rollback, and is switched off during event freezes. People own every high-risk release.</p></div>
+    <div class="qa"><b>Satellite is shrinking. Why spend on receiver testing?</b><p class="small">It still serves a large share of customers, though the exact split isn't public, and one bad firmware update could reach a big part of that base at once. Most of the investment goes to Gemini, which serves both satellite and internet customers.</p></div>
+    <div class="qa"><b>What will it cost?</b><p class="small">A credible number needs IBM's rates and the tool licence costs, which I don't have. The month 1 deliverable is a costed business case: Pune hires, AI model hosting, device cloud and tools, set against the IBM spend that goes away. On headcount alone, the team falls from about 110 to 68 by month 18.</p></div>
+  </div>
+</section>
+
+<!-- 21 START -->
+<section id="start">
+  <div class="eyebrow">21 · Getting started</div>
+  <h2>Decisions for the first 30 days</h2>
+  <p>These are the decisions that let month 1 start on time.</p>
+  <ul>
+    <li>Confirm the top 5 applications and the start date.</li>
+    <li>Agree, with the CISO, which AI models can be used and where data may go.</li>
+    <li>Approve the target team of 68 (8 in the US, 60 in Pune), with about 80 as the safety net if the month 10 checkpoint isn't met. Release the first 26 Pune requisitions, plus interim specialists for months 1–3.</li>
+    <li>Fund the transition overlap (a peak of about 136 people around month 6) and the US device and receiver lab.</li>
+    <li>Give procurement a mandate to agree IBM's exit schedule and knowledge-transfer duties.</li>
+    <li>Agree the shared near-zero targets with SRE and engineering leadership.</li>
+    <li>Grant read access to CI/CD, Jira, Performance Center, APM and streaming telemetry for the baseline.</li>
+    <li>Agree the gate model: no wave starts until the one before it passes its exit test.</li>
+  </ul>
+</section>
+
+<!-- 22 SOURCES -->
+<section id="sources">
+  <div class="eyebrow">22 · Sources</div>
+  <h2>Where the public facts come from</h2>
+  <h4>DIRECTV and market</h4>
+  <ul class="small">
+    <li><a href="https://about.att.com/story/2025/directv-transaction-close.html">AT&amp;T: AT&amp;T and TPG close DIRECTV transaction (July 2, 2025)</a></li>
+    <li><a href="https://shareholders.tpg.com/news-releases/news-release-details/tpg-completes-acquisition-atts-70-stake-directv">TPG: completes acquisition of AT&amp;T's 70% stake</a></li>
+    <li><a href="https://about.att.com/story/2021/att_directv.html">AT&amp;T: DIRECTV to own and operate former AT&amp;T video operations (2021, ~15.4M subscribers)</a></li>
+    <li><a href="https://www.axios.com/2024/11/22/directv-to-spike-dish-deal-over-debt-swap-exchange">Axios: DirecTV calls off Dish deal (Nov 2024)</a></li>
+    <li><a href="https://www.lightreading.com/video-streaming/echostar-agreement-with-creditors-might-reignite-a-dish-directv-deal">Light Reading: EchoStar creditor agreement might reignite a Dish–DirecTV deal (2026)</a></li>
+    <li><a href="https://www.thewrap.com/directv-ends-satellite-service-in-some-markets">TheWrap: DirecTV stops offering satellite to new customers in some markets (June 2025)</a></li>
+    <li><a href="https://nscreenmedia.com/q1-2025-traditional-pay-tv-subscribers/">nScreenMedia: Q1 2025 pay-TV subscribers (DIRECTV STREAM estimate)</a></li>
+    <li><a href="https://finance.yahoo.com/markets/stocks/articles/directv-customers-threaten-cancel-latest-150700332.html">Yahoo Finance / TheStreet: MoffettNathanson subscriber losses</a></li>
+    <li><a href="https://365247newsletter.substack.com/p/inside-directvs-sports-strategy-business">365247 Sports: Inside DIRECTV's sports strategy (8.2M, 13.2%, revenue estimate)</a></li>
+    <li><a href="https://www.satelliteguys.us/xen/threads/directvs-subscribers-number.421581/">SatelliteGuys forum: subscriber numbers (low confidence)</a></li>
+    <li><a href="https://9to5google.com/2023/04/06/directv-gemini-free-streaming-device/">9to5Google: DIRECTV Gemini launch (April 2023)</a></li>
+    <li><a href="https://www.directv.com/gemini">DIRECTV: Gemini and Gemini Air</a></li>
+    <li><a href="https://www.directv.com/affiliates/genre-packs">DIRECTV: Genre Packs</a></li>
+    <li><a href="https://www.directv.com/support/article/000066174">DIRECTV: compatible streaming devices and stream limits</a></li>
+    <li><a href="https://everpass.com/nfl-sunday-ticket-available-on-directv-for-business-through-new-agreement-with-everpass/">EverPass: NFL Sunday Ticket on DIRECTV FOR BUSINESS</a></li>
+    <li><a href="https://news.bloomberglaw.com/private-equity/directv-ceo-sees-a-future-beyond-satellites-in-big-pay-tv-merger">Bloomberg: DirecTV CEO sees a future beyond satellites (Oct 2024)</a></li>
+    <li><a href="https://talent500.com/directvindia/">DIRECTV India, Pune (careers page listing Quality Engineering)</a></li>
+  </ul>
+  <h4>Open-source models and tools named in this plan</h4>
+  <ul class="small">
+    <li><a href="https://github.com/microsoft/LightGBM">LightGBM</a> · <a href="https://github.com/dmlc/xgboost">XGBoost</a> · <a href="https://github.com/shap/shap">SHAP</a> · <a href="https://scikit-learn.org/">scikit-learn</a></li>
+    <li><a href="https://github.com/facebook/prophet">Prophet</a> · <a href="https://github.com/amazon-science/chronos-forecasting">Chronos</a> · <a href="https://github.com/Netflix/vmaf">VMAF</a> · <a href="https://github.com/sdv-dev/SDV">SDV</a></li>
+    <li><a href="https://github.com/QwenLM/Qwen3-Coder">Qwen3-Coder</a> · <a href="https://github.com/openai/gpt-oss">gpt-oss</a> · <a href="https://huggingface.co/BAAI/bge-m3">BGE-M3</a></li>
+    <li><a href="https://github.com/langchain-ai/langgraph">LangGraph</a> · <a href="https://mlflow.org/">MLflow</a> · <a href="https://github.com/evidentlyai/evidently">Evidently</a></li>
+  </ul>
+  <p class="small muted">Licences are listed as I understand them. Legal should confirm each one before use, especially SDV, which isn't under a standard open-source licence.</p>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var steps=[1,1.25,1.5,1.75,2,2.5,3];
+  document.querySelectorAll('[data-dg]').forEach(function(box){
+    var svg=box.querySelector('svg.dg'); if(!svg) return;
+    var base=parseInt(svg.getAttribute('data-min')||'800',10), i=0;
+    var reset=box.querySelector('[data-z="0"]');
+    function apply(){var z=steps[i];svg.style.minWidth=Math.round(base*z)+'px';svg.style.width=(z*100)+'%';if(reset) reset.textContent=Math.round(z*100)+'%';}
+    box.querySelectorAll('button[data-z]').forEach(function(b){
+      b.addEventListener('click',function(){
+        var k=b.getAttribute('data-z');
+        if(k==='+'&&i<steps.length-1) i++;
+        else if(k==='-'&&i>0) i--;
+        else if(k==='0') i=0;
+        else if(k==='f'){
+          try{
+            if(document.fullscreenElement){document.exitFullscreen();}
+            else if(box.requestFullscreen){var p=box.requestFullscreen();if(p&&p.catch)p.catch(function(){});}
+          }catch(e){}
+          return;
+        }
+        apply();
+      });
+    });
+    apply();
+  });
+})();
+(function(){
+  /* headcount chart: IBM (s2) at the base, then India (s1), then US (s3) */
+  var host=document.getElementById('hc-chart');
+  if(host){
+    var data=[['Start',110,0,1],['M3',110,10,4],['M6',104,26,6],['M9',78,44,8],['M13',36,56,8],['M16',20,60,8],['M18',0,60,8],['L5 ~M24',0,47,8]];
+    var NS='http://www.w3.org/2000/svg',W=800,H=228,x0=44,x1=790,yb=196,yt=22,mx=150,k=(yb-yt)/mx,band=(x1-x0)/data.length,bw=46;
+    function el(n,a,p){var e=document.createElementNS(NS,n);for(var q in a)e.setAttribute(q,a[q]);if(p)p.appendChild(e);return e;}
+    var svg=el('svg',{viewBox:'0 0 '+W+' '+H,'class':'s-chart',role:'img','aria-label':'Stacked bars of QA headcount by stage: start 111, month 3 124, month 6 136 (peak), month 9 130, month 13 100, month 16 88, month 18 68, L5 steady state 55. IBM falls from 110 to 0, DIRECTV India rises to 60 then 47, DIRECTV US stays at 8.'});
+    [0,50,100,150].forEach(function(v){var y=yb-v*k;el('line',{x1:x0,x2:x1,y1:y,y2:y,'class':v?'gl':'base'},svg);var t=el('text',{x:x0-8,y:y+4,'text-anchor':'end'},svg);t.textContent=v;});
+    data.forEach(function(d,j){
+      var cx=x0+band*(j+.5),g=el('g',{'class':'col'},svg),tot=d[1]+d[2]+d[3];
+      var tt=el('title',{},g);tt.textContent=(d[0]==='Start'?'Start':d[0].replace('M','Month '))+': IBM '+d[1]+', India '+d[2]+', US '+d[3]+', total '+tot;
+      el('rect',{'class':'hit',x:cx-band/2+2,y:yt-14,width:band-4,height:yb-yt+14,fill:'transparent'},g);
+      var y=yb,below=false;
+      [[d[1],'b2'],[d[2],'b1'],[d[3],'b3']].forEach(function(s){
+        if(!s[0])return;var h=s[0]*k,hh=(below&&h>3)?h-2:h;
+        el('rect',{'class':s[1],x:cx-bw/2,y:y-h,width:bw,height:Math.max(hh,1)},g);y-=h;below=true;
+      });
+      var lt=el('text',{'class':'tot',x:cx,y:y-7,'text-anchor':'middle'},g);lt.textContent=tot+(j===2?' peak':'');
+      var lx=el('text',{x:cx,y:yb+22,'text-anchor':'middle'},g);lx.textContent=d[0];
+    });
+    host.appendChild(svg);
+  }
+  /* deck */
+  var deck=document.getElementById('deck');if(!deck)return;
+  var slides=[].slice.call(deck.querySelectorAll('.slide')),i=0;
+  var cnt=deck.querySelector('.deck-count'),notes=deck.querySelector('.deck-notes'),nbody=deck.querySelector('.deck-notes-body'),nb=deck.querySelector('[data-d="notes"]');
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,x){s.hidden=x!==i;});
+    cnt.textContent=(i+1)+' / '+slides.length;
+    var src=slides[i].querySelector('.notes');nbody.innerHTML=src?src.innerHTML:'';
+  }
+  deck.querySelector('[data-d="prev"]').addEventListener('click',function(){show(i-1);});
+  deck.querySelector('[data-d="next"]').addEventListener('click',function(){show(i+1);});
+  nb.addEventListener('click',function(){notes.hidden=!notes.hidden;nb.textContent=notes.hidden?'Show talking points':'Hide talking points';nb.setAttribute('aria-pressed',String(!notes.hidden));});
+  deck.querySelector('[data-d="present"]').addEventListener('click',function(){
+    try{if(document.fullscreenElement){document.exitFullscreen();}else if(deck.requestFullscreen){var p=deck.requestFullscreen();if(p&&p.catch)p.catch(function(){});}}catch(e){}
+    deck.focus();
+  });
+  document.addEventListener('keydown',function(e){
+    var active=document.fullscreenElement===deck||deck.contains(document.activeElement);
+    if(!active)return;
+    if(e.target&&e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();show(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(i-1);}
+    else if(e.key==='Home'){show(0);}else if(e.key==='End'){show(slides.length-1);}
+  });
+  show(0);
+})();
+</script>
+
+</html>
